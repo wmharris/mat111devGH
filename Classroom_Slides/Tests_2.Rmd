@@ -1,0 +1,422 @@
+---
+title: "Tests of Significance: Pt.2"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# Tests and Intervals
+
+
+
+## Confidence Interval vs. Test
+
+
+Confidence intervals answer this question:
+
+  >Given the data, *within what range of values* might the parameter reasonably lie?
+
+Tests of significance answer this question:
+
+  >Given the data, is it reasonable to believe that the parameter *is a particular given value*?
+  
+## Example
+
+
+Say we are testing:
+
+* $H_0: \mu = 100$
+  
+* $H_a: \mu \neq 100$
+  
+And we get these summary results:
+
+|Sample Mean $\bar{x}$|Sample SD $s$|Sample Size $n$|
+|:---:|:---:|:----:|
+|101|6|36|
+
+## The Code
+
+
+For two-sided test and 95%-confidence interval:
+
+```{r eval=FALSE}
+ttestGC(mean=101,sd=6,n=36,
+        mu=100)
+```
+
+## Interval and P-Value
+
+
+```
+lower       upper          
+98.969892   103.030108      
+```
+
+* 100 (Null's belief about $\mu$) is inside the 95%-confidence interval
+
+```
+P-value:    P = 0.3242 
+```
+
+Also:  $P > 0.05$.  We will not reject $H_0$.
+
+
+## Different Example
+
+
+Say we are testing:
+
+* $H_0: \mu = 100$
+  
+* $H_a: \mu \neq 100$
+  
+And we get these summary results:
+
+|Sample Mean $\bar{x}$|Sample SD $s$|Sample Size $n$|
+|:---:|:---:|:----:|
+|102.5|6|36|
+
+## The Code
+
+
+For two-sided test and 95%-confidence interval:
+
+```{r eval=FALSE}
+ttestGC(mean=102.5,sd=6,n=36,
+        mu=100)
+```
+
+## Interval and P-Value
+
+
+```
+lower         upper          
+100.469892    104.530108     
+```
+
+* 100 (Null's belief about $\mu$) is *outside* the 95%-confidence interval
+
+```
+P-value:    P = 0.01726 
+```
+
+Also:  $P < 0.05$.  We *will* reject $H_0$.
+
+## Fact
+
+
+Suppose:
+
+* You plan to make a 95%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than 0.05;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than 0.05.
+
+
+## Another Fact
+
+
+Suppose:
+
+* You plan to make a 90%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than 0.10;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than 0.10.
+    
+## Test-Interval Relationship
+
+Suppose:
+
+* You plan to make a $100(1-\alpha)$%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than $\alpha$;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than $\alpha$.
+
+## Practice { .practice }
+
+You are testing
+
+* $H_0:  \mu = 50$
+* $H_a:  \mu \neq 50$
+
+You get a 95%-confidence interval for $\mu$:
+
+```
+lower   upper          
+48.3    50.25   
+```
+
+Choose one option below concerning the P-value of the test:
+
+* Your P-value will be less than 0.05
+* Your P-value will be at least 0.05
+* Cannot be determined using the information given
+  
+
+# Types of Error
+
+## Designed to be Wrong (Sometimes)
+
+Recall:
+
+* 95%-confidence intervals for $\mu$ will fail to contain $\mu$ about 5% of the time, in repeated sampling.
+  
+In general,
+
+* $100(1-\alpha)\%$-confidence intervals will fail to contain $\mu$ about $100\alpha\%$ of the time, in repeated sampling.
+  
+## Designed to be Wrong
+
+
+Test of significance do not always make the "right" decision, either!
+
+## Error Types
+
+
+| |$H_0$ true|$H_0$ false|
+|:---:|:----:|:---:|
+|Reject $H_0$|*Type-I Error*|OK|
+|Not reject $H_0$|OK|*Type-II Error*|
+
+<br>
+
+* Type-I Error:  Rejecting the Null, when it is actually true.
+* Type-II Error: Failing to reject the Null, when it is actually false.
+  
+## Designed to be Wrong (Sometimes)
+
+
+If
+
+* $H_0$ is actually true, and
+* your cut-off value $\alpha$ is set at 0.05
+
+then a trustworthy test of significance will commit a Type-I error about 5% of the time, in repeated sampling!
+
+## Designed to be Wrong (Sometimes)
+
+
+In general, if
+
+* $H_0$ is actually true, and
+* your cut-off value is $\alpha$
+
+then a trustworthy test of significance will commit a Type-I error about $100\alpha\%$ of the time, in repeated sampling!
+
+## Don't Believe it?
+
+Then try this app:
+
+[Tests for one Mean](https://homer.shinyapps.io/Type12Errors/)
+
+## Life is Hard ...
+
+To cut down on the chance of a Type-I error:
+
+* set cut-off $\alpha$ low.
+* But then if $H_0$ is false, Type-II errors become more likely!
+
+To cut down on chance of Type-II errors:
+
+* set cut-off $\alpha$ high.
+* But then if $H_0$ is true, Type-I errors become more likely!
+
+## ... and then You Die
+
+The only way to make
+
+* Type-I errors unlikely, and
+* Type-II errors unlikely
+
+at the same time is to
+
+* set $\alpha$ very low, and
+* take a really large sample!
+
+Large samples are expensive and time-consuming.
+
+## Practice { .practice }
+
+I plan to test:
+
+* $H_0:  \mu = 50$
+* $H_a:  \mu \neq 50$
+
+Unknown to me, the mean of the population is 52.
+
+* Can I make a Type-I error?
+* Can I make a Type-II error?
+
+# Safety Checks
+
+## t-statistic Distribution
+
+
+We are using the $t$-statistic to:
+
+* build confidence interval for $\mu$, and
+* to get $P$-values in tests about $\mu$.
+
+
+
+## Statistical Theory Says:
+
+
+If
+
+* you sample $n$ items randomly from a population, and
+* that population is normally distributed,
+
+then the t-statistic
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}$$
+
+has a $t(n-1)$-distribution, with "degrees of freedom" equal to $n-1$.
+
+## Reminder about t-Curves
+
+
+```{r eval=FALSE}
+require(manipulate)
+tExplore()
+```
+
+## App
+
+We'll play with the Confidence Interval app:
+
+[Georgetown:  Intervals for one Mean](http://rstudio.georgetowncollege.edu:3838/CIMean/)
+
+
+but this time see how the actual of the t-statistic compares with a t-curve.
+
+## The Result
+
+* If the population was normal, the t-statistic looked like the t-curve, at ANY sample size.
+* If the population was skewed or hand outlines, then the t-statistic looked close to the t-curve, IF t sample was "big enough."
+* If not, then confidence intervals did not have the advertised level of confidence.
+* Tests will be unreliable, too!
+
+
+## Safety Checks
+
+So we always look at a graph of the sample.
+
+* Check for departures from normality, especially:
+    * skewness
+    * outliers
+* If the sample does not look normal, then probably the population is not normal, as well!
+* The bigger the sample size, the less we are worried by departures from normality.
+* It's a balancing act!
+* The $n \geq 30$ criterion is only a rule of thumb.
+
+## Example:  
+
+```{r eval=FALSE}
+require(abd)
+data(SagebrushCrickets)
+View(SagebrushCrickets)
+help(SagebrushCrickets)
+```
+
+## Background
+
+* In mating, female mounts male.
+* The male cricket lets the female eat his wings while they mate.
+* As soon as he deposits his sperm, he skedaddles!
+* Is he offering his wings in order to get the female to mount him?
+
+One way to find out:  see if hungry females are more eager to mate than well-fed ones are.
+
+## Randomized Experiment
+
+Researchers took 24 female sagebrush crickets. 
+
+* !3 were randomly picked to be fed well
+* the remaining 11 were starved somewhat
+
+The researchers put the females out among males, and measured how long it took for each female to mate.
+
+## Variable Analysis
+
+* **treatment**:  factor, explanatory, two values:
+    * "fed"
+    * "starved"
+* **time.to.mate**:  numerical, response
+
+## Parameters/Hypotheses
+
+Let $\mu_1$ be the mean time to mate for all female sagebrush crickets, if all of them could have been starved first.
+
+Let $\mu_2$ be the mean time to mate for all female sagebrush crickets, if all of them could have been fed well first.
+
+* $H_0:  \mu_1 - \mu_2 = 0$
+* $H_0:  \mu_1 - \mu_2 \neq 0$
+
+## A t-test?
+
+Possible to try:
+
+```{r eval=FALSE}
+ttestGC(time.to.mating~treatment,data=SagebrushCrickets,
+        mu=0,alternative="two.sided")
+```
+
+But can we trust the results?
+
+## Sample Sizes
+
+```{r}
+favstats(time.to.mating~treatment,data=SagebrushCrickets)
+```
+
+Hmm, better look closely at graphs of the samples!
+
+## Density Plots
+
+```{r eval=FALSE}
+densityplot(~time.to.mating|treatment,
+            data=SagebrushCrickets,
+            from=0)
+```
+
+---
+
+
+```{r echo=FALSE}
+densityplot(~time.to.mating|treatment,
+            data=SagebrushCrickets,
+            from=0)
+```
+
+
+## Practice { .practice }
+
+What do you think?  Should we trust the results of the t-test?  Or should we ask a statistician for advice on how to analyze the data inferentially?

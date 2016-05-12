@@ -1,0 +1,258 @@
+---
+title: "DAR Ch.10 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(abd)
+require(tigerstats)
+```
+
+# Plagiarism Issues
+
+## Reminders (from Chs 4,9 DAR Feedback):
+
+* You should leave the Introduction untouched (it sets the assignment)
+* Use your own words in other sections.
+    * Really, really use your own words!
+    * Don't just change a word or two from each sentence in the example document!
+* Advice:  read the example document in advance, but don't look at it while writing up your own assignment
+
+**Copying is plagiarism!**
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods!
+
+One variable involved:
+
+* `percent.clockwise`, a numerical variable.
+
+(It's a number, for each dolphin!)
+
+## Descriptive Methods
+
+One numerical variable leads to:
+
+* `densityplot()` for a  (graphical descriptive)
+    - with such a small sample size, a box-plot or histogram won't be very informative
+* `favstats()` (numerical descriptive)
+
+## Inferential Methods
+
+* `percent.clockwise` is numerical
+
+* so we could be interested in one population mean.
+
+
+## Define Parameter, Choose Methods
+
+Define  $\mu$ to be the mean percentage of sleep-time spent swimming clockwise, for ALL Southern Hemisphere dolphins.
+
+* we'll make a 95%-confidence interval for $\mu$, and
+* perform a two-sided test to see if the data provide strong evidence that $\mu$ is bigger than 50%.
+
+
+# Graphical Descriptive Results
+
+## densityplot()
+
+
+
+```{r eval=FALSE}
+densityplot(~percent.clockwise,data=Dolphins,
+            to=100,
+            xlab="percent of time swimming counter-clockwise",
+            main="Dolphins in the Southern Hemisphere")
+```
+
+* For such a small sample, `bwplot()` and `histogram()` might not deliver very informative graphs.  (But I did not count off if you used one of them.)
+* `from` and `to` arguments are useful when you know the possible bouinds of the data
+
+---
+
+```{r echo=FALSE}
+densityplot(~percent.clockwise,data=Dolphins,
+            to=100,
+            xlab="percent of time swimming counter-clockwise",
+            main="Dolphins in the Southern Hemisphere")
+```
+
+
+# Numerical Results
+
+## favstats()
+
+
+```{r}
+favstats(~percent.clockwise,data=Dolphins)
+```
+
+
+
+# Inferential Results
+
+## Hypotheses
+
+Do Southern Hemisphere dolphins spend a majority of their sleep-time swimming clockwise?
+
+* $H_0:  \mu = 50$%
+
+* $H_a:  \mu \neq 50$%
+
+## The R-Code
+
+```{r eval=FALSE}
+ttestGC(~percent.clockwise,data=Dolphins,mu=50)
+```
+
+
+## Some Output
+
+```
+Estimate of mu:   88.21 
+SE(x.bar):	 2.861 
+```
+
+* Our best guess is that $\mu$ is about 88.21%
+
+* but this estimate could easily be off by 2.861% or so, by chance variation in the sampling process
+
+* still, $\bar{x}$ is MANY standard errors above 0
+
+* our results are very unlikely to occur if Southern Hemisphere dolphins don't spend most of their sleep-time swimming clockwise!
+
+## Confidence Interval
+
+```
+95% Confidence Interval for mu:
+
+          lower.bound         upper.bound          
+          81.446788           94.978212
+```
+
+Interpretation:  We are 95%-confident that $\mu$ is somewhere between 81.4% and 99.8%.
+
+## Address the Research Question
+
+All of the values in the confidence interval were well above 50%.
+
+We can rule out the idea that Southern Hemisphere dolphins spend, on average, less than half of their sleep-time swimming clockwise.
+
+## Test Statistic and P-Value
+
+```
+Test Statistic:  	t = 13.36  
+P-value:		P = 3.091e-06 
+```
+
+* The sample mean was 13.36 standard errors above what $H_0$ expected!
+
+$$3 \times 10^{-6} = \frac{3}{1000000}$$
+
+If Southern Hemisphere dolphins spend only half of their sleep-time swimming clockwise, then there is only a 3 in one million chance of getting a test statistic at least as far from 0 as the one we actually got!
+
+## Decision and Conclusion
+
+Since $p < 0.05$, we'll reject $H_0$.
+
+This study provided very strong evidence that the mean percentage of sleep-time spent swimming clockwise, for all Southern Hemisphere dolphins, was greater than 50%.
+
+# Discussion
+
+## Safety Check
+
+Most important part:  You should have taken a simple random sample from the population!  But ...
+
+* ... nothing said here about how the sample was taken!  (What if the dolphins are all from one herd/family?)
+
+* In fact (Google the title of the article to find it online), the article says:  "The present study reports the results of several nights of observation of eight dolphins held at Seaworld in Durban, South Africa."  Not a random sample at all!!
+
+## More Safety Check
+
+Less Important Part:  If we don't KNOW that the population is normally distributed, then either:
+
+* we must have a large sample, or
+* we should have good reason to believe that the population is not far from normal
+
+That's why when the sample is small we look carefully at a graph of the sample. 
+
+---
+
+```{r echo=FALSE}
+densityplot(~percent.clockwise,data=Dolphins,
+            to=100,
+            xlab="percent of time swimming counter-clockwise",
+            main="Dolphins in the Southern Hemisphere")
+```
+
+But if the sample is very small (e.g, 8) even a symmetric, unimodal graph does not provide much evidence that the population itself is close to normal.  
+
+# Alternative Analysis
+
+## Turn data into yes/no
+
+For each dolphin, record whether or not the dolphin spent more than half of its sleep-time swimming clockwise.
+
+The we could be interested in one proportion $p$, the proportion of all Southern Hemisphere dolphins that spend more than half their time swimming clockwise.
+
+## Hypotheses
+
+* $H_0:  p = 0.50$
+
+* $H_a:  p \neq 0.50$
+
+```{r eval=FALSE}
+binomtestGC(x=8,n=8,p=0.50,graph=TRUE)
+```
+
+## Some Results
+
+```
+Estimate of p:   1 
+SE(p.hat):	 0 
+```
+
+The standard error doesn't really make sense when there are no failures.  Ignore it.
+
+## More Results
+
+```
+95% Confidence Interval for p:
+
+          lower.bound         upper.bound          
+          0.630583            1.000000
+```
+
+Interval lies entirely above 0.5.  Looks bad for the Null!
+
+## P-Value
+
+```{r echo=FALSE}
+pbinomGC(7,region="above",size=8,prob=0.5,graph=TRUE)
+```
+
+##  Our Judgements
+
+We would reject $H_0$ and say that the data provided strong evidence that a majority of Southern Hemisphere dolphins spend more than half of their sleep-time swimming clockwise ...
+
+... except that we still think we don't have a random sample of dolphins!
+
+No fancy statistical trick gets us around this problem!
+
+* For practice, we perform the inferential procedure.
+
+* In real life, you would not perform the descriptive procedures, and you would explain to the reader why inferential procedures are not appropriate in this study.
+

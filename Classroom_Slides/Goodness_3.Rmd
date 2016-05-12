@@ -1,0 +1,345 @@
+---
+title: "Goodness of Fit: Pt.3"
+author: "Homer White"
+date: "November, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+require(abd)
+```
+
+# Chi-Square Test for Goodness of Fit
+
+
+## chisqtestGC()
+
+We can do the inferential work more quickly with `chisqtestGC()`.  For the Gambler Study:
+
+```{r echo=FALSE}
+set.seed(2020)
+```
+
+
+```{r eval=FALSE}
+obs <- c(one=8,two=18,three=11,four=7,five=9,six=7)
+nullProbs <- rep(1/6,times=6)
+chisqtestGC(obs,p=nullProbs,
+            simulate.p.value=TRUE, B=3000,
+            graph=TRUE)
+```
+
+## The Output
+
+```
+Pearson's chi-squared test with simulated p-value 
+   (based on 3000 resamples) 
+
+      Observed counts Expected by Null Contr to chisq stat
+one                 8               10                 0.4
+two                18               10                 6.4
+three              11               10                 0.1
+four                7               10                 0.9
+five                9               10                 0.1
+six                 7               10                 0.9
+
+Chi-Square Statistic = 8.8 
+Degrees of Freedom of the table = 5 
+P-Value = 0.123 
+
+```
+## Graph of Resamples
+
+```{r echo=FALSE,results='hide'}
+obs <- c(one=8,two=18,three=11,four=7,five=9,six=7)
+nullProbs <- rep(1/6,times=6)
+chisqtestGC(obs,p=nullProbs,
+            simulate.p.value=TRUE, B=3000,
+            graph=TRUE)
+```
+
+## The Seating Study
+
+```{r echo=FALSE}
+set.seed(3030)
+```
+
+
+```{r eval=FALSE}
+chisqtestGC(~seat,data=m111survey,
+            p=c(0.25,0.5,0.25),
+            simulate.p.value=TRUE,B=3000,
+            graph=TRUE)
+```
+
+## The Results
+
+```
+Pearson's chi-squared test with simulated p-value 
+   (based on 3000 resamples) 
+
+         Observed counts Expected by Null Contr to chisq stat
+1_front               27            17.75                4.82
+2_middle              32            35.50                0.35
+3_back                12            17.75                1.86
+
+
+Chi-Square Statistic = 7.0282 
+Degrees of Freedom of the table = 2 
+P-Value = 0.03 
+```
+
+# The Chi-Square Curve "Approximation"
+
+## Facts About the Chi-Square Statistic
+
+If you have a large enough sample and $H_0$ is true, then
+
+* the expected value is about the degrees of freedom $df$
+
+* the degrees of freedom is the number of cells - 1
+
+* the standard deviation is about $\sqrt{2 \times df}$
+
+## Really?
+
+Try the seating study again:
+
+```{r echo=FALSE}
+set.seed(3030)
+```
+
+
+```{r}
+seatResults <- chisqtestGC(~seat,data=m111survey,
+            p=c(0.25,0.5,0.25),
+            simulate.p.value=TRUE,B=3000,
+            graph=TRUE)
+```
+
+To see the results:
+
+```{r eval=FALSE}
+seatResults
+```
+
+## Investigate the Simulations
+
+```{r}
+favstats(~sims,data=seatResults)[c("mean","sd","n")]
+```
+
+Sure enough:
+
+* the mean of the simulations was about 2, the $df$
+* the SD of the sims was about 2 (the  $\sqrt{2 \times df}$ figure )
+
+## Thinking with the Mean and the SD
+
+
+So for the seating study, if the Null is right then we would expect the chi-square statistic to be about 2, give or take
+
+$$\sqrt{2 \times 2} = 2$$
+
+or so.  It came out to 7.0282 (quite a few SDs above the expected value), so chances of getting this or more were small.
+
+## How Big is "Big Enough"
+
+If the expected counts in each cell is at least five, then our sample is DEFINITELY "big enough."
+
+In fact, in that case the chi-square statistic behaves much like a "chi square" density curve with degrees of freedom equal to:
+
+* number of cells -1
+
+## Comparison:  Seating
+
+Let's compare our chi-square statistic simulations with a chi-square curve that has 2 degrees of freedom:
+
+```{r eval=FALSE}
+densityplot(~sims,data=seatResults,plot.points=F,from=0,xlim=c(0,10),
+            main="Simulations vs. Chi-Square Curve, df=2",
+            xlab="Simulations of the chi-square statistic",
+            sub="Simulations in blue, Chi-Square Curve in black",
+            panel=function(x,...) {
+              panel.mathdensity(dmath=dchisq,args=list(df=2),
+                  lwd=5,col="black",lty=1,alpha=0.5,...)
+              panel.densityplot(x,col="blue",lwd=2,...)
+            })
+```
+
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~sims,data=seatResults,plot.points=F,from=0,xlim=c(0,10),
+            main="Simulations vs. Chi-Square Curve, df=2",
+            xlab="Simulations of the chi-square statistic",
+            sub="Simulations in blue, Chi-Square Curve in black",
+            panel=function(x,...) {
+              panel.mathdensity(dmath=dchisq,args=list(df=2),
+                  lwd=5,col="black",lty=1,alpha=0.5,...)
+              panel.densityplot(x,col="blue",lwd=2,...)
+            })
+```
+
+## Comparison:  Gambler's Die
+
+In the study of the gambler's die:
+
+* there were six cells (one for each side of the die)
+
+* so $df = 6-1=5$
+
+* So if the die is far, then we expect the chi-square statistic to be about 5 ...
+
+* ... give or take $\sqrt{2 \times 5} \approx 3.16$ or so, for chance variation in the rolling of the die
+
+## What do we get?
+
+```{r echo=FALSE}
+set.seed(4040)
+```
+
+
+```{r}
+obs <- c(one=8,two=18,three=11,four=7,five=9,six=7)
+nullProbs <- rep(1/6,times=6)
+dieResults <- chisqtestGC(obs,p=nullProbs,
+            simulate.p.value=TRUE, B=3000,
+            graph=TRUE)
+favstats(~sims,data=dieResults)[c("mean","sd","n")]
+```
+
+Pretty close!
+
+## Compare With Chi-Square Curve
+
+Let's compare our simulations to a chi-square curve with 5 degrees of freedom:
+
+
+```{r eval=FALSE}
+densityplot(~sims,data=dieResults,plot.points=F,from=0,xlim=c(0,15),
+            main="Simulations vs. Chi-Square Curve, df=5",
+            xlab="Simulations of the chi-square statistic",
+            sub="Simulations in blue, Chi-Square Curve in black",
+            panel=function(x,...) {
+              panel.mathdensity(dmath=dchisq,args=list(df=5),
+                  lwd=5,col="black",lty=1,alpha=0.5,...)
+              panel.densityplot(x,col="blue",lwd=2,...)
+            })
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~sims,data=dieResults,plot.points=F,from=0,xlim=c(0,15),
+            main="Simulations vs. Chi-Square Curve, df=5",
+            xlab="Simulations of the chi-square statistic",
+            sub="Simulations in blue, Chi-Square Curve in black",
+            panel=function(x,...) {
+              panel.mathdensity(dmath=dchisq,args=list(df=5),
+                  lwd=5,col="black",lty=1,alpha=0.5,...)
+              panel.densityplot(x,col="blue",lwd=2,...)
+            })
+```
+
+
+## The Chi-Square Curve Approximation
+
+We have seen that if your sample size is "big enough", it's OK to just use a chi-square curve to approximate the P-value:
+
+```{r eval=FALSE}
+chisqtestGC(~seat,data=m111survey,
+            p=c(0.25,0.5,0.25),
+            graph=TRUE)
+```
+
+## Summary
+
+* The Chi-Square Test for Goodness of Fit is an inferential procedure for studying one factor variable
+
+* It helps you determine whether the or not the factor variable is distributed in a specific way (as stated by the Null Hypothesis)
+
+* If expected cell counts are big enough (at least five in each cell) then you can use a chi-square curve to approximate the P-value
+
+* If not, just use simulation
+
+* (You can always use simulation!)
+
+# Another Example
+
+## Picking "at Random"
+
+```{r eval=FALSE}
+data(pennstate1)
+View(pennstate1)
+help(pennstate1)
+```
+
+Subjects were asked to pick a whole number "at random" from 1 to 10.  The choice is recorded as the variable **RandNumb**.
+
+## Descriptive Work
+
+```{r}
+choices <- xtabs(~RandNumb,data=pennstate1)
+choices
+```
+
+```{r eval=FALSE}
+barchartGC(choices,xlab="number chosen",
+           main='Students Choosing "Randomly"')
+```
+
+## The Barchart
+
+```{r echo=FALSE}
+barchartGC(choices,xlab="number chosen",
+           main='Students Choosing "Randomly"')
+```
+
+## A Test of Significance
+
+Does the study provide strong evidence that people don't pick numbers randomly, when asked to pick "at random"?
+
+* $H_0$:  Each number has a 10% chance to be picked
+
+* $H_a:$ Some numbers were more likely to be picked than others were.
+
+## Setting up the Code
+
+We need to specify the null hypothesis in the `p` argument.
+
+Suggestion:  use the `rep()` function:
+
+```{r}
+PennNullProbs <- rep(0.1,10)
+PennNullProbs
+```
+
+
+## Practice { .practice }
+
+Run the chi-square test for goodness of fit.  (Hint:  set `p=PennNullProbs`)
+
+What do you conclude?
+
+## Want Less Output?
+
+You can set the argument `verbose` to `FALSE`:
+
+```{r eval=FALSE}
+chisqtestGC(~seat,data=m111survey,p=c(0.25,0.5,0.25),
+            verbose=FALSE)
+```
+
+

@@ -1,0 +1,301 @@
+---
+title: "Two Factor Variables: Pt.1"
+author: "Homer White"
+date: "Saturday, August 30, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Explanatory and Response
+
+## Two Variables
+
+Often a Research Question involves two variables.
+
+Example:  For the `m111survey` data, we might ask:
+
+>*Do males and females differ in their seating preferences?*
+
+Two variables involved:
+
+* **sex** (a factor variable)
+* **seat** (a factor variable)
+
+
+## Explanatory and Response
+
+Sometimes we consider one of the variable to be *explanaotry*, the other to the be the *response* variable.
+
+The explanatory variable is one that
+
+* we think might cause or explain the values of the response, OR
+* be used to predict the response
+
+Maybe here we think:
+
+* **sex** is explanatory
+* **seat** is the response
+
+# Two Factor Varibles:  Methods
+
+## Methods We Use
+
+To study the relationship between two factor variables, we can make:
+
+* two-way tables (`xtabs()`)
+* bar charts (`barchartGC()`)
+
+Code:
+
+$$function(\sim explanatory + response, data = \ldots)$$
+
+## Two-Way Table
+
+```{r}
+sexSeat <- xtabs(~sex+seat,data=m111survey)
+sexSeat
+```
+
+There are:
+
+* $19+16+5=40$ females
+* $8+16+7=31$ males
+
+## Row Percents
+
+To correct for the differing group sizes, compute row percents:
+
+```{r}
+19/40
+```
+
+47.5% of the females preferred the front.
+
+```{r}
+8/31
+```
+
+25.8% of the males preferred the front.
+
+## Practice:  Row Percents { .practice }
+
+```{r echo=FALSE}
+sexSeat
+```
+
+What percentage of females preferred the back?
+
+What percentage of males preferred the back?
+
+## Using rowPerc()
+
+```{r}
+rowPerc(sexSeat)
+```
+
+## Describing the Relationship
+
+```{r echo=FALSE}
+rowPerc(sexSeat)
+```
+
+"In the sample, sex and seating preference are related:  for example, females were more likely to prefer the front than males were (47.5% vs. 25.81%)."
+
+<br>
+
+## Describing the Relationship
+
+* Make row percents
+* Compare row percentages down columns (*not across a row!!*)
+* If you see one or more big differences, then:
+    * the two variables are related
+    * in other words, the groups differ in their response
+    
+## Another Example
+
+In the `mat111survey` data:
+
+>*Who is more likely to believe in love at first sight:  a guy or a gal?*
+
+Variable Analysis
+
+* **sex** (factor, explanatory)
+* **love_first** (factor, response)
+
+We can make a two-way table and some row percents to study the Research Question!
+
+## Practice { .practice }
+
+Make the two-way table.
+
+Make row percents.
+
+Describe the relationship (if any) between the two variables.
+
+# Inference
+
+## From Sample to Population
+
+In the sample, we saw that **sex** and **seat** were related:  males were less likely than females to prefer the front, more likely than females to prefer the back.
+
+But are these two variables related *in the GC population*?
+
+After all, the sample was picked randomly from the population.
+
+Could the pattern we saw in the sample be due just to chance?  Or is it so strong that we have to conclude there is a relationship in the population?
+
+## Back to Buzz
+
+In Dr. Bastian's experiment, we saw that Buzz pushed the correct button 15 out of 16 times.
+
+But could those results be due just to chance variation in the guessing process?  Or are they so extreme that we have to conclude that he can communicate with Doris?
+
+## Two Hypotheses
+
+Null Hypothesis:
+
+$H_0:$  Sex and seating preference are not related in the GC population.
+
+Alternative Hypothesis:
+
+$H_a:$  Sex and seating preference ARE related in the GC population.
+
+## Back to Buzz
+
+Null Hypothesis:
+
+$H_0:$  Buzz's chance of picking correct door is 50%. (No communication with Doris.)
+
+Alternative Hypothesis:
+
+$H_a:$  Buzz's chance of picking correct door is MORE THAN 50%. (Some communication with Doris.)
+
+## Attacking the Dolphin Question
+
+Null Hypothesis expects 8 correct picks (give or take some for chance error).
+
+Buzz got 15.  (This is our *test statistic*)
+
+We found P-value (chance of 15 or more correct if Null Hypothesis is correct).
+
+The P-value helped us decide if we had strong evidence that Buzz could communicate.
+
+## Attacking Sex and Seat
+
+Find what sort of two-way table the Null Hypothesis expects.
+
+Find a number that measures how different the actual table is from what the Null expected.  (This will be our test statistic.)
+
+Find the P-value (chance of getting a test statistic at least as big as the one we got, if the Null is correct.)
+
+Use the P-value to decide if we have strong evidence for a relationship between **sex** and **seat** in the GC population.
+
+## Expected Counts
+
+Observed table:
+
+```{r echo=FALSE}
+sexSeat
+```
+
+Null expects to see a table like this:
+
+```{r}
+expCounts(sexSeat)
+```
+
+Give or take some for chance error in the sampling process!
+
+## Expected Counts
+
+The Null says there is no relationship in the population.
+
+So the Null expects essentially no relationship in the sample.
+
+```{r}
+rowPerc(expCounts(sexSeat))
+```
+
+(Well, it expects a small relationship, because of chance variation in the sampling process)
+
+## Test Statistic
+
+We need a test statistic that will measure how much the observed table differs from the one the Null expects.
+
+$$\chi^2=\sum_{\text{all cells}} \frac{(\text{Observed}-\text{Expected})^2}{\text{Expected}}.$$
+
+## Chi-Square Statistic
+
+This works out to:
+
+$$\chi^2 = \frac{(19-15.21)^2}{15.21}+\frac{(8-11.79)^2}{11.79} \\
++\frac{(16-18.02)^2}{18.02}+\frac{(16-13.97)^2}{3.97} \\
++\frac{(5-6.76)^2}{6.76}+\frac{(7-5.24)^2}{5.24} \\
+\approx 3.73$$
+
+```{r echo=FALSE}
+expected <- expCounts(sexSeat)
+chisqStat <- round(sum((sexSeat-expected)^2/expected),2)
+```
+
+
+(We'll always make R compute this number.)
+
+## P-value
+
+Is our Chi-square statistic an unusually big number?
+
+What's the chance of getting 3.73 or more, if the Null is correct?
+
+## Back to Buzz
+
+To find the P-value for Buzz, we simulated.
+
+We imagined that Buzz was just guessing.  Then we had him repeat the experiment many, many times.
+
+## Simulation
+
+We can do the same thing!
+
+* Imagine that there is no relationship between sex and seating preference in a big population.
+* Take a random sample from that imaginary population many, many times.
+* Make a two-way table of our results.
+* Compute the chi-square statistic.
+* Keep track of how often that statistic exceeds the 3.73 that we actually got in our study.
+
+
+
+## Repeat Many Times
+
+[http://homer.shinyapps.io/SlowAssoc](http://homer.shinyapps.io/SlowAssoc)
+
+## Now Decide
+
+Think about your simulations.
+
+Is is all that unlikely to get 3.73 or more?
+
+Did the `m111survey` study provide strong evidence for a relationship between sex and seating preference?
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+ChisqSimSlow(~sex+love_first,data=m111survey)
+```
+
+How many times did you re-sample?
+
+What percentage of the time did the re sampled chi-square statistic exceed the chi-square statistic in the actual study?
+
+Do you think there is overwhelming evidence that in the GC population the two sexes differ in whether they believe in love at first sight?

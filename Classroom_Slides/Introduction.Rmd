@@ -1,0 +1,281 @@
+---
+title: "Introduction to R"
+author: "Homer White"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css: slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+# R as Calculator
+
+## Basic Arithmetic
+
+Operation|Sign|
+|---|---|
+addition|+|
+subtraction|-|
+multiplication|\*|
+division|/|
+
+<br>
+Parentheses are used to clarify order of operations.
+
+## Examples
+
+```{r}
+2+2
+```
+
+```{r}
+2*3+7
+```
+
+
+```{r}
+(23.7-20)/1.5
+```
+
+## Square Roots, Powers
+
+Use the `sqrt()` function:
+
+```{r}
+sqrt(9)
+```
+
+To raise to a power, use "^".  To get $4^3$:
+
+```{r}
+4^3
+```
+
+
+## Practice 1 { .practice }
+
+Use R to find:
+
+$$2+7-3 \times 5,$$
+
+$$\frac{25.5-20.2}{3},$$
+
+and finally:
+
+$$\sqrt{\frac{3.1^2}{25}+\frac{5.2^2}{36}}.$$
+
+# Packages
+
+## A System of Packages
+
+* Packages extend the basic functionality of R.
+
+* Some are already "loaded" and ready for use.
+
+* Others must be loaded by you, the user (once per R session).
+
+## Important Packages
+
+To load them, use the `library()` function:
+
+```{r eval=FALSE}
+library(tigerstats)
+```
+
+You can also use `require()`, or just make sure the box next to the package name is checked.
+
+Once loaded, the package stays loaded until you end your R session.
+
+## Practice 2 { .practice }
+
+Check the box next to `tigerstats`.  Then check to make sure that:
+
+* `mosaic`
+* `mosaicData`
+* `abd`
+* `tigerstats`
+
+are all loaded.
+
+# Data Frames
+
+## Learning about a Dataset
+
+`m111survey` comes from the `tigerstats` package.
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+## Data Frame Structure
+
+* Each row stands for an individual (also ocalled an **observation**)
+
+* The columns give *variables* that were measured for the individuals.
+
+When data is missing, you see an NA.
+
+Variables can be:
+
+* Factor variables (values not naturally numbers)
+* Numerical variables (integer and real number values)
+
+## Structure
+
+You can learn about the variables quickly using the `str()` function:
+
+```{r}
+str(m111survey)
+```
+
+## Structure
+
+You can also click the arrow next to the data frame in the Global Environment.
+
+Often you can tell just by viewing the data frame, or by looking at the Help file on the data frame.
+
+## Practice 3 { .practice }
+
+* How many students were in the MAT 111 survey?
+* For each variable in `m111survey`, say whether the variable is a factor variable or a numerical variable.
+* What does the variable **love_first** record, for each student?
+* How many did students did not answer the question about their ideal height?
+
+# Simple R Functions
+
+## Making a "List" with c()
+
+A "list" of four numbers:
+
+```{r}
+c(1,7,3,2)
+```
+
+You can store it in an object and see it any time you want
+
+```{r}
+myNumbers <- c(1,7,3,2)
+myNumbers
+```
+
+
+## Making Lists with rep()
+
+`rep()` repeats a number as many times as you want.
+
+```{r}
+rep(3,times=5)
+rep(1/6,6)
+someNumbs <- rep(3,10)
+someNumbs
+```
+
+
+## Making Lists with seq()
+
+Suppose you want all the odd numbers from 3 through 27:
+
+```{r}
+seq(3,27,by=2)
+```
+
+Or the numbers from -2 to 3, going in steps of 0.5:
+
+```{r}
+seq(-2,3,by=0.5)
+```
+
+## Practice 4 { .practice }
+
+Use R to make a list of the numbers $1,5,-2$ and $7$.
+
+Use R to make a list 100 fives.
+
+Use R to make a list of the numbers from 100 to 220, going up in steps of 10.
+
+# Simulation (optional)
+
+## Coin Flipping
+
+Flip a fair coin 16 times, and count the number of heads:
+
+```{r eval=FALSE}
+nflip(16)
+```
+
+```{r echo=FALSE}
+library(parallel)
+set.seed(2020)
+nflip(16, quiet=TRUE)
+```
+I got 7 heads, but your results may vary from this!
+
+
+## Repetition
+
+```{r eval=FALSE}
+do(10)*nflip(16)
+```
+
+```{r echo=FALSE}
+library(parallel)
+do(10)*nflip(16)
+```
+
+## Store Your Results
+
+Let's do it lots of times, and store the results:
+
+```{r eval=FALSE}
+mySims <- do(500)*nflip(16)
+head(mySims,n=5)
+```
+
+
+```{r echo=FALSE}
+library(parallel)
+mySims <- do(500)*nflip(16)
+head(mySims,n=5)
+```
+
+## Make Histogram of Results
+
+```{r eval=FALSE}
+histogram(~nflip,data=mySims,
+          xlab="Number of Heads",
+          breaks=seq(-0.5,16.5,by=1),
+          type="count"
+          )
+```
+
+## Histogram of the Simulations
+
+```{r echo=FALSE}
+histogram(~nflip,data=mySims,
+          xlab="Number of Heads",
+          breaks=seq(-0.5,16.5,by=1),
+          type="count"
+          )
+```
+
+Does it seem likely to get 15 or more heads?
+
+## Tallying the Simulations
+
+```{r}
+tally(~nflip,data=mySims)
+```
+
+How many times out of the 500 did we get 10 or more heads?  Is 10 or more an unusual result?
+

@@ -1,0 +1,187 @@
+---
+title: "Probability in Sampling: Pt.3"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# From God to Mortal
+
+
+## In reality ...
+
+
+You are not a god-like being.  You are a mere mortal, a statistician, who has just taken a simple random sample of size $n$ from a population.
+
+The following is all true about you:
+
+* You don't know population mean $\mu$.
+* You don't know population SD $\sigma$.
+* You DO know what $\bar{x}$ is.
+* You DO know that, BEFORE you took the sample, $\bar{x}$ was liable to turn out to be within one an SD or so of the EV $\mu$.
+
+## So You Figure ...
+
+
+... that for the sample you have just taken, $\bar{x}$ is an SD or so away from $\mu$.
+
+In other words:
+
+  >The population mean $\mu$ is liable to be within an SD or so of your sample mean $\bar{x}$.
+  
+## Problem
+
+
+The only problem is that:
+
+$$SD(\bar{x})=\frac{\sigma}{\sqrt{n}}$$
+
+* You know your sample size $n$,
+* but you do NOT know population SD $\sigma$!
+
+
+## Partial Solution
+
+
+You can *estimate* $\sigma$ with $s$, the SD of the *sample*.
+
+This leads to the so-called *standard error* of $\bar{x}$:
+
+$$SE(\bar{x})=\frac{s}{\sqrt{n}}.$$
+
+## Example
+
+
+* You take a sample of size $n=36$ from a population with unknown mean $\mu$.
+* From your sample, you compute $\bar{x}=60$.
+* From your sample, you compute $s=3$.
+
+You can then estimate:
+
+$$SD(\bar{x}) \approx SE(\bar{x}) = \frac{3}{\sqrt{36}}=0.5.$$
+
+## Example (Cont.)
+
+
+So you figure that $\mu$ is liable to be within 0.5 or so of 60, your sample mean.
+
+## But Wait!  There's More!
+
+
+Your sample size was $n=36 \ge 30$, so $n$ is "big enough":  $\bar{x}$, as a random variable, was about normal!
+
+Since there was about a 68% chance $\bar{x}$ would be within one SD of $\mu$, you can go out on a limb and say:
+
+  >"I am about 68%-confident that $\mu$ is within one SE of my $\bar{x}$."
+  
+In other words:
+
+  >"I am about 68%-confident that $\mu$ is between 59.5 and 60.5."
+  
+## Practice { .practice }
+
+You take a sample of size 49 from a population with an unknown mean $\mu$.
+
+The mean $\bar{x}$ of your sample is 50.  The SD of your sample is 14.
+
+What is the standard error of $\bar{x}$?
+
+Show how to replace the following blanks with numbers:  "I am about 68%-confident that $\mu$ is somewhere between Blank and Blank."
+  
+
+# 68-95 Rule for Estimation
+
+
+## 68-95 Rule for Estimation
+
+
+If the probability distribution of an estimator is approximately normal, then
+
+* we can be about 68%-confident that the parameter will be within one SE of the estimator
+* we can be about 95%-confident that the parameter will be within two SE of the estimator
+* we can be about 99.7%-confident that the parameter will be within three SEs of the estimator
+
+## Example
+
+Back to the previous example:
+
+* You take a sample of size $n=36$ from a population with unknown mean $\mu$.
+* From your sample, you compute $\bar{x}=60$.
+* From your sample, you compute $s=3$.
+* You compute $SE(\bar{x})=0.5$.
+
+## Rough 68%-Confidence Interval
+
+
+You are about 68%-confident that
+
+$$\bar{x} - SE(\bar{x}) < \mu < \bar{x} + SE(\bar{x}), \\
+59.5 < \mu < 60.5$$
+
+This is a a rough 68%-confidence interval for $\mu$.
+
+
+## Rough 95%-Confidence Interval
+
+
+You are about 95%-confident that
+
+$$\bar{x} - 2SE(\bar{x}) < \mu < \bar{x} + 2SE(\bar{x}), \\
+59.0 < \mu < 61.0$$
+
+This is a a rough 95%-confidence interval for $\mu$.
+
+**Note**:
+
+* 95%-confidence intervals are the ones most commonly made.
+* The "$2 \times SE$" figure is known to the public as the "margin of error."
+
+## Rough 99.7%-Confidence Interval
+
+
+You are about 99.7%-confident that
+
+$$\bar{x} - 3SE(\bar{x}) < \mu < \bar{x} + 3SE(\bar{x}), \\
+58.5 < \mu < 61.5$$
+
+This is a a rough 99.7%-confidence interval for $\mu$.
+
+## Practice { .practice }
+
+Same situation as in the previous practice problem:
+
+* you take a sample of size 49 from a population with an unknown mean $\mu$.
+* The mean $\bar{x}$ of your sample is 50.
+* The SD of your sample is 14.
+
+Show how to replace the following blanks with numbers:  "I am about 95%-confident that $\mu$ is somewhere between Blank and Blank."
+
+## SEs for Basic Five Estimators
+
+
+Plug in estimates for population parameters, wherever they occur in the formula for the SD:
+
+|  Estimator | SD | SE |
+|:--------:|:----------:|:-----------:|
+|$\bar{x}$|$\frac{\sigma}{\sqrt{n}}$|$\frac{s}{\sqrt{n}}$|
+|$\bar{x}_1-\bar{x}_2$|$\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$|$\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}$|
+|$\hat{p}$|$\sqrt{\frac{p(1-p)}{n}}$|$\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$|
+|$\hat{p}_1-\hat{p}_2$|$\sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$|$\sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1}+\frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$|
+|$\bar{d}$|$\frac{\sigma_d}{\sqrt{n}}$|$\frac{s_d}{\sqrt{n}}$|
+
+## Next Chapter
+
+
+In the next chapter we will learn to make confidence intervals that are less "rough".

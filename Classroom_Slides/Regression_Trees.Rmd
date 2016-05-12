@@ -1,0 +1,269 @@
+---
+title: "Regression Trees"
+author: "Homer White"
+date: "February, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+library(tree)
+library(tigerTree)
+```
+
+# Introduction to Regression Trees
+
+## Regression Trees
+
+Regression trees are similar to classification trees, except that:
+
+* the response variable is numerical!
+
+## A Regression Tree
+
+For the `m111survey` data, let's make a tree model to predict **fastest** from the other variables in the data frame.
+
+First, remove observations with missing values:
+
+```{r}
+m2 <- subset(m111survey, complete.cases(m111survey))
+```
+
+This leaves 68 rows.  Now make the tree:
+
+```{r eval = FALSE}
+library(tree)
+trFast <- tree(fastest ~ ., data = m2)
+plot(trFast); text(trFast)
+```
+
+
+## The Tree Model (graph)
+
+```{r echo = FALSE}
+trFast <- tree(fastest ~ ., data = m2)
+plot(trFast); text(trFast)
+```
+
+At each terminal node the predicted speed is the mean fastest speed for all observations in the node.
+
+## The Tree Model (more detail)
+
+```{r}
+trFast
+```
+
+## How Does This Work?
+
+How does the tree decide to make its splits?
+
+How does it decide when to stop splitting?
+
+## By Tree-Control!
+
+Under the hood, `tree` still uses the `control` argument and the `tree.control` function:
+
+```{r eval = FALSE}
+trFast <- tree(fastest ~ ., data = m2,
+              control = tree.control(
+                nobs = nrow(m2),
+                mincut = 5,
+                minsize = 10,
+                mindev = 0.01
+              ))
+```
+
+`nobs`, `mincut` and `minsize` work the same as for classification trees.
+
+## mindev
+
+`mindev` still pays attention to the deviance and says in order to split a node its deviance should be at least
+
+$$\text{mindev} \times \text{root node deviance}.$$
+
+But for a numerical response, deviance is measured differently.
+
+## Deviance
+
+Each node has a deviance.  When you are predicting **fastest**, the deviance formula is:
+
+$$\sum_{i}(y_i-\bar{y})^2$$
+
+where:
+
+* $i$ stands for an individual in the node;
+* $y_i$ is the fastest speed driven by individual $i$;
+* $\bar{y}$ is the mean fastest speed for all individuals in the node.
+
+## Deviance
+
+$y_i-\bar{y}$ is called the *residual* for individual $i$.
+
+It's how much his or her speed differed from the mean speed of everyone in the node.
+
+The bigger the deviance, the more the individuals in the node differ from their mean.  The smaller the deviance, the less they differ.
+
+For the mean of the node to be a good prediction for new observations, the deviance for the node should be small.
+
+## Summary
+
+```{r}
+summary(trFast)
+```
+
+## Residual Mean Deviance
+
+```
+Residual mean deviance:  325.1 = 19180 / 59 
+```
+
+To get residual mean deviance:
+
+* sum the deviances at all 9 terminal nodes (19180)
+* divide by:  $68 - 9 = 59$.
+
+## Root Mean Square Error (RMSE)
+
+$$RMSE = \sqrt{\text{residual mean deviance}} \approx 18$$
+
+This is a good measure of how much an individual in the data typically differs from the prediction made by the tree.
+
+But it probably understates the likely error in predicting **fastest** for new individuals.
+
+## Practice { .practice }
+
+From the `ver2` data frame:
+
+```{r}
+ver2 <- subset(verlander, speed > 60)
+ver2$gamedate <- NULL
+```
+
+make a tree to predict the speed of a Verlander pitch from the other variables in the data frame.
+
+What's the residual mean deviance?
+
+What's the RMSE?
+
+# Tuning Regression Trees
+
+## Tree-Tuning
+
+This works the same as for classification trees:
+
+* Divide data into training, quiz and test sets.
+* Build tree models on the training set.
+* Test each one on the quiz set.
+* Pick your favorite (small RMSEs are good).
+* Estimate its error (RMSE) on new data by trying it on the test set.
+
+## Verlander Subdivision
+
+Again we use the `divideTrainTest` function from the `tigerTree` package.
+
+```{r eval = FALSE}
+ver2 <- subset(verlander, speed > 60)
+ver2$gamedate <- NULL
+library(tigerTree)
+dfs <- divideTrainTest(seed = 4040, 
+                       prop.train = 0.6, prop.quiz = 0.2,
+                       data = ver2)
+verTrain <- dfs$train
+verQuiz <- dfs$quiz
+verTest <- dfs$test
+```
+
+```{r echo = FALSE}
+dfs <- divideTrainTest(seed = 4040, 
+                       prop.train = 0.6, prop.quiz = 0.2,
+                       data = ver2)
+verTrain <- dfs$train
+verQuiz <- dfs$quiz
+verTest <- dfs$test
+```
+
+## Tuning
+
+Again, we'll do it by hand with our Shiny app from the `tigerTree` package:
+
+```{r eval = FALSE}
+tuneTree(speed ~ ., data = verTrain,
+         testSet = verQuiz,
+         truth = verQuiz$speed)
+```
+
+## Practice { .practice }
+
+Make your favorite tree model for **speed**:
+
+```{r eval = FALSE}
+tr.myFav <- tree(speed ~ ., data = verTrain,
+                 control = tree.control(
+                   nobs = nrow(verTrain),
+                   mincut = ??,
+                   minsize = ??,
+                   mindev = ??
+                 ))
+```
+
+Try it out on the test set:
+
+```{r eval = FALSE}
+tryTree(tr.myFav, testSet = verTest, truth = verTest$speed)
+```
+
+If you were asked to predict the speed of a new pitch, about how close would your tree model come to the actual speed?
+
+# Parting Advice
+
+## One Model
+
+If you plan to make JUST ONE predictive model, then you can divide into:
+
+* training set
+* test set
+
+```{r eval = FALSE}
+dfs <- divideTrainTest(seed = ??, data = ??, prop.train = ??)
+```
+
+## Many Models
+
+But if you plan to make more than one predictive model and pick the best, then you must divide into:
+
+* training set
+* quiz set
+* test set
+
+```{r eval = FALSE}
+dfs <- divideTrainTest(seed = ??, data = ??, prop.train = ??, prop.quiz = ??)
+```
+
+## Data Prep
+
+* For classification trees, make sure your response is a factor variable:
+
+```{r eval = FALSE}
+myData$resp <- factor(myData$resp)
+```
+
+
+* Eliminate predictor variables that are neither factor nor numerical:
+
+```{r eval = FALSE}
+myData$badVariable <- NULL
+```
+
+* Avoid missing values:
+
+```{r eval = FALSE}
+myData2 <- subset(myData, complete.cases(myData))
+```
+

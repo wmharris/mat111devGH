@@ -1,0 +1,126 @@
+---
+title: "Goodness of Fit: Pt.2"
+author: "Homer White"
+date: "November, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+require(abd)
+```
+
+# More Wild, Wild West
+
+## Further Discussion
+
+What's an "even-handed" way to measure the difference between:
+
+* the table we observed
+
+      vs.
+
+* the table one expects if the Die is fair?
+
+## Chi-Square Statistic
+
+We could try:
+
+$$\chi^2 = \sum_{\textbf{cells}} \frac{(\textbf{observed}-\textbf{expected})^2}{\textbf{expected}}.$$
+
+(We used this back in Chapter 3.)
+
+## Compute It
+
+$$\chi^2 = \frac{(8-10)^2}{10}+\frac{(18-10)^2}{10}+\frac{(11-10)^2}{10} \\
++\frac{(7-10)^2}{10}+\frac{(9-10)^2}{10}+\frac{(7-10)^2}{10} \\
+= 8.8$$
+
+## What Are the Chances
+
+Is this a "big" number?
+
+If the die is really fair, what are the chances of getting a $\chi^2$-statistic at least as big as the one we actually got?
+
+## Physical Simulation
+
+Pair up:
+
+* one person rolls fair die 60 times
+* the other tallies the results
+* compute the chi-square statistic with calculator or R
+
+Were your results $\geq 8.8$?  What about the other students?
+
+## More Simulations
+
+Let's get more simulations with an app:
+
+[Slow Chi-Square Simulation, Shinyapps Server](https://homer.shinyapps.io/SlowGoodness/)
+
+or
+
+[Slow Chi-Square Simulation, GC Server](http://rstudio.georgetowncollege.edu:3838/SlowGoodness/)
+
+## Practice { .practice }
+
+How many times simulations did you do?
+
+What percentage of the time did you get above 8.8?
+
+Do you think the data provide overwhelming evidence that the die was weighted?
+
+## Another Situation
+
+Define
+
+* $p_1 =$ the proportion of all GC students who to sit in the front
+
+* $p_2 =$ the proportion of all GC students who to sit in the middle
+
+* $p_3 =$ the proportion of all GC students who to sit in the back
+
+## In Many Gc Classrooms ...
+
+* there is one "front" row
+* there are two "middle" rows
+* there is one "back" row
+
+Do the preferences of GC students reflect the space available in each area?
+
+## Hypotheses
+
+* $H_0: p_1=0.25,p_2=0.5,p_3=0.25$
+
+(This means that student preferences reflect available seats.)
+
+* $H_a:$  at least one of the above proportions is wrong
+
+## Our Data
+
+```{r}
+xtabs(~seat,data=m111survey)
+```
+
+## Practice { .practice }
+
+* Go back to your app.
+* Enter the Null Probabilities: 0.25, 0.5, 0.25
+* Enter the observed Counts: 27,32,12
+* Enter three good names for the values
+
+1. What is the value of the chi-square statistic?
+1. Perform some simulations.  How many did  you perform?
+1. What percentage of the time did you get at least as big as the actual chi-square statistic?
+1. Does the data provide strong evidence that people prefer one part of the classroom more than its number of seats would suggest?
+
+

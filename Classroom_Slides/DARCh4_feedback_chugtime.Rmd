@@ -1,0 +1,192 @@
+---
+title: "DAR Ch.4 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Plagiarism Issues
+
+## One More Reminder:
+
+* You should leave the Introduction untouched (it sets the assignment)
+* Use your own words in other sections.
+    * Really, really use your own words!
+    * Don't just change a word or two from each sentence in the example document!
+* Advice:  read the example document in advance, but don't look at it while writing up your own assignment
+
+**Copying is plagiarism!**
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods!
+
+Two variables involved:
+
+* **Weight** (a numerical variable)
+* **ChugTime** (a numerical variable)
+
+Later on you have to predict a chug-time from a known weight, so best to pick **Weight** as the explanatory variable.
+
+## Methods Chosen
+
+Two numerical variables leads to:
+
+* `xyplot()` for a scatter plot
+* `lmGC()` for a linear regression model
+
+# Graphical Descriptive Results
+
+## xyplot()
+
+```{r eval=FALSE}
+xyplot(ChugTime~Weight,data=chugtime,
+       main="Time to Chug, by Weight",
+       xlab="weight (pounds)",
+       ylab="chuggin time (sec)",
+       pch=19,type=c("p","r"))
+```
+
+---
+
+```{r echo=FALSE}
+xyplot(ChugTime~Weight,data=chugtime,
+       main="Time to Chug, by Weight",
+       xlab="weight (pounds)",
+       ylab="chuggin time (sec)",
+       pch=19,type=c("p","r"))
+```
+
+## Address the Research Question
+
+People did this well!
+
+
+# Numerical Results
+
+## The Linear Model
+
+```{r eval=FALSE}
+chugWeight <- lmGC(ChugTime~Weight,data=chugtime)
+chugWeight
+```
+
+
+## Correlation
+
+```
+Correlation coefficient r =  -0.7879 
+```
+
+This is fairly near -1, confirming a moderately strong negative relationship between **Weight** and **ChugTime**.
+
+## Regression Line
+
+```
+ChugTime = 13.2975 + -0.0458 * Weight 
+```
+
+* Intercept = 13.2975
+    * a zero-pound person is predicted to chug in 13.2975 seconds.  This makes no sense!
+* Slope = -0.0458
+    * For every extra pound of weight, the predicted chug-time decreases by 0.0458 seconds.
+    * If two guys differ by 10 pounds in their weight, the heavier guy is predicted to chug in 0.458 fewer seconds.
+    * etc. ...
+    
+## R^2
+
+```
+R^2 (unadjusted):  	R^2 = 0.6208
+```
+
+* The weights vary
+* the chug-times vary
+* About 62% of the variation is weights is accounted for by variation in the chug-times
+
+## Prediction
+
+```{r eval=FALSE}
+predict(chugWeight,x=170)
+```
+
+You get a prediction of 5.513 seconds.
+
+Your prediction could be off by 1.1234 or so (residual standard error s).
+
+**Note**:  Actually, s is a bit low as a standard error for prediction.  Later you may learn "better" standard errors.
+
+## A Problem
+
+Some people made this model:
+
+```{r}
+weightChug <- lmGC(Weight~ChugTime,data=chugtime)
+weightChug
+```
+
+## How to Predict Chugtime?
+
+You can't do this:
+
+```{r}
+predict(weightChug,x=170)
+```
+
+The `x` is a weight, not a chug-time!
+
+
+
+## What They Thought
+
+They looked at their regression equation:
+
+$$Weight = 248.0874 - 13.5563 \times ChugTime$$
+
+They thought:
+
+* "Hmm, maybe I can solve it for **ChugTime**!"
+
+## What They Did
+
+They plugged in 170 for the weight, then solved for ChugTime:
+
+$$170 = 248.0874 - 13.5563 \times ChugTime \\
+13.5563 \times ChugTime = 248.0874 - 170 \\
+ChugTime = \frac{248.0874 - 170}{13.5563} \\
+\approx 5.76$$
+
+This is not 5.513 (the correct prediction).
+
+The regression line for `weightChug` is not the same as the regression line for `chugWeight`!
+
+# Discussion
+
+## Confounding Variable
+
+A possible confounding variable is **cross-sectional area of throat**:
+
+* It's a third variable.
+* It is associated with **weight** (bigger guys tend to weigh more and to have bigger throats), but is not *caused* by weight (gaining wight doesn't make your throat wider)
+* It helps cause chug-time (when your throat is big, you can pour stuff down it faster!)
+
+
+
+
+
+   
+   
+

@@ -1,0 +1,370 @@
+---
+title: "DAR Ch.4 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+```
+
+# Methods
+
+## Education and Wages
+
+Is a worker's education related to his/her wages?
+
+For the question on education and wages:
+
+* **educ** is numerical
+* **wage** is numerical
+
+This leads to:
+
+* scatter plot (`xyplot()`)
+* a linear model (`lmGC()`)
+
+## Education and Sex
+
+Do men and women differ in how much education they have?
+
+* **sex** is a factor
+* **educ** is numerical
+
+This leads to:
+
+* `favstats()`
+* `densityplot()` (or bwplots or histograms)
+
+## Experience and Wages
+
+Is a worker's number of years of work experience related to his/her wages?
+
+* **exper** is numerical
+* **wage** is numerical
+
+This leads to:
+
+* scatter plot (`xyplot()`)
+* a linear model (`lmGC()`)
+
+## Experience and sex
+
+Do men and women differ in how much education they have?
+
+* **sex** is a factor
+* **exper** is numerical
+
+This leads to:
+
+* `favstats()`
+* `densityplot()` (or bwplots or histograms)
+
+## An Outlier!
+
+Some students noticed an outlier:
+
+```{r eval=FALSE}
+bwplot(~wage,data=CPS85,
+            main="Wages",
+            xlab="wage (dollars per hour)")
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+bwplot(~wage,data=CPS85,
+            main="Wages",
+            xlab="wage (dollars per hour)")
+```
+
+## Who is This?
+
+```{r}
+bigBucks <- subset(CPS85,wage > 40)
+bigBucks
+```
+
+Seems unlikely!  Could there have been a data-entry error?
+
+## Removing the Outlier
+
+Some folks chose to remove the outlier:
+
+```{r}
+CPSsmall <- subset(CPS85,wage <= 40)
+```
+
+Then they did all of their analysis with `CPSsmall`.
+
+Their results weren't much different than if they had kept the outlier.
+
+
+# Results
+
+## Is Education a Confounding Factor?
+
+If so, it would be:
+
+* related to **sex**, and
+* help to cause **wage**
+
+## Education and Wages
+
+```{r eval=FALSE}
+xyplot(wage~educ,data=CPS85,
+       xlab="years of education",
+       ylab="wage (dollars per hour)",
+       main="Education and Wages",
+       type=c("p","r"))
+```
+
+## The Scatterplot
+
+```{r echo=FALSE}
+xyplot(wage~educ,data=CPS85,
+       xlab="years of education",
+       ylab="wage (dollars per hour)",
+       main="Education and Wages",
+       type=c("p","r"))
+```
+
+More education could cause higher wages!
+
+## Education and Sex
+
+Do guys have more education than gals?
+
+```{r}
+favstats(educ~sex,data=CPS85)
+```
+
+Apparently not!
+
+## Education and Sex
+
+```{r eval=FALSE}
+densityplot(~educ,data=CPS85,
+            groups=sex,
+            xlab="years of education",
+            plot.points=FALSE,
+            auto.key=TRUE)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~educ,data=CPS85,
+            groups=sex,
+            xlab="years of education",
+            plot.points=FALSE,
+            auto.key=TRUE)
+```
+
+Not much difference!
+
+## Is Experience a Confounding Factor?
+
+If so, it would be:
+
+* related to **sex**, and
+* help to cause **wage**
+
+## Experience and Wages
+
+```{r eval=FALSE}
+xyplot(wage~exper,data=CPS85,
+       xlab="years of experience",
+       ylab="wages (dollars perhour)",
+       main="Experience and Wages",
+       type=c("p","r"))
+```
+
+## The Scatterplot
+
+```{r echo=FALSE}
+xyplot(wage~exper,data=CPS85,
+       xlab="years of experience",
+       ylab="wage (dollars per hour)",
+       main="Experience and Wages",
+       type=c("p","r"))
+```
+
+Not clearly a positive relationship, here!
+
+## A Deeper Look
+
+You can break down by sex:
+
+
+```{r eval=FALSE}
+xyplot(wage~exper|sex,data=CPS85,
+       xlab="years of experience",
+       ylab="wage (dollars per hour)",
+       main="Experience and Wages",
+       type=c("p","r"))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+xyplot(wage~exper|sex,data=CPS85,
+       xlab="years of experience",
+       ylab="wage (dollars per hour)",
+       main="Experience and Wages",
+       type=c("p","r"))
+```
+
+Experience and wages are related for men, but not for women!
+
+## Experience and Sex
+
+Do guys have more experience than gals?
+
+```{r}
+favstats(exper~sex,data=CPS85)
+```
+
+Apparently not!
+
+## Experience and Sex
+
+```{r eval=FALSE}
+densityplot(~exper,data=CPS85,
+            groups=sex,
+            xlab="years of experience",
+            plot.points=FALSE,
+            auto.key=TRUE)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~exper,data=CPS85,
+            groups=sex,
+            xlab="years of experience",
+            plot.points=FALSE,
+            auto.key=TRUE)
+```
+
+Not much difference!
+
+## Correcting for Education
+
+Let's predict wages for a man and a woman who have the SAME level of education.
+
+First, make separate linear model for each sex:
+
+```{r}
+educWageMale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="M"))
+educWageFemale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="F"))
+```
+
+## Six Years of Education
+
+```{r}
+predict(educWageMale,x=6)
+predict(educWageFemale,x=6)
+```
+
+The guy is predicted to make more!
+
+## Fifteen Years of Education
+
+
+```{r}
+predict(educWageMale,x=15)
+predict(educWageFemale,x=15)
+```
+
+The guy is also predicted to make more!
+
+## Correcting for Experience
+
+Let's predict wages for a man and a woman who have the SAME level of experience.
+
+First, make separate linear model for each sex:
+
+```{r}
+experWageMale <- lmGC(wage~exper,
+                     data=subset(CPS85,sex=="M"))
+experWageFemale <- lmGC(wage~exper,
+                     data=subset(CPS85,sex=="F"))
+```
+
+## Ten Years of Experience
+
+```{r}
+predict(experWageMale,x=10)
+predict(experWageFemale,x=10)
+```
+
+The guy is predicted to make more!
+
+## Forty Years of Experience
+
+
+```{r}
+predict(experWageMale,x=40)
+predict(experWageFemale,x=40)
+```
+
+The guy is also predicted to make more!
+
+
+# Discussion
+
+## The "Education" Theory
+
+The wage difference between the sexes cannot be explained as being due to guys having more education:
+
+* guys and gals had about the same amount of education.
+
+## The Experience Theory
+
+The wage difference between the sexes cannot be explained as being due to guys having more experience:
+
+* guys and gals had about the same amount of experience;
+* experience wasn't clearly related to wages, anyway!
+
+## Correcting for Education
+
+```{r echo=FALSE}
+par.settings <- list(
+  superpose.symbol = list(col = c("blue", "red"), fill = c("blue", "red")),
+  superpose.line = list(col =c("blue", "red")))                                                                                                                       
+xyplot(wage~educ,data=CPS85,groups=sex,auto.key=list(space="right"),
+       type=c("p","r","g"),pch=19,par.settings=par.settings,
+       main="Wages vs. Education, by Sex",
+       xlab="years of education",
+       ylab="wages (dollar per hour")
+```
+
+## Correcting for Experience
+
+```{r echo=FALSE}
+par.settings <- list(
+  superpose.symbol = list(col = c("blue", "red"), fill = c("blue", "red")),
+  superpose.line = list(col =c("blue", "red")))                                                                                                                       
+xyplot(wage~exper,data=CPS85,groups=sex,auto.key=list(space="right"),
+       type=c("p","r","g"),pch=19,par.settings=par.settings,
+       main="Wages vs. Expereince, by Sex",
+       xlab="years of experience",
+       ylab="wages (dollar per hour")
+```
+
+
+
+
+

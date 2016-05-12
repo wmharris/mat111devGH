@@ -1,0 +1,59 @@
+---
+title: "Goodness of Fit: Pt.4"
+author: "Homer White"
+date: "November, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+require(abd)
+```
+
+# M&M Colors
+
+
+## Milk Chocolate M&M Colors
+
+According to the Mars Company in 2008 (see [here](https://www.exeter.edu/documents/mandm.pdf)), the distribution of colors for M&M milk chocolate candies is:
+
+Color|Percentage
+:---|:---:
+Blue|24%
+Orange|20%
+Green|16%
+Yellow|14%
+Red|13%
+Brown|13%
+
+## But ... 
+
+... the company also said:
+
+* "since the individual packages are filled by weight on high-speed equipment, and not by count, it is possible to have an unusual color distribution."
+
+
+## Question
+
+Are the M&M candies in your bag like a random sample from all the candies at the factory?
+
+$H_0:$  Probability of each color is as the Mars Company stated.
+
+$H_a:$  At least one of those probabilities is incorrect.
+
+## Take a Bag!
+
+* Take a bag and count the colors.
+* Put your tallies on the board
+* Run `chisqtestGC()` to decide if your bag is not like a random sample from the candies at the factory.
+
+

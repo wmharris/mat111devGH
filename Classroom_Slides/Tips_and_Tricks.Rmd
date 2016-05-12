@@ -1,0 +1,135 @@
+---
+title: "Tips and Tricks"
+author: "Homer White"
+date: "December, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+library(abd)
+```
+
+
+# Getting Data Into R
+
+## Importing Data (on Server somewhere)
+
+Use Import Dataset:
+
+* From Text File ...
+
+Example:  `m111surveyFA13.csv`
+
+## Importing Data From the Web
+
+Use Import Dataset:
+
+* From Web URL ...
+
+Example:
+
+* Go to [http://harvardforest.fas.harvard.edu:8080/exist/xquery/data.xq?id=hf124](http://harvardforest.fas.harvard.edu:8080/exist/xquery/data.xq?id=hf124)
+* find the data link
+* right-click and copy the link location
+* paste it into dialog box
+
+## Importing into an R Markdown Document
+
+use `read.csv()`:
+
+```{r eval=FALSE}
+newSurvey <- read.csv("/mat111/Additional_Datasets/m111surveyFA13.csv",header=TRUE)
+drs<-read.csv("http://harvardforest.fas.harvard.edu/data/p12/hf124/hf124-01-browse.csv",
+                  header=TRUE)
+```
+
+## Uploading Data
+
+* In the Files pane, find the Upload button
+* press it, then find the file on your computer
+
+Example:
+
+* I sent you an email with a csv file attached
+* download the file onto your computer
+* upload it into your Home directory on the Server
+* import it
+
+# Sending Data to Others
+
+## Get It Off the Server
+
+* In the Files pane, check the file you want to send
+* Find the More button
+* choose Export
+* the file will go to the Downloads file on your computer
+* save it where you wish
+* or send it as an email attachment, etc.
+
+
+# Handling Excel Files
+
+## Excel Can be Messy!
+
+* Download and open the Excel Workbook that I sent you by email.  Note the messiness.
+
+* Save it somewhere on your computer.
+
+* Upload it to the Server, to your Home directory.
+
+## The readxl Package
+
+This package is great for reading parts of excel files:
+
+```{r eval=FALSE}
+require(readxl)
+```
+
+## Reading a specific worksheet
+
+Say that you want the data on the second sheet.  Then run:
+
+```{r eval=FALSE}
+carinfo <- read_excel("datasets.xlsx",sheet=2)
+View(carinfo)
+```
+
+
+## Skipping lines
+
+In the first sheet, the first two lines are junk.  We can skip them:
+
+```{r eval=FALSE}
+irisinfo <- read_excel("datasets.xlsx",sheet=1,skip=2)
+```
+
+## A List of Sheets
+
+If you wnat a reminder about which sheet is which, you can get a list of sheet names, in order:
+
+```{r eval=FALSE}
+excel_sheets("datasets.xlsx")
+```
+
+```
+[1] "iris"     "mtcars"   "chickwts" "quakes"  
+```
+
+
+
+
+
+
+
+
+

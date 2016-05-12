@@ -1,0 +1,541 @@
+---
+title: "Tests of Significance: Pt.4"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# Some Cautions
+
+## Cautions
+
+This set of slides is about some common difficulties in tests of significance:
+
+* interpreting the P-value correctly
+
+* knowing the difference between
+    * "strong evidence for a difference" and
+    * "evidence for a big difference"
+    
+* limited reporting
+
+* data snooping
+
+# P-value Interpretation
+
+## In General ...
+
+... the P-value of a test is:
+
+* the probability of getting a test statistic at least as extreme as the one you actually got, if $H_0$ is true
+
+## The P-value is not ...
+
+... the probability that $H_0$ is true.
+
+Why?
+
+* $H_0$ is either true of false
+* No "chances" about it!
+* Chance only came in when you collected the data.
+
+If you want to know "chances" for the Null to be true, you have to work with a "Bayesian" statistician.  (We don't teach Bayesian methods in this class.)
+
+# Strong Evidence vs. Big Difference
+
+## Testing One Mean
+
+
+Suppose you are interested in the difference of means $\mu_1-\mu_2$ between two population, and you are testing:
+
+  >$H_0: \mu_1-\mu_2 = 0$
+  
+  >$H_a:  \mu_1-\mu_2 \neq 0,$
+  
+Say you take two very big random samples, and you get these results:
+
+|Group|$\bar{x}$|$s$|$n$|
+|:-:|:---:|:---:|:----:|
+|group one|100.1|6|36000|
+|group two|100|6|36000|
+
+## Try Test
+
+
+```{r eval=FALSE}
+ttestGC(mean=c(100.1,100),
+        sd=c(6,6),
+        n=c(36000,36000),
+        mu=0)
+```
+
+## Results
+
+
+95%-confidence interval, and P-value:
+
+```
+lower       upper          
+0.012346    0.187654 
+
+P-value:    P = 0.02535
+```
+
+Low P-value:  Woo-hoo!
+
+* Reject $H_0$!
+* Lots of evidence for a difference!
+
+## But ...
+
+
+The confidence interval
+
+```
+lower       upper          
+0.012346    0.187654 
+```
+
+lets you know that the difference is probably very small:
+
+* maybe not important at all!
+
+## Keep in Mind ...
+
+
+... at very large sample sizes, you can acquire a lot of evidence for a very small difference.
+
+* Low $P$-values might get you excited ...
+* ... but confidence intervals keep you focused on what's important
+
+# Limited Reporting
+
+## Research Question
+
+  >*I wonder if any of my friends possess telekinetic powers?*
+  
+* You gather twenty friends.
+* Each friend flips a fair coin 100 times.
+* While flipping, he/she tries to make it land Heads, by "concentrating" on it.
+
+## The First Ten Results
+
+
+```{r echo=FALSE}
+set.seed(33192)
+CoinFlips <- rbinom(20,size=100,p=0.5)
+CoinData <- data.frame(heads=CoinFlips)
+```
+
+```
+   heads
+1     57
+2     54
+3     57
+4     61 (wow!!)
+5     45
+6     52
+7     60 (hmm!)
+8     52
+9     48
+10    57
+```
+
+## The Next Ten Results
+
+
+```
+11    58 (hmm ...)
+12    58 (hmm ...)
+13    51
+14    46
+15    49
+16    53
+17    51
+18    51
+19    48
+20    46
+```
+
+## Focus In
+
+Your attention is especially drawn to Friend #4, who got 61 heads.
+
+  >*Is Friend #4's performance strong evidence that for her the coin had more than a 50% chance of coming up Heads?*
+  
+## Significance Test
+
+
+Let
+
+$p =$ chance that the coin lands Heads when friend #4 concentrates on it.
+
+Hypotheses are:
+
+  >$H_0: p=0.50$  (no telekinesis)
+  
+  >$H_a:  p > 0.50$ (something is afoot!)
+  
+## Code and Results
+
+
+```{r eval=FALSE}
+binomtestGC(x=61,n=100,p=0.50,
+          alternative="greater")
+```
+
+$P$-value is
+
+$$P(\text{Heads} \geq 61 \vert p=0.50) = 0.0176.$$
+
+* You reject $H_0$.
+* You conclude that there is strong evidence that friend #4 has telekinetic powers, to some extent.
+
+## Obvious Problem
+
+
+You ignored the data from the other 19 friends!
+
+* You need to take all of your data into account
+* your $P$-value should reflect this
+
+## Better P-Value
+
+
+The $P$-value should be
+
+$$P(\text{at least one friend gets } \geq 61 \text{ heads} \vert p=0.50)$$
+
+## Function to Investigate
+
+
+Teach R this function
+
+```{r eval=FALSE}
+HeadMax <- 
+  function(friends,flips,coin) {
+    heads <- rbinom(friends,size=flips,prob=coin)
+    most <- max(heads)
+    return(cat(paste0("The largest number of heads was ",most,".")))
+    }
+```
+
+This will simulate gathering friends and making them flip coins a certain number of times.  It will return the largest number of heads obtained.
+
+## Try it Out
+
+
+Try this a few times.
+
+```{r eval=FALSE}
+HeadMax(friends=20,flips=100,coin=0.5)
+```
+
+Is it so unusual to get a friend with 61 or more Heads?
+
+## In Fact ...
+
+Statisticians know that:
+
+```{r echo=FALSE}
+p.value <- pbinom(0,size=20,
+       prob=pbinom(60,size=100,prob=0.5,lower.tail=FALSE),
+       lower.tail=FALSE)
+```
+
+
+$$P(\text{at least one friend gets } \geq 61 \text{ heads} \vert p=0.50) \\\
+\approx `r round(p.value,3)`$$
+
+The total data provides essentially no evidence of telekinesis!
+
+## Avoid Limited Reporting!
+
+If:
+
+* one portion of your data shows an interesting pattern, and
+* the rest does not
+
+do NOT test and report only on the interesting portion!
+
+# Data Snooping
+
+
+## Attitudes
+
+
+```{r eval=FALSE}
+data(attitudes)
+View(attitudes)
+help(attitudes)
+```
+
+## Primary Research Questions
+
+
+When the study was conducted, researchers were primarily interested in the following questions:
+
+* Does suggested race of defendant affect the sentence recommended?
+* Does suggested race of victim affect the sentence recommended?
+* Does the way one lost one's money affect the decision about whether to attend the concert anyway?
+
+## Other Questions
+
+
+But the data frame has many variables, so many other Research Questions suggest themselves to us.
+
+## New Research Question
+
+
+*Who is harder on crime:  a GC female or a GC male?*
+  
+```{r eval=FALSE}
+favstats(sentence~sex,data=attitudes)
+```
+
+```{r echo=FALSE}
+favstats(sentence~sex,data=attitudes)[c("sex","mean","sd","n")]
+```
+
+Probably not much going on, here.
+
+
+## New Research Question
+
+
+*Who is more likely to decide to attend the rock concert anyway:  a GC female or a GC male?*
+  
+
+```{r}
+SexRock <- xtabs(~sex+conc.decision,
+                 data=attitudes)
+rowPerc(SexRock)
+```
+
+Probably not much going on, here, either.
+
+## New Research Question
+
+*Who is harder on crime:  A GC student who would decide to attend the rock concert or a GC student who would decide not to attend?*
+  
+```{r eval=FALSE}
+favstats(sentence~conc.decision,data=attitudes)
+```
+
+```{r echo=FALSE}
+favstats(sentence~conc.decision,data=attitudes)[c("conc.decision","mean","sd","n")]
+```
+
+Hmm, more than 4 years difference between the sample means!
+
+## A Graph
+
+
+```{r setenceticket,echo=FALSE}
+densityplot(~sentence|conc.decision,data=attitudes,
+            auto.key=TRUE,main="Sentence by Ticket Decision",
+            from=2,to=50,
+            layout=c(1,2))
+```
+
+
+
+## Better Run A Test!
+
+
+Parameters and Hypotheses
+
+* $\mu_1 =$ mean sentence recommended by all GC students who would buy a ticket to the rock concert
+  
+* $\mu_2 =$ mean sentence recommended by all GC students who would NOT buy a ticket to the rock concert
+  
+
+* $H_0: \mu_1-\mu_2 = 0$
+  
+* $H_a: \mu_1-\mu_2 \neq 0$
+  
+## The Code
+
+
+```{r eval=FALSE}
+ttestGC(sentence~conc.decision,
+        data=attitudes,
+        mu=0,
+        first="buy")
+```
+
+
+## Some Results
+
+
+```
+Test Statistic:    t = 2.172 
+Degrees of Freedom:	  198.6 
+P-value:		P = 0.03102
+```
+
+* We reject $H_0$
+* We conclude that this data provides strong evidence that GC students who are inclined to spend money on rock concerts are harder on crime.
+
+## Bu There is a Problem!
+
+
+* We did not plan, in advance of collecting the data, to perform this test.
+
+* We decided to perform the test BASED UPON an interesting pattern that we noticed in the data after we collected it.
+
+## Data Snooping
+
+
+*Data snooping* is:
+
+  >the practice of performing an inferential procedure on data, based upon a pattern that you observe in it.
+  
+## Curiosity is Good ...
+
+
+... but if
+
+* you look at the data from **many** points of view
+* and perform inferential procedures on the "angles" that look interesting
+
+then
+
+* you are liable to conclude statistical significance when there was only chance variation (Type-I errors)
+
+## How Many Points of View?
+
+
+* Humans are very good at detecting patterns.
+* For every pattern we notice, there may be thousands that we *would* have noticed had they been present.
+* In reality, we look at data from many, many points of view, without even knowing it!
+
+
+## What to Do?
+
+
+* We should not shut down our curiosity.
+* Performing tests helps us to tell the difference between chance variation and a "real" pattern.
+
+So we suggest you distinguish between
+
+* Primary Research Questions (decided upon in advance of collecting data)
+* Secondary Research Questions (that occurred to you after you looked at the data)
+
+## A Guideline
+
+
+* Conclusions for Secondary Research questions should be cast as highly provisional!
+
+* They are more like an invitation to others to investigate further, with new data.
+
+## An Example
+
+```{r eval=FALSE}
+data(gss2012)
+View(gss2012)
+help(gss2012)
+```
+
+Research Question:  Is there any relationship between one's astrological sign and whether or not one believes in the Big Bang Theory?
+
+## Graph
+
+```{r eval=FALSE}
+barchartGC(~zodiac+bigbang,data=gss2012,
+           type="percent",flat=TRUE,ylab="Zodiac Sign",
+           main="Big-Bang Belief, by Sign of the Zodiac",
+           sub="TRUE means subject believes the big bang Theory")
+```
+
+---
+```{r echo=FALSE}
+barchartGC(~zodiac+bigbang,data=gss2012,
+           type="percent",flat=TRUE,ylab="Zodiac Sign",
+           main="Big-Bang Belief, by Sign of the Zodiac",
+           sub="TRUE means subject believes the big bang Theory")
+```
+
+## Inference
+
+```{r}
+chisqtestGC(~zodiac+bigbang,data=gss2012,verbose=FALSE)
+```
+
+## But ...
+
+... in the data, Cancers and Leos seem less likely to believe than did people of other signs:
+
+```{r}
+cancleonot <- ifelse(gss2012$zodiac %in% c("CANCER","LEO"),"cl","not")
+clbb <- xtabs(~cancleonot+bigbang,data=gss2012)
+clbb
+```
+
+## Row Percents
+
+
+```{r}
+rowPerc(clbb)
+```
+
+
+
+## New Question
+
+Are Cancers and Leos less likely to believe in the Big Bang Theory than are people of other signs?
+
+
+## New Chi-Square Test
+
+```{r}
+chisqtestGC(clbb,data=gss2012,verbose=FALSE)
+```
+
+## Try proptestGC()
+
+Define:
+
+* $p_1$ to be the proportion of all non-Cancer/Leos who believe in the Big Bang Theory
+
+* $p_2$ is the proportion of all Cancers and Leos who believe in the Big Bang Theory
+
+* $H_0:  p_1-p_2 = 0$
+* $H_a:  p_1-p_2 \neq 0$
+
+```{r eval=FALSE}
+proptestGC(~cancleonot+bigbang,data=gss2012,
+             first="not",success="True",
+             p=0,graph=TRUE)
+```
+
+
+## Some Results
+
+```
+Estimate of p1-p2:   0.1602 
+SE(p1.hat - p2.hat):	 0.06839 
+
+95% Confidence Interval for p1-p2:
+
+          lower.bound         upper.bound          
+          0.026148            0.294218             
+
+	Test Statistic:		z = 2.342 
+	P-value:		P = 0.01916 
+```
+
+## Practice { .practice }
+
+Based on the above studies, would you conclude that the data provide strong evidence that Cancers and Leos are less likely than people of other signs to believe in the Big Bang Theory?  Why or why not?

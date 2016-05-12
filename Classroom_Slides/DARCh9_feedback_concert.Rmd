@@ -1,0 +1,226 @@
+---
+title: "DAR Ch.9 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Plagiarism Issues
+
+## Reminders (from Ch 4 DAR Feedback):
+
+* You should leave the Introduction untouched (it sets the assignment)
+* Use your own words in other sections.
+    * Really, really use your own words!
+    * Don't just change a word or two from each sentence in the example document!
+* Advice:  read the example document in advance, but don't look at it while writing up your own assignment
+
+**Copying is plagiarism!**
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods!
+
+Two variables involved:
+
+* **conc.situation**, a factor variable with two values:
+    - `lost.money`
+    - `lost.ticket`
+* **conc.decision** a factor variable with two values:
+    - `buy`
+    - `not.buy`
+
+We wonder if the way you lost the \$30 affects your decision, so best to pick **conc.situation** as the explanatory variable.
+
+## Descriptive Methods
+
+Two factor variables leads to:
+
+* `barchartGC()` for a bar-chart (graphical descriptive)
+* `xtabs() and rowPerc()` for two-ways tables (numerical descriptive)
+
+## Inferential Methods
+
+* Since response has two values (buy or not) we are interested in proportions.
+
+* Since explanatory has two values (lost money vs. lost ticket), we will be interested in the difference of two proportions.
+
+## Define Parameters (One Good Choice)
+
+This was a randomized experiment.  (See Chapter 8 Part 2 website slides).  If we think the 267 are like a random sample from the population of all GC students, then we could define:
+
+* $p_1 =$ the proportion of all GC students who would buy a ticket if they had lost \$30 in cash
+
+* $p_2 =$ the proportion of all GC students who would buy another ticket if they had lost a previously-purchased $30 ticket
+
+## Define Parameters (Another Good Choice)
+
+If we think the 267 are NOT like a representative sample of the population of all GC students, then we could define:
+
+* $p_1 =$ the proportion of all 267 students in the experiment who would buy a ticket if they had lost \$30 in cash
+
+* $p_2 =$ the proportion of all 267 students in the experiment who would buy another ticket if they had lost a previously-purchased $30 ticket
+
+Either way, we will make a confidence interval for $p_1-p_2$ using `proptestGC()`.
+
+# Graphical Descriptive Results
+
+## barchartGC()
+
+Easiest to make a two-way table, then keep re-using it:
+
+```{r echo=FALSE}
+sitDec <- xtabs(~conc.situation+conc.decision,data=attitudes)
+```
+
+
+```{r eval=FALSE}
+sitDec <- xtabs(~conc.situation+conc.decision,data=attitudes)
+barchartGC(sitDec,type="percent",
+           main="Concert Decision,\nby Situation on Survey Form",
+           xlab="Scenario on Survey Form")
+```
+
+---
+
+```{r echo=FALSE}
+barchartGC(sitDec,type="percent",
+           main="Concert Decision,\nby Situation on Survey Form",
+           xlab="Scenario on Survey Form")
+```
+
+## Also Popular:  Flat Barcharts!
+
+```{r eval=FALSE}
+barchartGC(sitDec,type="percent",
+           main="Concert Decision,\nby Situation on Survey Form",
+           ylab="Scenario on Survey Form",
+           flat=TRUE)
+```
+
+---
+
+```{r echo=FALSE}
+barchartGC(sitDec,type="percent",
+           main="Concert Decision,\nby Situation on Survey Form",
+           ylab="Scenario on Survey Form",
+           flat=TRUE)
+```
+
+## Common Knitting Problem
+
+Make sure that in your R Markdown document you create everyting you need to run a function BEFORE you ask R to do something with it in the document.
+
+This will knit up:
+
+```{r eval=FALSE}
+sitDec <- xtabs(~conc.situation+conc.decision,data=attitudes)
+barchartGC(sitDec)
+```
+
+This will NOT knit:
+
+```{r eval=FALSE}
+barchartGC(sitDec)  #asking for a barchart of sitDec before making sitDec
+# then later on ...
+sitDec <- xtabs(~conc.situation+conc.decision,data=attitudes)
+rowPerc(sitDec)
+```
+
+
+
+# Numerical Results
+
+## Two Way Table and Row Percents
+
+
+```{r}
+sitDec
+```
+
+
+```{r}
+rowPerc(sitDec)
+```
+
+# Inferential Results
+
+## The R-Code
+
+```{r eval=FALSE}
+proptestGC(~conc.situation+conc.decision,data=attitudes,
+           success="buy")
+```
+
+* gives us a 95%-confidence interval, by default
+
+## Short Form Also OK
+
+```{r eval=FALSE}
+proptestGC(~conc.situation+conc.decision,data=attitudes,
+           success="buy",verbose=FALSE)
+```
+
+
+## Some Output (Longer Version)
+
+```
+Estimate of p1-p2:   0.3081 
+SE(p1.hat - p2.hat):	 0.05449 
+```
+
+* Our best guess is that $p_1-p_2$ is about 30.81%
+
+* but this estimate could easily be off by 5.5% or so, by chance variation in which subjects were given which form
+
+* still, $\hat{p}_1-\hat{p}_2$ is nearly six standard errors above 0
+
+* our results are very unlikely to occur if the anchors have no effect!
+
+## Confidence Interval (Both Versions)
+
+```
+95% Confidence Interval for p1-p2:
+
+          lower.bound         upper.bound          
+          0.201340            0.414937        
+```
+
+Interpretation:  We are 95%-confident that $p_1-p_2$ is somewhere between 20% and 41.5%.
+
+## Address the Research Question
+
+If anchor has no effect on decision to buy, then $p_1-p_2 = 0$.  But the 95%-interval
+
+$$(0.201340,0.414937)$$
+
+lies entirely above 0.  This study provided VERY strong evidence that if you lose cash you are more likely to attend the concert than if you lose a ticket of the same cash value.
+
+# Discussion
+
+## Safety Check
+
+* You should have taken two independent random samples from two populations, or done a completely randomized experiment.  (We did the latter.)
+
+```{r echo=FALSE}
+sitDec
+```
+
+
+* Number of successes and number of failures in both groups should be at least 10.
+    * 106 buys, 24 non-buys in lost-money group (OK)
+    * 70 buys, 68 non-buys in lost-ticket group (OK)

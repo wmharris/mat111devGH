@@ -1,0 +1,427 @@
+---
+title: "Probability in Sampling: Pt.2"
+author: "Homer White"
+date: "March, 2015"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# The Central Limit Theorem
+
+
+## Center and Spread
+
+
+The estimators for the Basic Five Parameters are all random variables, so they all have a center (EV) and a spread (SD).
+
+|  Estimator | Center | Spread |
+|:--------:|:----------:|:-----------:|
+|$\bar{x}$|$\mu$|$\frac{\sigma}{\sqrt{n}}$|
+|$\bar{x}_1-\bar{x}_2$|$\mu_1-\mu_2$|$\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$|
+|$\hat{p}$|$p$|$\sqrt{\frac{p(1-p)}{n}}$|
+|$\hat{p}_1-\hat{p}_2$|$p_1-p_2$|$\sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$|
+|$\bar{d}$|$\mu_d$|$\frac{\sigma_d}{\sqrt{n}}$|
+
+
+## Estimating One Mean
+
+
+To investigate the shape of the distribution of $\bar{x}$, try:
+
+[http://homer.shinyapps.io/CentralLimit](http://homer.shinyapps.io/CentralLimit)
+
+
+
+## The Pattern
+
+
+As sample sizes increase, shape of the distribution of $\bar{x}$ looks more and more bell-shaped.
+
+
+**No matter what the underlying population looks like!!**
+
+But:
+
+* the more skewed the population is, and
+* the more far-out its outliers are
+
+the bigger the sample needs to be before $\bar{x}$ starts looking normal.
+
+## Central Limit Theorem (CLT)
+
+
+No matter how the population is distributed, as sample size $n$ increases, the distribution of $\bar{x}$ gets closer and closer to:
+
+$$norm(\mu,\frac{\sigma}{\sqrt{n}}).$$
+
+## Another Way  to Put It
+
+No matter how the population is distributed, as sample size $n$ increases, the distribution of
+
+$$Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}$$
+
+gets closer and closer to:
+
+$$norm(0,1),$$
+
+the *standard normal* distribution.
+
+## How Big is Big Enough?
+
+Many folks say $n \geq 30$ is "big enough" for $\bar{x}$ to look normal.
+
+But it's just a rule of thumb!
+
+## The CLT Carries Over ...
+
+
+... to the other four of the Basic Five estimators!
+
+As long as sample sizes are "big enough", their shape will be approximately normal!
+
+## How Big is "Big Enough"?
+
+
+Rules of Thumb:
+
+|  Estimator | Big Enough |
+|:--------:|:----------:|
+|$\bar{x}$|$n \ge 30$|
+|$\bar{x}_1-\bar{x}_2$|$n_1 \ge 30,n_2 \ge 30$|
+|$\hat{p}$|$np \ge 10,n(1-p) \ge 10$|
+|$\hat{p}_1-\hat{p}_2$| all of $n_1p_1,n_1(1-p_1),n_2p_2,n_2(1-p_2) \ge 10$|
+|$\bar{d}$|$n \ge 30$|
+
+
+# Probability With Estimators
+
+## Imagine ...
+
+
+... that you are a powerful being (a Greek god/goddess, maybe).
+
+* You know everything about the present
+* so you have complete information on all populations
+* so you can instantly find any population parameter you like
+* but you do NOT know the future
+
+## Imagine ...
+
+
+You see a poor mortal, a statistician, about to take a simple random sample of size $n$ from a population.
+
+The following is all true:
+
+* You know population mean $\mu$,
+* you know population SD $\sigma$,
+* and you know that $\bar{x} \approx norm(\mu,\sigma/\sqrt{n}).$
+* You don't know what $\bar{x}$ will be,
+* but you can compute probabilities for it to lie in various ranges.
+
+## Example
+
+Recall `imagpop`:
+
+```{r eval=FALSE}
+data(imagpop)
+View(imagpop)
+help(imagpop)
+```
+
+## Example
+
+  > A statistician is about to take a SRS of size $n=25$ from `imagpop` and compute $\bar{x}$, the sample mean of the heights of the 25 selected individuals.
+  
+  >*What is the probability that the sample mean will exceed 68.3 inches?*
+  
+In other words, what is:
+
+$$P(\bar{x} > 68.3)?$$
+
+## Solution
+
+
+First of all, we use our god-like powers (and R!) to find:
+
+* mean $\mu$ and
+* standard deviation $\sigma$
+
+of the heights in the population:
+
+```{r}
+favstats(~height,data=imagpop)[c("mean","sd")]
+```
+
+## Solution
+
+
+So we know that:
+
+*  $EV(\bar{x}) = 67.53$, and
+*  $SD(\bar{x}) = 3.907/\sqrt{25}=0.7814$.
+
+We know the center and the spread of $\bar{x}$!
+
+## Solution
+
+
+How about the shape of $\bar{x}$?  
+
+* Sample was size $n=25$,
+* a bit less than the "cut-off" of 30 where CLT kicks in.
+
+Better use our god-like powers to make density plot of the population:
+
+```{r eval=FALSE}
+densityplot(~height,data=imagpop,
+            xlab="Height (inches)",
+            main="Imagpop Heights",
+            plot.points=FALSE)
+```
+
+
+
+
+## The Population
+
+
+```{r echo=FALSE}
+densityplot(~height,data=imagpop,
+            xlab="Height (inches)",
+            main="Imagpop Heights",
+            plot.points=FALSE)
+```
+
+Looks fairly bell-shaped!
+
+## Solution
+
+
+So even though $n=25 < 30$, we still figure that
+
+$$\bar{x} \approx norm(67.53,0.7814).$$
+
+So for $P(\bar{x} > 68.3)$, go for:
+
+```{r eval=FALSE}
+pnormGC(bound=68.3,region="above",
+        mean=67.53,sd=0.7814,
+        graph=TRUE)
+```
+
+## Solution
+
+```{r echo=FALSE}
+pnormGC(bound=68.3,region="above",
+        mean=67.53,sd=0.7814,
+        graph=TRUE)
+```
+
+
+## Practice { .practice }
+
+In a population of college students, the mean fastest speed ever driven is 110 mph.  The SD of the fastest speeds is 10 mph.
+
+Herbert will sample 64 college students at random and compute the sample mean $\bar{x}$.
+
+Approximately what is the probability that $\bar{x}$ will be less than 107 mph?
+
+## Example
+
+49% of all registered Deomocrats in the United States support Bernie Sanders for President.
+
+Harriet plans to take a random sample of 1600 registered Democrats.  She will compute $\hat{p}$, the proportion of them that support Sanders.
+
+Approximately what is
+
+$$P(0.47 < \hat{p} < 0.51)?$$
+
+## Solution
+
+Think about center, spread and shape of $\hat{p}$:
+
+* Center:  $EV(\hat{p})=p=0.49$
+
+* Spread:  $SD(\hat{p}) = \sqrt{p(1-p)/n}$, which is:
+
+```{r}
+sqrt(0.49*(1-0.49)/1600)
+```
+
+The sample percentage should be around 49%, give or take 1.25% or so for chance variation.
+
+## Solution
+
+Shape of distribution of $\hat{p}$:
+
+* $np = 1600 \times 0.49 = 784 \geq 10$
+
+* $n(1-p) = 1600 \times 0.51 = 816 \geq 10$
+
+So by the CLT, $\hat{p} \approx$ normal!
+
+## Solution
+
+So you can use `pnormGC()` to find the chance:
+
+$$P(0.47 < \hat{p} < 0.51) =$$
+
+```{r eval=FALSE}
+pnormGC(c(0.47,0.51),region="between",
+        mean=0.49,sd=0.0124975,
+        graph=TRUE)
+```
+
+---
+
+```{r echo=FALSE}
+pnormGC(c(0.47,0.51),region="between",
+        mean=0.49,sd=0.0124975,
+        graph=TRUE)
+```
+
+## Moral
+
+When you use random sampling, polls can be pretty accurate!
+
+* There are millions of registered Democrats
+* Harriet is sampling only 1600 of them
+* But there is about an 89% chance that her estimate is within 2% of the truth!
+
+# 68-95 Rule, Again
+
+
+## 68-95 Rule:  Review
+
+
+If the distribution of a numerical variable is roughly bell-shaped, then
+
+* about 68% of the values are within one SD of the mean
+* about 95% are within 2 SDs of the mean
+* about 99.7% are within 3 SDs of the mean
+
+
+## 68-95 Rule for Probability
+
+
+If the probability distribution of a random  variable $X$ is approximately normal, then
+
+* there is about a 68% chance that $X$ will turn out to be within one SD of its EV
+* there is about a 95% chance that $X$ will turn out to be within two SDs of its EV
+* there is about a 99.7% chance that $X$ will turn out to be within three SDs of its EV
+
+
+## Application
+
+
+You are about to take a simple random sample from a population.
+
+* The mean $\mu$ is 50.
+* The standard deviation $\sigma$ of the population is 6.
+* The size of your sample will be $n=36$.
+
+Approximately what is
+
+$$P(\bar{x} > 52)?$$
+
+## Solution
+
+
+* $EV(\bar{x})=\mu=50$
+* $SD(\bar{x})=\sigma/\sqrt{n}=6/\sqrt{36}=1$
+* $n=36 \ge 30$, so by CLT $\bar{x} \approx norm(50,1)$
+
+
+52 is 2 SDs above the EV. 
+
+---
+
+```{r, echo=FALSE}
+QuickEmpRuleGraphs <- function(mean=0,sd=1,xlab="x",range=1,shade="between") {
+
+  curve(dnorm(x,mean=mean,sd=sd),from=mean-4*sd,to=mean+4*sd,xlab=xlab,ylab="density",
+       main=paste("68-95 Rule:\nmean =",mean,", SD =",sd),axes=FALSE)
+ DesiredLabels <- rep("",9)
+ DesiredLabels[5] <- as.character(mean)
+ DesiredLabels[5-range] <- as.character(mean-sd*range)
+ DesiredLabels[5+range] <- as.character(mean+sd*range)
+ axis(side=1,at=mean+sd*seq(-4,4,by=1),labels=DesiredLabels)
+ 
+ if (shade=="between")  {
+   x.coords <- seq(from=mean-sd*range,to=mean+sd*range,
+                   length.out=500)
+   y.coords <- dnorm(x.coords,mean=mean,sd=sd)
+   x.coords <- c(mean-sd*range,x.coords,mean+sd*range)
+   y.coords <- c(0,y.coords,0)
+   polygon(x.coords,y.coords,col="lightblue")
+   percs <- c("~68%","~95%","~99.7%")
+   text(x=mean,y=0.45/(sqrt(2*pi)*sd),labels=percs[range],cex=4)
+ } else {
+   x.coords.left <- c(mean-4*sd,
+                      seq(from=mean-4*sd,to=mean-sd*range,length.out=300),
+                      mean-sd*range)
+   x.coords.right <- c(mean+sd*range,
+                       seq(from=mean+sd*range,to=mean+4*sd,length.out=300),
+                       mean+4*sd)
+   y.coords.left <- c(0,dnorm(seq(from=mean-4*sd,to=mean-sd*range,length.out=300),mean=mean,sd=sd),0)
+   y.coords.right <- c(0,
+                       dnorm(seq(from=mean+sd*range,to=mean+4*sd,length.out=300),mean=mean,sd=sd),
+                       0)
+   polygon(x.coords.left,y.coords.left,col="lightblue")
+   polygon(x.coords.right,y.coords.right,col="lightblue")
+   x.txt <- mean-sd*c(2.3,3,3.55)
+   y.txt <- c(0.4,0.25,0.15)/(sqrt(2*pi)*sd)
+   percs <- c("~16%","~2.5%","~0.15%")
+   text(x.txt[range],y.txt[range],percs[range],cex=4)
+   x.txt.right <- mean+sd*c(2.3,3,3.55)
+   text(x.txt.right[range],y.txt[range],percs[range],cex=4)
+                            
+ }
+
+}  #end EmpRuleGC
+
+QuickEmpRuleGraphs(mean=50,sd=1,xlab="Sample Mean",range=2,shade="between")
+```
+
+## Think "Outside"
+
+
+```{r echo=FALSE}
+QuickEmpRuleGraphs(mean=50,sd=1,xlab="Sample Mean",range=2,shade="outside")
+```
+
+## Solution
+
+
+So,
+
+$$P(\bar{x} > 52) \approx 2.5\%.$$
+
+
+## Use the Right SD!
+
+
+Use the SD for the random variable you are working with, NOT the SD of the population.
+
+$$SD(\bar{x})=\frac{\sigma}{\sqrt{n}}=\frac{6}{\sqrt{36}}=1,$$
+
+$$SD(\bar{x}) \neq \sigma=6$$
+
+## Practice { .practice }
+
+In a population of high school students, the mean fastest speed ever driven is 106 mph.  The SD of the fastest speeds is 12 mph.
+
+Herbert will sample 36 college students at random and compute the sample mean $\bar{x}$.
+
+Approximately what is the probability that $\bar{x}$ will be between 104 and 108 mph?

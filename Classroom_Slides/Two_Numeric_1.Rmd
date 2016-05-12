@@ -1,0 +1,393 @@
+---
+title: "Two Numeric Variables: Pt.1"
+author: "Homer White"
+date: "August, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(mosaicData)
+library(tigerstats)
+```
+
+# Graphical Methods
+
+## Swimming World Records
+
+```{r eval=FALSE}
+library(mosaicData)
+data(SwimRecords)
+View(SwimRecords)
+help(SwimRecords)
+```
+
+**Research Question**:  How have 100m records varied over the years?
+
+## Variable Analysis
+
+Variables involved:
+
+* **year** explanatory
+* **time** response
+
+Their types:
+
+* **year** numerical
+* **time** numerical
+
+## Are Old Methods Useful?
+
+With numerical variables we have used:
+
+* `densityplot()`
+* `bwplot()`
+* `histogram()`
+* `favstats()`
+
+Try this:
+
+```{r eval=FALSE}
+histogram(~time|year,data=SwimRecords)
+```
+
+
+## Weirdness
+
+```{r echo=FALSE}
+histogram(~time|year,data=SwimRecords)
+```
+
+
+## The Problem
+
+* explanatory variable **year** is numerical, not a factor, and
+* it has LOTS of values!
+
+We need a new graphical method to study the relationship between two numerical variables.
+
+## A Scatter Plot
+
+```{r echo=FALSE}
+xyplot(time~year,data=SwimRecords,
+       main="100m Swim Records",
+       xlab="year",
+       ylab="time (seconds)",
+       pch=19)
+```
+
+
+## How to Make a Scatter Plot
+
+Use the `xyplot()` function:
+
+```{r eval=FALSE}
+xyplot(time~year,data=SwimRecords,
+       main="100m Swim Records",
+       xlab="year",
+       ylab="time (seconds)",
+       pch=19)
+```
+
+Basic Form:
+
+$$xyplot(response \sim explanatory, data = \ldots)$$
+
+# Relationship Terminology
+
+## Positive Linear
+
+```{r echo=FALSE}
+xyplot(height~father,data=Galton,
+       subset=sex=="M",
+       main="Father and Son Heights",
+       xlab="father's height (inches)",
+       ylab="son's height (inches)",
+       pch=19,type=c("p","r"))
+```
+
+Rising cloud:  the taller the father, the taller the son!
+
+## Negative Linear
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- -2*x+rnorm(100,sd=5)
+xyplot(y~x,pch=19,type=c("p","r"))
+```
+
+Falling cloud:  bigger x's go with smaller y's!
+
+## Curvilinear
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- (x-50)^2+rnorm(100,sd=20)
+xyplot(y~x,pch=19)
+```
+
+There's a relationship, but it's not linear!
+
+## A Bit Curvilinear
+
+```{r echo=FALSE}
+xyplot(gasbill~temp,data=Utilities,
+       main="Temperature and Gas Bill",
+       xlab="temperature (deg Fahrenheit)",
+       ylab="gas bill (dollars)",
+       pch=19)
+```
+
+See the cloud "leveling off"?
+
+## No Relationship
+
+```{r echo=FALSE}
+set.seed(3010)
+x <- rnorm(100,mean=50,sd=10)
+y <- rnorm(100,mean=50,sd=10)
+xyplot(y~x,pch=19)
+```
+
+As you move to the right, cloud neither rises nor falls.
+
+# Examples
+
+## Beetles and Stumps
+
+```{r eval=FALSE}
+data(stumps)
+View(stumps)
+help(stumps)
+```
+
+**Research Question**:  Are there more larvae cluster in plots where there are more cottonwood stumps?
+
+## Practice {.practice}
+
+* **stumps** numerical
+* **larvae** numerical
+
+Which is explanatory?
+
+Which is the response?
+
+Make the scatter plot.
+
+Describe the relationship between number of larvae and number of stumps.
+
+## Speed and Fuel Efficiency
+
+```{r eval=FALSE}
+data(fuel)
+View(fuel)
+help(fuel)
+```
+
+Research Question:  How does the speed at which the Ford Escort is driven affect its fuel efficiency?
+
+## Practice { .practice }
+
+* **speed** numerical
+* **efficiency** numerical
+
+Which is explanatory? Which is the response?
+
+Make the scatter plot.
+
+Describe the relationship between number of speed and fuel efficiency.
+
+Units for **efficiency** are "liters per 100 km".  Does a high number for **efficiency** represent good or poor fuel efficiency?
+
+# Groups in Scatter Plots
+
+## Dealing With Groups: 1
+
+Use a `groups` argument, with a key:
+
+```{r eval=FALSE}
+xyplot(time~year,data=SwimRecords,
+       main="100m Swim Records",
+       xlab="year",
+       ylab="time (seconds)",
+       pch=19,
+       groups=sex,
+       auto.key=TRUE)
+```
+
+## The Result
+
+
+```{r echo=FALSE}
+xyplot(time~year,data=SwimRecords,
+       main="100m Swim Records",
+       xlab="year",
+       ylab="time (seconds)",
+       pch=19,
+       groups=sex,
+       auto.key=TRUE)
+```
+
+## Dealing with Groups:  2
+
+```{r eval=FALSE}
+data(TenMileRace)
+View(TenMileRace)
+help(TenMileRace)
+```
+
+Let's look at the relationship between **age** (explanatory) and **net** time (response), for both men and women.
+
+## First Pass
+
+```{r eval=FALSE}
+xyplot(net~age,data=TenMileRace,
+       groups=sex,
+       auto.key=TRUE)
+```
+
+## Sexes are "Too Mixed Up"
+
+```{r echo=FALSE}
+xyplot(net~age,data=TenMileRace,
+       groups=sex,
+       auto.key=TRUE)
+```
+
+
+## Plot in Separate Panels
+
+Make a scatter plot for each sex:
+
+```{r eval=FALSE}
+xyplot(net~age|sex,data=TenMileRace,
+       main="Age and Race Time, by Sex",
+       xlab="age (years)",
+       ylab="10k time (seconds)",
+       layout=c(2,1))
+```
+
+## The Result
+
+```{r echo=FALSE}
+xyplot(net~age|sex,data=TenMileRace,
+       main="Age and Race Time, by Sex",
+       xlab="age (years)",
+       ylab="10k time (seconds)",
+       layout=c(2,1))
+```
+
+The guys appear to run faster.  Hard to tell if age make a difference.
+
+## Verlander Over the Plate
+
+```{r eval=FALSE}
+help(verlander)
+```
+
+
+* **px** horizontal distance of ball from center of plate (feet)
+* **pz** vertical distance of ball above plate (feet)
+
+**Research Question**:  How are these variables related?
+
+## First Try
+
+```{r eval=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19)
+```
+
+## Result
+
+
+```{r echo=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19)
+```
+
+
+Over-plotting! (15,307 points sitting on top of each other.)
+
+## Second Try
+
+```{r eval=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10)
+```
+
+With `alpha` set to 0.10, you need 10 points stacked on each other to get full color!
+
+## Result
+
+```{r echo=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10)
+```
+
+## Third Try
+
+Let's group by type of pitch:
+
+```{r eval=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10,
+       groups=pitch_type,
+       auto.key=list(space="right"))
+```
+
+## The Result
+
+```{r echo=FALSE}
+xyplot(pz~px,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10,
+       groups=pitch_type,
+       auto.key=list(space="right"))
+```
+
+Hard to tell!
+
+## Fourth Try
+
+Let's plot in separate panels for each pitch type:
+
+```{r eval=FALSE}
+xyplot(pz~px|pitch_type,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10)
+```
+
+## The Result
+
+```{r echo=FALSE}
+xyplot(pz~px|pitch_type,data=verlander,
+       main="Verlander over the Plate",
+       pch=19,
+       alpha=0.10)
+```
+
+## Practice { .practice }
+
+For which types of pitch is there a relationship between **px** and **pz**?
+
+How would you describe the relationships you see (if any)?

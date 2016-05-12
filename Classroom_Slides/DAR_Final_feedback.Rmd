@@ -1,0 +1,197 @@
+---
+title: "DAR Final Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+library(knitr)
+```
+
+# Methods
+
+## A Possible Outlier
+
+```{r}
+bwplot(~ wage, data = CPS85)
+```
+
+One person makes a lot more than everyone else!
+
+## Who Is This?
+
+```{r}
+CPSRich <- subset(CPS85, wage > 40)
+CPSRich
+```
+
+## Decide
+
+Some folks decided to keep the outlier, thinking there was no reason the woman was not "real."
+
+Some kept her in numerical summaries, but not in graphs (so as not to waste graph space).
+
+## Removing the Outlier
+
+If you decided to remove the outlier, you could have done it with:
+
+```{r}
+CPS2 <- subset(CPS85, wage < 44)
+```
+
+## Confouding Factors
+
+At some point in methods it was important to:
+
+* show that men were making more money than women
+* but point out that confounding factors (rather than sex) could explain the wage
+* and explain how one might investigate confounding factors (e.e., by correcting for them)
+
+# Results
+
+## Important Things
+
+* Consider all possible confounding factors
+* find graphs where pattern is easiest to see
+* back up graphs with numerical summaries, especially when graphs are difficult to read
+
+
+## Interesting Insights:  Marital Status
+
+Marital Status is NOT a confounding factor, because it isn't related to **sex**:
+
+```{r}
+rowPerc(xtabs(~ sex + married, data = CPS2))
+```
+
+## Interesting Insights:  Marital Status
+
+But watch what happens when you correct for marital status anyway:
+
+```{r eval = FALSE}
+favstats(wage ~ sex + married, data = CPS2)[c("sex.married","mean","n")]
+```
+
+```{r echo = FALSE}
+kable(favstats(wage ~ sex + married, data = CPS2)[c("sex.married","mean","n")])
+```
+
+
+## Correct for Two (or More) at Once?
+
+One person wondered if men had more education, after breaking down by sector:
+
+```{r eval = FALSE}
+favstats(educ ~ sex + sector, data = CPS2)[c("sex.sector", "mean", "n")]
+```
+
+```
+   sex.sector     mean  n
+1  F.clerical 12.84211 76
+2  M.clerical 13.28571 21
+3     F.const      NaN  0
+4     M.const 11.15000 20
+5     F.manag 14.25000 20
+6     M.manag 14.79412 34
+7     F.manuf 10.66667 24
+8     M.manuf 11.47727 44
+```
+
+## Continued ...
+
+```
+9     F.other 12.83333  6
+10    M.other 11.72581 62
+11     F.prof 15.28846 52
+12     M.prof 15.98113 53
+13    F.sales 12.76471 17
+14    M.sales 13.57143 21
+15  F.service 11.65306 49
+16  M.service 11.52941 34
+```
+
+Questionable whether men are significantly more educated after taking sector into account, but still, could we correct for **educ** and **sector** simultaneously?
+
+##  One Way
+
+```{r}
+CPSccmm <- subset(CPS2, 
+  sector %in% c("clerical", "construction", "manag","manuf"))
+CPSopss <- subset(CPS2, 
+  sector %in% c("other", "prof", "sales","service"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(wage ~ educ | sector,
+	data = CPSccmm,
+	layout = c(2,2),
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	type = c("p","smooth"), span = 1.5,
+	pch = 20)
+```
+
+##
+
+```{r echo=FALSE}
+xyplot(wage ~ educ | sector,
+	data = CPSopss,
+	layout = c(2,2),
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	type = c("p","smooth"), span = 1.5,
+	pch = 20)
+```
+
+# Conclusion/Discussion
+
+## Correcting for "All at Once"
+
+Are there ways to correct for all confounding variables (in the data set) at once?
+
+## Population vs. Sample
+
+Women make less than men after correcting for confounding factors, but this is a pattern we see in the sample.  Does it carry over to the population (i.e., is it statistically significant)?
+
+## Wage Gap Shrinking?
+
+```{r echo = FALSE}
+xyplot(wage ~ age,
+	data = CPS2,
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	type = c("p","smooth"),
+	pch = 20)
+```
+
+Need a longitudinal study!
+
+## Why the Wage Gap?
+
+The wage gap persists to this day, but is it still due to outright wage discrimination?  Or are women less assertive than men when it comes to raises, promotions, etc?
+
+These matters are currently being studied.
+
+

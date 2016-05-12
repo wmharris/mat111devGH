@@ -1,0 +1,482 @@
+---
+title: "Probability in Sampling: Pt.1"
+author: "Homer White"
+date: "October, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(mosaic)
+library(tigerstats)
+```
+
+# Definitions
+
+## Parameters and Statistics
+
+  >A *parameter* is a number associated with a population.
+  
+
+* It does not depend on chance
+* but usually is unknown
+  
+  >A *statistic* is a number we compute from the sample data
+
+
+* It can be known (we have the data)
+* but it depends on sample (and so depends on chance)
+
+
+## Estimators
+
+We often use a statistic to *estimate* a parameter. Examples:
+
+| Parameter | Estimator |
+|:---------:|:----------:|
+| population mean $\mu$ | sample mean $\bar{x}$ |
+| population SD $\sigma$ | sample SD $s$ |
+| population median | median of sample |
+| population Q3 | Q3 of sample |
+
+We hope that usually
+
+$$\textbf{estimator} \approx \textbf{parameter}$$
+
+## The "Basic Five" Parameters
+
+| Parameter | Estimator |
+|:---------:|:----------:|
+| one mean $\mu$ | sample mean $\bar{x}$ |
+| one proportion $p$ | sample proportion $\hat{p}$ |
+| difference of two means $\mu_1-\mu_2$ | $\bar{x}_1-\bar{x}_2$ |
+| difference of two proportions $p_1 - p_2$ | $\hat{p}_1-\hat{p}_2$ |
+| mean of differences $\mu_d$ | sample mean of differences $\bar{d}$ |
+
+# One Mean
+
+## Research Question
+
+
+>*Is the mean height in `imagpop` more than 66 inches?*
+
+## Parameter of Interest
+
+
+One population mean.  Let's define it:
+
+  >Let $\mu =$ the mean height of all people in `imagpop`.
+
+## The Estimator
+
+
+The mean of the sample, $\bar{x}$.
+
+This is a random variable, and it has an expected value and a standard deviation:
+
+$$EV(\bar{x}) = \mu \\
+SD(\bar{x}) = \frac{\sigma}{\sqrt{n}}$$
+
+where
+
+* $\sigma$ is the SD of the population
+* $n$ is the sample size
+
+## Example
+
+* A population of males has a mean height $\mu$ of 72 inches.
+
+* The standard deviation $\sigma$ of the population is 3 inches.
+
+* You pick one male at random from the population.
+
+How tall do you expect him to be?  Give or take about how much?
+
+## Solution
+
+Let $X$ be the height of the randomly-picked male.  When you sample just one guy, his height IS the sample mean $\bar{x}$!
+
+$EV(X) = \mu = 72$, so we expect the guy to be about 72 inches tall.
+
+$SD(X) = \sigma/\sqrt{n} = 3/\sqrt{1} = 3$, so give-or-take figure is 3 inches.
+
+We expect the guy to be around 72 inches tall, give or take about 3 inches for chance variation in the sampling process.
+
+## Example
+
+Same population of guys:
+
+* $\mu = 72$
+* $\sigma = 3$
+
+This time you pick $n=4$ guys at random and compute the mean $\bar{x}$ of their heights.
+
+What do you expect the sample mean to be?  Give or take about how much?
+
+## Solution
+
+$EV(\bar{x}) = \mu = 72$, so we expect the guy to be about 72 inches tall.
+
+$SD(\bar{x}) = \sigma/\sqrt{n} = 3/\sqrt{4} = 3/2 = 1.5$
+
+We expect sample mean to be around 72 inches, give or take about 1.5 inches for chance variation in the sampling process.
+
+## Practice { .practice }
+
+Same population of guys:
+
+* $\mu = 72$
+* $\sigma = 3$
+
+This time you pick $n=25$ guys at random and compute the mean $\bar{x}$ of their heights.
+
+What do you expect the sample mean to be?  Give or take about how much?
+
+## Moral of the Story
+
+If you  do random sampling, then:
+
+* as sample size $n$ goes up ...
+* chance variation goes down!
+
+The bigger your sample size, the more likely it is that $\bar{x}$ will be close to $\mu$!
+
+## We Apologize ...
+
+... for the mess:  there are THREE "standard deviations" to keep track of:
+
+* $s$, the SD of the sample (says how much a typical data value differs from the mean of the sample)
+
+* $\sigma$, the SD of the population (says how much a typical member of the population differs form the mean of the population)
+
+* The SD of a random variable (says how much a random variable is liable to differ from its expected value)
+
+
+# One Proportion
+
+
+## Research Question
+
+
+>What proportion of all college students are math majors?
+
+## Parameter of Interest
+
+
+One population proportion.  Let's define it:
+
+Let $p =$ the proportion of all college students who are math majors.
+
+## The Estimator
+
+
+The sample proportion:
+
+$$\hat{p}=\frac{\textbf{number in sample who are math majors}}{\textbf{sample size}}.$$
+
+This is a random variable, and it has an expected value and a standard deviation:
+
+$$EV(\hat{p}) = p \\
+SD(\hat{p}) = \sqrt{\frac{p(1-p)}{n}}$$
+
+where $n$ is the sample size.
+
+## Example
+
+Suppose that 10% of all college students are math majors.
+
+Suppose you take a random sample of 900 college students.
+
+About what percentage of the students in your sample will be math majors?  Give or take about how much?
+
+## Solution
+
+$EV(\hat{p})=p = 0.10$, or 10%.
+
+$n=900$, so $SD(\hat{p})$ is
+
+```{r}
+sqrt(0.1*(1-0.1)/900)
+```
+
+So you expect about 10% of the sample to be math majors, give or take 1% or so.
+
+## Practice { .practice }
+
+Suppose that 45% of all registered voters in KY favor Alison Lundergren Grimes in the Senate race.
+
+Suppose you take a random sample of 635 registered voters.
+
+About what percentage of the students in your sample will favor Alison?  Give or take about how much?
+
+# Two Means
+
+## Research Question
+
+>*We wonder how much taller the GC guys are, on average, than GC gals.*
+
+
+
+## Parameter of Interest
+
+Divide the GC population into two separate populations:
+
+* all of the females, and
+* all of the males.
+
+The parameters are:
+
+  >$\mu_1$ = mean height of all GC males, and
+
+  >$\mu_2$ = mean height of all GC females
+
+We are interested in the value of $\mu_1-\mu_2$:
+
+* if $\mu_1-\mu_2 >0$, then guys are taller, on average
+* if $\mu_1-\mu_2 <0$, then gals are taller, on average
+
+
+## The Estimator
+
+
+* We take a simple random sample of size $n_1$ of guys, computing sample mean $\bar{x}_1$.
+* We take an *independent* simple random sample of size $n_2$ of gals, computing sample mean $\bar{x}_2$.
+
+The estimator is $\bar{x}_1 - \bar{x}_2$, the difference of sample means.
+
+$$EV(\bar{x}_1 - \bar{x}_2) = \mu_1-\mu_2 \\
+SD(\bar{x}_1-\bar{x}_2)=\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$$
+
+where $\sigma_1$ and $\sigma_2$ are the population SDs.
+
+# Two Proportions
+
+## Research Question
+
+*Who is more likely to believe in love at first sight:  a GC gal or a GC guy?*
+
+## Parameters
+
+Divide the GC population into two separate populations:
+
+* all of the females, and
+* all of the males.
+
+The parameters are:
+
+  >$p_1$ = proportion of all GC females who believe in love at first sight, and
+
+  >$p_2$ = proportion of all GC males who believe in love at first sight
+  
+## Parameters
+
+We are interested in $p_1-p_2$.
+
+* if $p_1-p_2 >0$, then GC gals are more likely to believe than GC guys are;
+* if $p_1-p_2 <0$, then it's the other way around!
+
+## The Estimator
+
+
+* We take a simple random sample of size $n_1$ of gals, computing sample proportion $\hat{p}_1$.
+* We take an *independent* simple random sample of size $n_2$ of guys, computing sample proportion $\hat{p}_2$.
+
+The estimator is $\hat{p}_1 - \hat{p}_2$, the difference of sample proportions.
+
+$$EV(\hat{p}_1 - \hat{p}_2) = p_1-p_2 \\
+SD(\hat{p}_1 - \hat{p}_2) = \sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$$
+
+# Mean of Differences
+
+## Research Question
+
+*Do Tidarren spiders run faster after one pedipalp has been amputated?*
+
+```{r eval=FALSE}
+data(SpiderSpeed)
+View(SpiderSpeed)
+help(SpiderSpeed)
+```
+
+
+## The Parameter
+
+This was a repeated-measures design, so we are interested in the differences.
+
+Let $\mu_d$ be the mean difference in speed (after minus before) for ALL Tidarren spiders.
+
+(Not just the 16 in the sample!)
+
+If $\mu_d > 0$, then on average spiders run faster after amputation!
+
+## Estimator
+
+
+* We take a simple random sample of size $n$ for the population
+* record ideal height and actual height for each person
+* compute the difference (ideal minus actual) for each person
+* compute the mean of these differences (written $\bar{d}$)
+
+
+$$EV(\bar{d}) = \mu_d \\
+SD(\bar{d})=\frac{\sigma_d}{\sqrt{n}}$$
+
+where $\sigma_d$ is the SD of the differences for the population.
+
+# Tips for Identifying the Parameter
+
+## Keywords
+
+
+  >*On average*, do adults in the U.S. make more than 38,000 dollars per year?
+
+"On average" often indicates a mean.
+
+Parameter is:
+
+  >$\mu =$ mean income of all adults in the U.S..
+  
+## Keywords
+
+
+  >Do a *majority* of people in the U.S. favor capital punishment?
+  
+Words like "majority" and "minority" often indicate an interest in a proportion.
+
+The parameter is:
+
+  >$p =$ proportion of all people in the U.S. who favor capital punishment.
+  
+## Variable Analysis
+
+When the Research Question involves two variables:
+
+* identify each variable
+* if relevant, decide which is explanatory and which is response
+* classify each one (factor?  numerical?)
+* for each factor, count how many levels it has
+
+
+## Variable Analysis:  Example 1
+
+
+Research Question:
+
+  >*On average, who drives faster at GC:  a guy or a gal?*
+  
+Variable Analysis:
+
+* One variable is **sex**
+    * it is the explanatory variable
+    * it is a factor
+    * it has two values:  "male" and "female"
+* The other variable is **fastest**:
+    * it is the response variable
+    * it is numerical
+    
+## Variable Analysis:  Example 1
+
+
+If
+
+* explanatory variable is a factor with two values, and
+* response variable is numerical
+
+then we are probably interested in the difference of two means.
+
+(In this Research Question, the keyword "average" further supports this idea.)
+
+## Variable Analysis:  Example 1
+
+
+So we define
+
+  >$\mu_1 =$ mean fastest speed ever driven, for all males at GC.
+  
+and
+
+  >$\mu_2 =$ mean fastest speed ever driven, for all females at GC.
+  
+We are interested in $\mu_1-\mu_2$.
+
+## Variable Analysis:  Example 2
+
+
+Research Question:
+
+  >*At GC, who is more likely to believe in love at first sight:  a guy or a gal?*
+  
+Variable Analysis:
+
+* One variable is **sex**
+    * it is the explanatory variable
+    * it is a factor with two values ("male","female")
+* The other variable is **love_first**:
+    * it is the response variable
+    * it is a factor with two values ("no","yes")
+    
+
+## Variable Analysis:  Example 2
+
+
+If
+
+* explanatory variable is a factor with two values, and
+* response variable is a factor with two values
+
+then we are probably interested in the difference of two proportions.
+
+(Proportions can stand for probabilities, so in this Research Question, the keyword "likely" further points toward proportions.)
+
+## Variable Analysis:  Example 2
+
+
+So we define
+
+  >$p_1 =$ proportion of all males at GC who believe in love at first sight.
+  
+and
+
+  >$p_2 =$ proportion of all females at GC who believe in love at first sight.
+  
+We are interested in $p_1-p_2$.
+
+## Variable Analysis:  Example 3
+
+
+Research Question:
+
+  >*On average, do people at GC want to be taller than they actually are?*
+  
+Variable Analysis:
+
+* One variable is **height**
+    * it is numerical
+* The other variable is **ideal_height**:
+    * it is numerical
+
+Explanatory/Response distinction does not apply here:  we have repeated measures instead.
+
+
+## Variable Analysis:  Example 3
+
+
+When
+
+* you are in a repeated measures or matched pairs situation, and
+* both variables are numerical
+
+then you are probably interested in the mean of differences.
+
+## Variable Analysis:  Example 3
+
+
+So we are interested in
+
+  >$\mu_d =$ mean difference (ideal height minus actual height) for all students at Georgetown College.
+  

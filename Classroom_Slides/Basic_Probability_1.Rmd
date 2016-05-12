@@ -1,0 +1,432 @@
+---
+title: "Basic Probability: Pt.1"
+author: "Homer White"
+date: "September, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# Random Variables
+
+## Random Variable
+
+A **random variable** is a number whose value depends on the outcome of a chance process.
+
+## Example
+
+You flip a fair coin three times.
+
+Let $X =$ the number of heads you get.
+
+$X$ is a random variable.
+
+## Example
+
+You roll a six-sided die:
+
+* If the six-spots side lands up, you win 10 bucks.
+* If not, you lose a buck.
+
+Let $Y=$ how much you win in one play.
+
+$Y$ is a random variable.
+
+## Example
+
+You pick a person at random from a population.
+
+Let $Z =$ his/her height.
+
+$Z$ is a random variable.
+
+## Example
+
+* You take a simple random sample of 25 people from a population.
+* You calculate the mean $\bar{x}$ of the sample.
+
+$\bar{x}$ is a random variable.
+
+# Probability Distributions
+
+## Finding the Chances
+
+For a random variable $X$, we would like to know the chances for $X$ to assume various values.
+
+If we know how to do this, then we know the *distribution* of $X$.
+
+## Example
+
+We flip a fair coin three times.  The possible results are:
+
+$$\{HHH,HHT,HTH,THH,\\
+      HTT,THT,TTH,TTT\}$$
+      
+That's 8 possible outcomes.
+
+Suppose that 
+
+$$X = \textbf{number of heads}$$
+      
+## Notice:
+
+
+When this is result|$X$ is
+---|---
+TTT|0
+TTH|1
+THT|1
+HTT|1
+THH|2
+HTH|2
+HHT|2
+HHH|3
+
+## Distribution of X
+
+So we can find the "chances" for $X$ to be various values:
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+## Graph of the Distribution
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(3,0.5),kind="histogram",type="percent", xlab="Number of Heads x")
+```
+
+## Using the Distribution
+
+Now we can find many different probabilities.
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+<br>
+
+$P(X \leq 2) = 1/8 + 3/8 + 3/8 = 7/8.$
+
+## Graph
+
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(3,0.5),kind="histogram",type="percent", 
+         groups=x<=2,xlab="Number of Heads x")
+```
+
+The pink "shaded" area is $P(X \leq 2)$.
+
+## Using the Distribution
+
+Another example:
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+<br>
+
+$P(X < 2) = 1/8 + 3/8 = 4/8 = 0.5.$
+
+## Graph
+
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(3,0.5),kind="histogram",type="percent", 
+         groups=x<2,xlab="Number of Heads x")
+```
+
+The shaded area is $P(X < 2)$.
+
+
+## Using the Distribution
+
+Another example:
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+<br>
+
+$P(X > 1) = 3/8 + 1/8 = 4/8 = 0.5.$
+
+## Graph
+
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(3,0.5),kind="histogram",type="percent", 
+         groups=x>1,xlab="Number of Heads x")
+```
+
+The shaded area is $P(X > 1)$.
+
+## The Random Variable Y
+
+Recall:  you roll a six-sided die:
+
+* If the six-spots side lands up, you win 10 bucks.
+* If not, you lose a buck.
+
+$Y=$ how much you win in one play.
+
+## Distribution of Y
+
+$y$|$P(Y=y)$
+---|---
+-1|5/6
+10|1/6
+
+# Expected Value
+
+## What to Expect "On Average"
+
+Suppose you play the dice game many, many times.
+
+On each play, you get either 10 or -1.
+
+About how much would you expect to win per game, *on average*?
+
+This is called the *expected value* of $Y$, or $EV(Y)$ for short.
+
+## Try It Out
+
+Set up the game:
+
+```{r}
+y <- c(-1,10)
+p.y <- c(5/6,1/6)
+```
+
+Play the game:
+
+
+```{r eval=FALSE}
+sample(y,size=1,p=p.y,replace=TRUE)
+```
+
+Run the code-chunk a few times.  Get a feel for what happens.
+
+## Play it a LOT!
+
+Let's play the game 10,000 times!
+
+```{r eval=FALSE}
+winnings <- sample(y,size=10000,p=p.y,replace=TRUE)
+```
+
+```{r echo=FALSE}
+set.seed(3030)
+winnings <- sample(y,size=10000,p=p.y,replace=TRUE)
+```
+
+Here's my first 20:
+
+```{r}
+winnings[1:20]
+```
+
+What did *you* get?
+
+## On Average ...
+
+I got
+
+```{r}
+mean(winnings)
+```
+
+What did *you* get?
+
+## Expected Value
+
+A formula:
+
+$$EV(Y)= \sum_y y \cdot P(Y=y) \\
+= (-1) \times \frac{5}{6} + 10 \times \frac{1}{6} \\
+= \frac{5}{6} \approx 0.83.$$
+
+## It Makes Sense!
+
+When you play the dice game many, many times:
+
+* you expect -1 about $5/6^{th}$ of the time
+* you expect 10 about $1/6^{th}$ of the time.
+
+$$EV(Y)=(-1) \times \frac{5}{6} + 10 \times \frac{1}{6}.$$
+
+## What Does R Say?
+
+```{r}
+expected <- sum(y*p.y)
+expected
+```
+
+## Coin Flip
+
+Recall flipping the fair coin three times, $X$ = number of heads.
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+## R Says
+
+Set it up:
+
+```{r}
+x <- c(0,1,2,3)
+p.x <- c(1/8,3/8,3/8,1/8)
+```
+
+Then $EV(X)$ is:
+
+```{r}
+sum(x*p.x)
+```
+
+## Try it Out:
+
+```{r eval=FALSE}
+heads <- sample(x,size=10000,p=p.x,replace=TRUE)
+mean(heads)
+```
+```{r echo=FALSE}
+set.seed(3030)
+heads <- sample(x,size=10000,p=p.x,replace=TRUE)
+mean(heads)
+```
+
+Did you also get near 1.5?
+
+# Standard Deviation
+
+## Give-or-Take
+
+So, when you "try" a random variable $X$, you expect to get around $EV(X)$ ...
+
+... give or take some for chance variation!
+
+What's the "give-or-take" figure?
+
+## Standard Deviation
+
+$$SD(X) = \sqrt{\sum_x (x-EV(X))^2 P(X=x)}.$$
+
+## Example
+
+$x$|$x-EV(X)$|$(x-EV(X))^2$|$P(X=x)$
+---|---|---|---
+0|-1.5|2.25|1/8
+1|-0.5|0.25|3/8
+2|+0.5|0.25|3/8
+3|1.5|2.25|1/8
+
+<br>
+
+$SD(X)=\sqrt{2.25/8+0.75/8+0.75/8+2.25/8} \approx 0.867.$
+
+## So ...
+
+When you flip a fair coin 3 times, the number of heads will differ from the expected 1.5 by about 0.867 or so.
+
+* 1.5 - 0.867 = 0.633
+* 1.5 + 0.867 = 2.367
+
+The possible values in this range are:  1 and 2.
+
+So typically you are supposed get 1 or 2 heads.
+
+$P(X=1) + P(X=2) = 3/8 +3/8 = 6/8 =\textbf{ }$ a 75% chance.
+
+Yes, that seems "typical"!
+
+## Two Games
+
+The rules for Game A are:
+
+* flip a fair coin once
+* if it's Heads, you win 4 dollars
+* if it's Tails, you win 2 dollars
+
+The rules for Game B are:
+
+* flip a fair coin twice
+* if it lands Heads both times, you win 40 dollars
+* otherwise, you lose 8 dollars
+
+## Many Plays
+
+You can play Game A 10,000 times, or you can play Game B 10,000 times.
+
+## Practice { .practice }
+
+Which would you choose?  Why?
+
+## Suggestion:  Compare  EV's
+
+Compute EV(A) using:
+
+$a$|$P(X=a)$
+---|---
+2|1/2
+4|1/2
+
+Compute EV(B) using:
+
+$b$|$P(X=b)$
+---|---
+-8|3/4
+40|1/4
+
+## Another Suggestion: Simulation
+
+For Game A:
+
+```{r eval=FALSE}
+a <- c(4,2)
+p.a <- c(0.5,0.5)
+winningsA <- sample(a,size=10000,p=p.a,replace=TRUE)
+sum(winningsA)
+```
+
+
+For Game B:
+
+```{r eval=FALSE}
+b <- c(40,-8)
+p.b <- c(0.25,0.75)
+winningsB <- sample(b,size=10000,p=p.b,replace=TRUE)
+sum(winningsB)
+```
+
+
+
+

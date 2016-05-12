@@ -1,0 +1,829 @@
+---
+title: "Tests of Significance: Pt.1"
+author: "Homer White"
+date: "October, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+
+# One Mean
+
+
+
+## Confidence Interval vs. Test
+
+
+Confidence intervals answer this question:
+
+  >Given the data, *within what range of values* might the parameter reasonably lie?
+
+Tests of significance answer this question:
+
+  >Given the data, is it reasonable to believe that the parameter *is a particular given value*?
+  
+## Fastest Speed Ever Driven
+
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+Focus on variable **fastest**.
+
+Define
+
+  >$\mu =$ mean fastest speed ever driven, for all GC students
+  
+## Hypotheses
+
+
+A *one-sided* test:
+
+* $H_0:  \mu=100$
+  
+* $H_a: \mu >100$
+  
+## Notation:  Null's Belief
+
+$\mu_0$ is what the Null Hypothesis claims $\mu$ is.
+  
+In our example:
+
+* $$\mu_0=100.$$
+
+
+  
+## ttestGC() Again!
+
+
+Need to set
+
+* argument `mu` to $\mu_0$ (100, this time)
+* argument `alternative` to "greater"
+
+```{r eval=FALSE}
+ttestGC(~fastest,data=m111survey,
+        mu=100,
+        alternative="greater")
+```
+
+## Output Tour:  Descriptive Results
+
+
+```
+ variable  mean    sd  n
+  fastest 105.9 20.88 71
+```
+
+We see:
+
+* $\bar{x}=105.9$, higher than $H_0$ expected
+* sample size $n=71$, big enough to trust `ttestGC()`
+
+
+## Output Tour:  Confidence Interval
+
+
+```
+95% Confidence Interval for mu:
+
+          lower             upper          
+          101.771329        Inf   
+```
+
+* One-sided interval (goes with one-sided test)
+* We are 95%-confident that $\mu > 101.77$.
+* Hmm, interval does not contain $\mu_0=100$:
+    * looking bad for the Null!
+
+## Output Tour:  Estimate and SE
+
+```
+Estimate of mu:   105.9 
+SE(x.bar):   2.478 
+```
+
+Observe:
+
+* Null expects $\bar{x} \approx \mu_0=100$, give or take some for chance error
+* But we got $\bar{x}=105.9$
+* That more than two SEs above what $H_0$ expected:
+    * looking bad for $H_0$!
+
+## Output Tour:  Test Statistic
+
+```
+Test Statistic:  	t = 2.382 
+```
+The test statistic $t$ is defined as:
+
+$$t=\frac{\bar{x}-\mu_0}{SE(\bar{x})}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+* "$z$-score style"
+* says how many SEs $\bar{x}$ is above or below what $H_0$ expected it to be!
+
+## Output Tour:  Test Statistic
+
+```
+Test Statistic:    t = 2.382 
+```
+This time it worked out to be:
+
+$$t=\frac{\bar{x}-\mu_0}{SE(\bar{x})}=\frac{105.9-100}{2.478}=2.382. $$
+
+## Output Tour:  P-Value
+
+```
+  Degrees of Freedom:	  70 
+	P-value:		P = 0.009974 
+```
+* $t$ is a random variable
+* $t \approx t(70)$
+
+
+$$\textbf{P-value}=P(t \geq 2.382 \vert H_0 \text{ is true}) \approx 0.009974$$
+
+## Graph of the P-value
+
+
+```{r echo=FALSE}
+ptGC(bound=2.382,region="above",df=70,
+     graph=TRUE)
+```
+
+
+## Want a Graph With Your Output?
+
+
+```{r eval=FALSE}
+ttestGC(~fastest,data=m111survey,
+        mu=100,
+        alternative="greater",
+        graph=TRUE)
+```
+
+
+## Interpretation of P-value
+
+
+$P \approx 0.009974 \approx 0.01 = 1\%$, so we say:
+
+* "If the Null is correct, then there is only about 1% chance of getting a test statistic at least as big as the one we got in our study. "
+  
+Either:
+
+* $H_0$ is correct, and we got a rather unusual sample, or
+* $H_0$ is not correct, and $\mu > 100$.
+
+Second option seems more reasonable!
+
+## Points to Address:  Step One
+
+
+(We define the parameter of interest, and state our hypotheses.)
+
+Let
+
+  >$\mu =$ mean fastest speed ever driven, for all GC students
+  
+Our hypotheses are:
+
+* $H_0:  \mu=100$
+  
+* $H_a: \mu >100$
+  
+## Step Two:  Code, Safety Check and Test Statistic
+
+
+We took a simple random sample from the population, and the sample size $n$ was 71, which is large enough to trust the results of the test.
+
+The test statistic was:
+
+$$t=2.382.$$
+
+Our sample mean was 2.382 standard errors above what the Null Hypothesis expected it to be.
+
+## Step Three:  P-Value and Interpretation
+
+
+The P-value was 0.009974.
+
+* If the Null is correct, then there is only about 1% chance of getting a test statistic at least as big as the one we got in our study.
+  
+## Step Four:  Decision about Null Hypothesis
+
+
+Since $P < 0.05$, we reject $H_0$.
+
+## Step Five:  Conclusion
+
+
+* This data provided strong evidence that the mean fastest speed driven at GC is more than 100 mph.
+  
+## One-Sided, "Less-Than" Test
+
+
+* **Research Question**:  *The mean GPA of all UK students is known to be 3.3.  Does the `mat111survey` data provide strong evidence that the mean GPA of all GC students is lower?*
+
+Let
+
+* $\mu$ = the mean GPA of all GC students.
+  
+Then our hypotheses are:
+
+* $H_0$:  $\mu=3.3$
+
+* $H_a$:  $\mu < 3.3$
+
+## The Code
+
+
+```{r eval=FALSE}
+ttestGC(~GPA,data=m111survey,
+         mu=3.3,alternative="less",
+         graph=TRUE)
+```
+
+## Some Results
+
+
+```
+Test Statistic:  	t = -1.733 
+Degrees of Freedom:	  69 
+P-value:		P = 0.04382
+```
+
+This time,
+
+$$\textbf{P-value} = P(t \leq -1.733 \vert H_0 \text{ is true})=0.04382.$$
+
+## Graph
+
+
+
+```{r echo=FALSE}
+ptGC(bound=-1.733,region="below",df=69,
+     graph=TRUE)
+```
+
+
+## Interpretation
+
+
+* If the Null is correct, then there is only about 4.38% chance of getting a test statistic less than or equal to the one we got in our study.
+  
+## A "Two-Sided" Test
+
+
+Let
+
+* $\mu$ = the mean GPA of all GC students.
+  
+Then our hypotheses are:
+
+* $H_0$:  $\mu=3.3$
+
+* $H_a$:  $\mu \neq 3.3$
+
+## The Code
+
+
+```{r eval=FALSE}
+ttestGC(~GPA,data=m111survey,
+         mu=3.3,alternative="two.sided",
+        graph=TRUE)
+```
+
+## Some Results
+
+
+```
+Test Statistic:  	t = -1.733 
+	Degrees of Freedom:	  69 
+	P-value:		P = 0.08763 
+```
+*t* is just the same as for the one-sided test.
+
+But this time, $P$-value is
+
+$$P(t \leq -1.733 \textbf{ or } t \geq 1.733 \vert H_0 \text{ is true}) \\
+=0.08763,$$
+
+twice as big as before!
+
+## Graph
+
+
+
+
+```{r echo=FALSE}
+ptGC(bound=c(-1.733,1.733),region="outside",
+     df=69,graph=TRUE)
+```
+
+
+## Interpretation
+
+
+* If the Null is correct, then there is about an 8.6% chance of getting a test statistic at least as far from 0 as the one we got in our study.
+  
+(Given our usual cut-off of $\alpha=0.05$, we would not reject $H_0$.)
+
+## One or Two-Sided?
+
+
+* If you have *prior* evidence that the $\mu$ differs from $\mu_0$ in a particular direction, then you may set up a one-sided test for that direction.
+* If not, just perform a two-sided test.
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+Let $\mu$ be the mean number of drinks consumed each week, for all UC-Davis students.
+
+At Penn State, the mean is known to be 4.  Is it the same at UC-Davis?  
+
+* $H_0: \mu = 4$
+* $H_0: \mu \neq 4$
+
+Perform the test of significance.
+
+# Difference of Two Means
+
+
+## Research Question
+
+
+* *Does the data provide strong evidence that GC males drive faster, on average, than GC females do?*
+
+## Parameters and Hypotheses
+
+
+Let
+
+* $\mu_1$ = the mean fastest speed of all GC females.
+
+* $\mu_2$ = the mean fastest speed of all GC males.
+
+Hypotheses are:
+
+* $H_0$:  $\mu_1-\mu_2 = 0$
+
+* $H_a$:  $\mu_1-\mu_2 \neq 0$
+  
+## The Code
+
+
+```{r eval=FALSE}
+ttestGC(fastest~sex,data=m111survey,
+        mu=0,alternative="two.sided",
+        graph=TRUE)
+```
+
+Note:
+
+* argument still `mu` (even though two means)
+* don't really need to set `alternative="two.sided":
+    * two-sided is the default
+    
+## Descriptive Results
+
+
+```
+  group  mean    sd  n
+ female 100.0 17.61 40
+   male 113.5 22.57 31
+```
+
+Both sample sizes are "big enough", so safe to proceed.
+
+## Estimator and SE
+
+```
+Estimate of mu1-mu2:   -13.4 
+SE(x1.bar - x2.bar):	 4.918 
+```
+$\bar{x}_1-\bar{x}_2$ is nearly three SEs below what $H_0$ expected it to be.
+
+This looks bad for $H_0$.
+
+## Confidence Interval
+
+
+The 95% confidence interval for $\mu_1-\mu_2$ is:
+
+```
+ lower       upper          
+-23.254640  -3.548586     
+```
+This does not contain 0 (the Null's belief).
+
+Again, looks bad for $H_0$.
+
+## Test Statistic
+
+
+```
+Test Statistic:  	t = -2.725 
+```
+
+The test statistic $t$ is defined as:
+
+$$t=\frac{\bar{x}_1-\bar{x}_2}{SE(\bar{x}_1-\bar{x}_2)}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+* "$z$-score style"
+* says how many SEs $\bar{x}_1-\bar{x}_2$ is above or below what $H_0$ expected it to be!
+
+## Test Statistic
+
+
+```
+Test Statistic:    t = -2.725 
+```
+
+This time it worked out as:
+
+$$t=\frac{\bar{x}-\bar{x}_2}{SE(\bar{x}-\bar{x}_2)}=\frac{100-113.5}{4.918}=-2.725$$
+
+* The observed difference between the sample means was 2.725 standard errors below what $H_0$ was expecting.
+  
+## The P-Value
+
+
+```
+Degrees of Freedom:    55.49 
+P-value:		P = 0.008579 
+```
+
+* $t$ is a random variable
+* if $H_0$ is true, then $t \approx t(55.49)$
+
+$$\textbf{P-value}\\
+=P(t \leq -2.725 \text{ or } t \geq 2.725\vert H_0 \text{ is true}) \\
+\approx 0.008579$$
+
+## Graph of the P-value
+
+
+
+```{r}
+ptGC(bound=c(-2.725,2.725),region="outside",
+     df=55.49,graph=TRUE)
+```
+
+
+## Decision and Conclusion
+
+
+$P < 0.05$, so we will reject $H_0$.
+
+This data provided strong evidence that GC males drive faster than GC females, on average.
+
+## Note on Group Order
+
+
+What if you had defined:
+
+  >$\mu_1$ = the mean fastest speed of all GC males.
+
+  >$\mu_2$ = the mean fastest speed of all GC females.
+  
+For *you*, GC males are the "first" population.
+
+Problem:
+
+  >How do you get `ttestGC()` to recognize this?
+
+## Note on Group Order
+
+
+Solution:
+
+  >Set the `first` argument to "male".
+  
+```{r eval=FALSE}
+ttestGC(fastest~sex,data=m111survey,
+        mu=0,alternative="two.sided",
+        first="male",graph=TRUE)
+```
+
+```
+  group  mean    sd  n
+   male 113.5 22.57 31
+ female 100.0 17.61 40
+```
+
+## Another Example:  CPS85
+
+Research Question:
+
+>*Among non-white workers in 1985, who was earning higher wages, on average:  males or females?*
+
+Define:
+
+* $\mu_1 =$ mean wage for all non-white males in 1985
+* $\mu_2 =$ mean wage for all non-white females in 1985
+
+## Code
+
+```{r eval = FALSE}
+cnw <- subset(CPS85, race == "NW")
+ttestGC(wage ~ sex, data = cnw,
+        mu = 0, first = "M")
+```
+
+```{r echo = FALSE}
+cnw <- subset(CPS85, race == "NW")
+```
+
+## Descriptive Results
+
+```
+group  mean    sd  n
+    F 7.494 4.412 28
+    M 8.463 3.828 39
+```
+
+Better look at the samples:
+
+```{r eval = FALSE}
+bwplot(wage ~ sex, data = cnw)
+```
+
+## The Samples
+
+```{r echo = FALSE}
+bwplot(wage ~ sex, data = cnw)
+```
+
+Hmm, probably OK.
+
+## Results
+
+```
+95% Confidence Interval for mu1-mu2:
+
+          lower.bound         upper.bound          
+          -1.106605           3.044700             
+
+Test of Significance:
+
+	H_0:  mu1-mu2 = 0 
+	H_a:  mu1-mu2 != 0 
+
+	Test Statistic:		t = 0.9364 
+	Degrees of Freedom:	  53.06 
+	P-value:		P = 0.3533
+```
+
+
+
+## The Basic Argument (Small P-value)
+
+
+1. Suppose the null is correct.
+2. Then getting a test statistic as big as the one we got is very unlikely.
+3. Therefore, it's not reasonable to believe the Null.
+
+
+## The Basic Argument (Large P-Value)
+
+What if the $P$-value is not very small?
+
+1. Suppose the null is correct.
+2. Then getting a test statistic as big as the one we got is not unlikely.
+3. Therefore ... ??
+
+* No definite conclusion can be drawn
+* We don't have strong evidence against $H_0$
+* But we don't have evidence *for* it, either.
+
+## Remember
+
+The Null Hypothesis claims the parameter is a *specific value*, for example
+
+  >$H_0: \mu = 100$
+  
+* A low $P$-value provides evidence *against* $H_0$
+    * but does not absolutely prove it is false
+* A high $P$-value does NOT provide evidence *for* $H_0$
+    * and it certainly does not prove that it is true!
+
+
+# Mean of Differences
+
+
+## The Labels Experiment
+
+
+```{r eval=FALSE}
+data(labels)
+View(labels)
+help(labels)
+```
+
+Research Question:
+
+* *Will people rate peanut butter more highly, on average, if it comes with a Jiff jar than if it comes in a Great Value jar?*
+  
+## Parameter and Hypotheses
+
+
+Let
+
+* $\mu_d =$ mean difference in rating (Jiff minus Great Value) for all Georgetown College students
+  
+The hypotheses are:
+
+* $H_0:  \mu_d = 0$
+  
+* $H_a:  \mu_d \neq 0$
+  
+## The Code
+
+
+```{r eval=FALSE}
+ttestGC(~jiffrating-greatvaluerating,
+      data=labels, mu=0)
+```
+
+
+## "Safety" Considerations
+
+
+1. We hope that the 30 subjects were like a simple random sample from the population.
+2. Sample size $n$ is 30.  Let's go ahead and check the sample for:
+    * signs of strong skewness
+    * extreme outliers
+    
+## Making a Histogram
+
+
+```{r}
+diff <- labels$jiffrating - labels$greatvaluerating
+favstats(diff)
+```
+
+
+```{r eval=FALSE}
+histogram(~diff,
+  xlab="difference in ratings (jiff - gv)",
+  main="Jiff vs. Great Value",
+  type="count",
+  breaks=seq(from=-5.5,to=8.5,by=1))
+```
+
+---
+
+```{r echo=FALSE}
+histogram(~diff,xlab="difference in ratings (jiff - gv",
+    main="Jiff vs. Great Value",
+    type="count",
+    breaks=seq(from=-5.5,to=8.5,by=1))
+```
+
+## Judgement
+
+
+* integer values (not continuous)
+* some left-skewness
+* maybe an outlier or two at smaller values
+
+
+These could be a problem at smaller sample sizes, but probably OK here.
+
+## Estimate and SE
+
+
+```
+Estimate of mu-d:   2.367 
+SE(d.bar):	 0.513
+```
+
+* $H_0$ expects $\bar{d}$ to be about 0, give or take some for chance error
+* We actually got $\bar{d}=2.367$.
+* This is more than 4 SEs above what $H_0$ expected.
+* Looks bad for $H_0$.
+
+
+## The Confidence Interval
+
+
+95%-confidence interval for $\mu_d$ is:
+
+```
+lower         upper          
+1.317442      3.415892 
+```
+
+* Note that 0 (the Null's belief about $\mu_d$) is outside the interval
+* Again:  looking bad for $H_0$!
+
+## The Test Statistic
+
+
+```
+Test Statistic:		t = 4.613
+```
+
+$$t=\frac{\bar{d}-0}{SE(\bar{d})}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+* "$z$-score style" (again!)
+* says how many SEs $\bar{d}$ is above or below what $H_0$ expected it to be!
+
+## The Test Statistic
+
+
+```
+Test Statistic:  	t = 4.613
+```
+
+$$t=\frac{\bar{d}-0}{SE(\bar{d})}=\frac{2.387-0}{0.513}=4.613$$
+
+* The sample mean of differences was 4.613 standard errors above what $H_0$ was expecting it to be!
+
+
+## The P-Value
+
+
+```
+Degrees of Freedom:    29 
+P-value:		P = 7.421e-05
+```
+
+* $t$ is a random variable
+* if $H_0$ is true, then $t \approx t(29)$
+
+$$\textbf{P-value}\\
+=P(t \leq -4.613 \text{ or } t \geq 4.613\vert H_0 \text{ is true}) \\
+\approx 7.42 \times 10^{-5}$$
+
+## Interpretation of P-Value
+
+
+Quick Math Review:
+
+* $10^{-5}=1/10^5$
+* $10^5 = 100,000$
+* So $10^{-5}=1/100,000$, which is "one in 100,000"
+* So $7.42 \times 10^{-5}$ is about 7 in 100,000
+
+So we can say:
+
+* If labels make no difference, then there is only about a 7 in 100,000 chance of getting a test statistic that is at least as far from 0 as the one we actually got!
+  
+This looks really bad for $H_0$.
+
+## Decision and Conclusion
+
+
+$P < 0.05$, so we will reject $H_0$.
+
+This data provided strong evidence that, for GC students, jar-labels affect perception of the quality of peanut butter.
+
+## Want Less Output?
+
+
+Sometimes you don't want quite so much output to the console.  To limit output:
+
+  >set argument `verbose` to `FALSE`.
+  
+```{r eval=FALSE}
+ttestGC(fastest~sex,data=m111survey,
+        mu=0,alternative="two.sided",
+        verbose=FALSE)
+```
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+require(abd); data(SpiderSpeed)
+View(SpiderSpeed)
+help(SpiderSpeed)
+```
+
+Does losing a pedipalp affect the sprinting speed of a Tidarren spider?
+
+Let $\mu_d$ be the mean difference in speed (after amputation minus before) for all Tidarren spiders.
+
+* $H_0:  \mu_d = 0$
+* $H_a:  \mu_d \neq 0$
+
+Perform the test of significance.

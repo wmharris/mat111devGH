@@ -1,0 +1,325 @@
+---
+title: "DAR Ch.3 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(mosaicData)
+require(tigerstats)
+```
+
+# Plagiarism Issues
+
+## Bear in Mind:
+
+Last week when going over DARCh2 I warned you not to copy the words in the example document; you should use your own words instead.
+
+You should leave the Intro untouched (see video for that advice), but you must use your own words in other sections.
+
+This time around, I deducted !0% for plagiarism.  **Next time the deduction will be much, much greater!**
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods!
+
+Two variables involved:
+
+* **biggerfoot** (a factor variable)
+* **domhand** (a numerical variable)
+
+You could take either variable as the explanatory one.  Let's pick **biggerfoot**.
+
+Two factor variables leads to:
+
+* `barchartGC()` for graphs
+* `xtabs()`, `rowPerc()` for numerical summaries
+*  `chisqtestGC()` for inference
+
+# Numerical Descriptive Results
+
+## Tables A
+
+```{r}
+footHand <- xtabs(~biggerfoot+domhand,data=KidsFeet)
+footHand
+```
+
+Then row percents:
+
+```{r}
+rowPerc(footHand)
+```
+
+## Follow Directions!!
+
+From the directions:
+
+"Use your numerical results to describe the pattern (if any) that you find in your data.  Your discussion should focus on using the data to address the Research Question."
+
+## Address the Research Question
+
+```{r echo=FALSE}
+rowPerc(footHand)
+```
+
+One way to address the Research Question:
+
+"The kids whose right foot was bigger were about four times more likely to be left-handed than were the kids whose left foot was bigger (35.29% vs. 9.09%).""
+
+
+## Now With Variable Names
+
+In last week's `tigerstats`, you had to tell the reader:
+
+* rows say which foot is bigger
+* columns say which hand is dominant
+
+Now you've got the labels.
+
+## Tables B
+
+Some people learned about `mosaic`'s `tally()` function:
+
+```{r}
+tally(domhand~biggerfoot,data=KidsFeet,format="count")
+```
+
+
+```{r}
+tally(domhand~biggerfoot,data=KidsFeet,format="percent")
+```
+
+Not bad, once you get used to the different way the formula works.
+
+# Graphical Descriptive Results
+
+## Barchart A
+
+Some folks chose to make bar charts as in the in-class slides:
+
+```{r eval=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger")
+```
+
+## The Graph
+
+```{r echo=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger")
+```
+
+Then you must explain things to the reader!
+
+## Barchart B
+
+Others used the new arguments for `barchartGC()`:
+
+```{r eval=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!")
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!")
+```
+
+## Barchart C
+
+Percentage bar charts are fine, too:
+
+```{r eval=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+barchartGC(~biggerfoot+domhand,data=KidsFeet,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+
+## Barchart D
+
+Some people realized you could put a two-way table into `barchartGC()`:
+
+```{r eval=FALSE}
+footHand <- xtabs(~biggerfoot+domhand,data=KidsFeet)
+barchartGC(footHand,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+## The Graph
+
+```{r echo=FALSE}
+footHand <- xtabs(~biggerfoot+domhand,data=KidsFeet)
+barchartGC(footHand,
+           main="Dominant Hand, by Which Foot is Bigger",
+           xlab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+
+## Barchart E
+
+Some people made a "flat" bar chart:
+
+```{r eval=FALSE}
+barchartGC(footHand,
+           flat=TRUE,
+           main="Dominant Hand, by Which Foot is Bigger",
+           ylab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+## The Graph
+
+```{r echo=FALSE}
+barchartGC(footHand,
+           flat=TRUE,
+           main="Dominant Hand, by Which Foot is Bigger",
+           ylab="Which foot is bigger",
+           sub="Bar colors indicate which hand is dominant!",
+           type="percent")
+```
+
+This looks just like a table of row percents!
+
+## Whatever You Do ...
+
+Address the Research Question when you discuss the graph!
+
+From the directions:
+
+"Use your graphical results to describe the pattern (if any) that you find in your data.  Your discussion should focus on using the graph to address the Research Question."
+
+
+# Inference
+
+## What Does a Test of Significance Do?
+
+* You see a pattern in your data.
+* But the data are a product of chance (in the random sampling process, for instance)
+
+So you wonder:
+
+* Does your data provide strong evidence for a patter in the population?
+* Or is it reasonable to believe that the pattern in your data was due just to chance?
+
+The chi-square test helps you answer this question!
+
+## State Your Hypotheses!
+
+$H_0: $ In the population of all fourth grade kids, there is no relationship between which foot is bigger and which hand is dominant.
+
+
+$H_a: $ In the population of all fourth grade kids, there IS a relationship between which foot is bigger and which hand is dominant.
+
+
+## Chi-Square Test Code
+
+Some people tried the regular chi-square test:
+
+```{r eval=FALSE}
+chisqtestGC(footHand)
+```
+
+Problem!  Expected cell counts are low:
+
+```
+Counts Expected by Null:
+          domhand
+biggerfoot    L     R
+         L 4.51 17.49
+         R 3.49 13.51
+
+Warning message:
+In chisqtestGC(footHand) : Some expected cell counts are low:
+  the approximation of the P-value may be unreliable.
+	Consider using simulation.
+```
+
+## Simulation A
+
+You can always just set `simulate.p.value` to `TRUE`:
+
+```{r eval=FALSE}
+set.seed(3030)
+chisqtestGC(footHand,
+            simulate.p.value=TRUE,
+            B=10000)
+```
+
+Don't forget to set your seed!
+
+## Simulation B
+
+Since the kids are a random sample from the population of all kids, we could instead use:
+
+```{r eval=FALSE}
+set.seed(3030)
+chisqtestGC(~biggerfoot+domhand,data=KidsFeet,
+            simulate.p.value="random",
+            B=10000,
+            graph=TRUE)
+```
+
+## Discuss Results!
+
+From the directions:
+
+"State hypotheses clearly.  Make sure that your discussion of the inferential test addresses all of the important features of the output such as test statistic, P-value, etc.  Make a decision about the Null Hypothesis.  Be sure to choose a routine that produces a P-value approximation on which you can rely."
+
+## Outline of a Good Discussion
+
+* The chi-square statistic was 4.0383.
+* If the Null is correct, it should be about 1, give or take some for chance error in process of sampling kids for the study.
+* The P-value is about 0.0434. 
+* This means that if the Null is correct, then there was only a 4.34% chance of getting a chi-square statistic at least as big as the one we got.
+* The P-value is less than 0.05, so we'll reject the Null.
+* This study provided strong evidence (barely) for a relationship in the population between the two variables.
+
+Note that all "steps" in a test of significance are addressed, including the conclusion.
+
+## Interesting ...
+
+P-value a bit lower with `simulate.p.value="random"` than with `simulate.p.value=TRUE`.
+
+If you used `simulate.p.value=TRUE`, then you probably got a P-value a bit over 0.05, so you would not have rejected $H_0$.  Then your conclusion would have been a bit different:
+
+"This study did not quite provide strong evidence for a relationship in the population between the two variables. Maybe we should do the study again, with a bigger sample.""
+

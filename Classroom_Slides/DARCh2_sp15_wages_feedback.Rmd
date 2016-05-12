@@ -1,0 +1,197 @@
+---
+title: "DAR Ch.2 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods section! (See example document.)
+
+For each question, two variables are involved, for example:
+
+* **race** (a factor variable, explanatory)
+* **wages** (a numerical variable, response)
+
+This leads to:
+
+* density plots, or
+* histograms, or
+* box plots
+* and `favstats()` (for numerical summaries)
+
+# Results
+
+## union and Wage:  Graphs
+
+Some folks chose density plots, as in class slides:
+
+```{r eval=FALSE}
+densityplot(~wage|union,data=CPS85,
+            main="Hourly Wage, by Union Status",
+            xlab="wage (dollars per hour)",
+            layout=c(1,2))
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+densityplot(~wage|union,data=CPS85,
+            main="Hourly Wage, by Union Status",
+            xlab="wage (dollars per hour)",
+            layout=c(1,2))
+```
+
+## Density Plots B
+
+Some folks "grouped", as taught in website slides and Course Notes:
+
+```{r eval=FALSE}
+densityplot(~wage,data=CPS85,
+            groups=union,
+            main="Hourly Wage, by Union Status",
+            xlab="wage (dollars per hour)",
+            auto.key=TRUE)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~wage,data=CPS85,
+            groups=union,
+            main="Hourly Wage, by Union Status",
+            xlab="wage (dollars per hour)",
+            auto.key=TRUE)
+```
+
+
+
+## Histograms
+
+You've been leanring about histograms in Course Notes and Online Quizzes.  Some folks used them:
+
+
+```{r eval=FALSE}
+histogram(~wage|union,data=CPS85,
+      main="Hourly Wage, by Union Status",
+      xlab="wage (dollars per hour)",
+      layout=c(1,2), width=2
+      )
+```
+
+## The Graph
+
+```{r echo=FALSE}
+histogram(~wage|union,data=CPS85,
+      main="Hourly Wage, by Union Status",
+      xlab="wage (dollars per hour)",
+      layout=c(1,2), width=2,
+      )
+```
+
+## Union and Wage:  Numerical
+
+```{r}
+favstats(wage~union,data=CPS85)
+```
+
+Unionized workers earn more on average (10.80/hr, as compared to 8.64/hr for non-unionized workers).
+
+
+## (Option) Sex and Wage
+
+```{r}
+favstats(wage~sex,data=CPS85)
+```
+
+## (Another Option) Sector and Wage
+
+```{r}
+favstats(wage~sector,data=CPS85)
+```
+
+## Graphs for Sector and Wage
+
+```{r echo=FALSE}
+bwplot(wage~sector,data=CPS85,
+       main="Hourly Wage, by Sector",
+       ylab="wage (dollars per hour)",
+       xlab="sector of employment"
+       )
+```
+
+But when you knit the labels may get jammed together!
+
+## Solution 1
+
+You could use histograms or density plot, e.g.:
+
+```{r eval=FALSE}
+densityplot(~wage|sector,data=CPS85,
+            main="Hourly Wage, by Sector",
+            xlab="wage (dollars per hour)",
+            layout=c(1,8))
+```
+
+## Graph
+
+```{r echo=FALSE}
+densityplot(~wage|sector,data=CPS85,
+            main="Hourly Wage, by Sector",
+            xlab="wage (dollars per hour)",
+            layout=c(1,8))
+```
+
+## Solution 2 (nice trick)
+
+You can flip the bwplot:
+
+```{r eval=FALSE}
+bwplot(sector~wage,data=CPS85,
+       main="Hourly Wage, by Sector",
+       xlab="wage (dollars per hour)",
+       ylab="sector of employment"
+       )
+```
+
+## The Graph
+
+```{r echo=FALSE}
+bwplot(sector~wage,data=CPS85,
+       main="Hourly Wage, by Sector",
+       xlab="wage (dollars per hour)",
+       ylab="sector of employment"
+       )
+```
+
+# Discussion/Conclusion
+
+------
+
+The strongest relationships were:
+
+* between wages and union status (mean 10.80 vs. 8.44)
+* between wages and sex (mean 9.99 vs. 7.88)
+
+Some differences in wages among sectors were also impressive!
+
+
+
+
+

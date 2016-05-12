@@ -1,0 +1,321 @@
+---
+title: "Basic Probability: Pt.2"
+author: "Homer White"
+date: "September, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# Binomial Random Variables
+
+## The Binomial "Situation"
+
+Suppose that:
+
+* You perform a specific number $n$ of trials.
+
+* Each trial has two outcomes: *success* or *failure*.
+
+* The chance of success $p$ is the same on each trial.
+
+* The outcome of one trial does not affect the outcome of any other trial.  (The trials are "independent" of each other.)
+
+## Binomial Random Variable
+
+Let $X =$ the number of successes in the $n$ trials.
+
+$X$ is called a **binomial** random variable.
+
+Sometimes for short we write:
+
+$$X \sim binom(n,p).$$
+
+## Example
+
+$X=$ number of heads in three flips of a fair coin.
+
+This is a binomial random variable.  Why?
+
+* Each flip is a "trial".  ($n=3$)
+
+* Two outcomes for each trials:
+    * *success* = Heads, 
+    * *failure* = Tails
+
+* Probability of a *success* = $p=0.5$ is the same for each flip. 
+
+* The outcomes of the flips don't affect each other (independence).
+
+## Another Example
+
+* You can make 70% of the free-throw shots you attempt.
+* Your shots don't affect each other.
+* You go to the line and take 20 shots.
+
+Let $Y =$ the number of shots you make.
+
+$$Y \sim binom(20,0.7).$$
+
+## Another Example
+
+Buzz the dolphin chooses a button to push, possibly with help from Doris.
+
+* He does it 16 times.
+* Each time he either chooses the correct button, or the wrong one.
+* Each time his chance of getting it right is $p$.
+* His tries don't affect each other.
+
+Let $Z =$ the number of times he pushes the correct button.
+
+$$Z \sim binom(16,p).$$
+
+## A Mystery
+
+What is $p$?
+
+* If Buzz is just guessing randomly, then $p=0.5$.
+* If he can communicate with Doris to some extent, then $p > 0.5$.
+
+## A Non-Example
+
+* Kindergarten class has 20 children.
+* Each child either will or will not get the flu this winter.
+* 10% of all kindergarten children get the flu.
+
+Let $Z$= number of children in the class who get the flu this winter.
+
+## Analysis
+
+* Each child is a "trial":  $n=20$
+* *success*=Flu, *failure* = No Flu
+* Probability of a *success* is 0.10.
+
+But ...
+
+... the children are not *independent*.  If one child in the class gets the flu, others become more likely to get it.
+
+## Practice { .practice }
+
+* You choose twenty people at random.
+* They are not related to each other.
+* You ask each person how many brothers he/she has.
+
+Let $X=$ the total number of brothers reported.
+
+Is $X$ binomial?  If so, what is $n$ and what is $p$?
+
+## Practice { .practice }
+
+* You sample 71 people at random from a large population.
+* You record the sex of each person (male/female).
+* 55% of the population is female
+
+Let $X=$ the total number of females in the sample.
+
+Is $X$ binomial?  If so, what is $n$ and what is $p$?
+
+# Binomial Probabilities
+
+## Taking a Test
+
+* You have a multiple choice test with 20 questions.
+* Each questions has four choices, but only one is correct.
+* You guess on each question.
+* To pass, you must get at least 8 questions correct.
+* What is the chance that you fail?
+
+## Analysis
+
+If you guess, you have a 25% chance of getting the question right.
+
+Let $X=$ number of questions correct.
+
+Then $X \sim binom(20,0.25)$.
+
+We are looking for:
+
+$$P(X \leq 7)$$.
+
+## Solution
+
+Use `pbinomGC()`:
+
+```{r eval=FALSE}
+pbinomGC(7,size=20,prob=0.25,graph=TRUE)
+```
+
+## Result
+
+```{r echo=FALSE}
+pbinomGC(7,size=20,prob=0.25,
+         region="below",
+         graph=TRUE)
+```
+
+## Another Example
+
+* Suppose Buzz is just a guesser (no communication with Doris).
+
+* What's the chance that he pushes the correct button 15 or more times out of 16 tries?
+
+## Analysis
+
+Let $Z =$ number he gets correct.
+
+We see that $Z \sim binom(16,0.5).$
+
+We want:
+
+$$P(X \geq 15).$$
+
+## Solution
+
+```{r eval=FALSE}
+pbinomGC(14,size=16,prob=0.5,
+         region="above",
+         graph=TRUE)
+```
+
+We do this because $X > 14$ means the same thing as $X \geq 15$.
+
+## Result
+
+```{r echo=FALSE}
+pbinomGC(14,size=16,prob=0.5,
+         region="above",
+         graph=TRUE)
+```
+
+## Example
+
+* You toss a fair coin 100 times.
+* What is the chance of getting between 45 and 55 heads (including the 45 and the 55)?
+
+Let $X=$ the number of heads.  We want $P(45 \leq X \leq 55)$.
+
+```{r eval=FALSE}
+pbinomGC(c(45,55),size=100,prob=0.5,
+         region="between",
+         graph=TRUE)
+```
+
+## Result
+
+```{r echo=FALSE}
+pbinomGC(c(45,55),size=100,prob=0.5,
+         region="between",
+         graph=TRUE)
+```
+
+## Practice { .practice }
+
+If Buzz can get it right only 70% of the time when Doris helps, then what is the chance that he gets it right 15 or more times out of 16 tries?
+
+If you flip a fair coin 100 times, what is the chance of getting:
+
+* no more than 45 heads?
+* less than 47 heads?
+* between 40 and 60 heads?
+* exactly 50 heads?
+
+# EV and SD for Binomials
+
+## Expected Value and SD
+
+If $X \sim binom(n,p)$, then
+
+$$EV(X) = np,$$
+
+and
+
+$$SD(X) = \sqrt{np(1-p)}.$$
+
+## Example
+
+You flip a fair coin 100 times.
+
+* $EV(X) = np = 100 \times 0.5 = 50.$
+
+* $SD(X) = \sqrt{np(1-p)}=\sqrt{100(0.5)(1-0.5)}=5.$
+
+So when flip a fair coin 100 times, you can expect to get around 50 heads, give or take 5 or so for chance variation!
+
+## Practice { .practice }
+
+You are a 70% free-throw shooter.  You shoot 20 baskets.
+
+* How many can you expect to hit?
+* Give or take about how many?
+
+# Shapes of Binomials
+
+## An App
+
+Explore this app:
+
+```{r eval=FALSE}
+require(manipulate)
+BinomNorm()
+```
+
+## Observations
+
+* No matter what $p$ is, as $n$ gets larger the distribution gets more "bell-shaped".
+
+Many people think that it looks quite bell-shaped as long as:
+
+* $np \geq 10,$ and 
+* $n(1-p) \geq 10.$
+
+
+## The 68-95 Rule for Binomials
+
+Let $X$ be a binomial random variable.
+
+If the distribution of $X$ looks roughly bell-shaped, then:
+
+* there is about a 68% chance that $X$ will be within one SD of its EV.
+* there is about a 95% chance that $X$ will be within two SDs of its EV.
+* there is about a 99.7% chance that $X$ will be within three SDs of its EV.
+
+## Example
+
+You flip a fair coin 400 times.  Let $X=$ the number of heads you get.
+
+* $EV(X) = np = 400 \times 0.5 = 200.$
+* $SD(X) = \sqrt{400(0.5)(1-0.5)} = 10.$
+
+* There is about a 68% chance that you will get between 190 and 210 heads.
+* There is about a 95% chance that you will get between 180 and 220 heads.
+
+## Practice { .practice }
+
+When you flip the fair coin 400 times:
+
+* About what is the chance that you will get fewer than 190 heads?
+* More than 220 heads?
+
+Use the 68-95 rule to answer these questions, and then compare your answers to the exact probabilities:
+
+```{r eval=FALSE}
+pbinomGC(189,size=400,prob=0.5,
+         region="below",graph=TRUE)
+```
+
+```{r eval=FALSE}
+pbinomGC(220,size=400,prob=0.5,
+         region="above",graph=TRUE)
+```
+
+

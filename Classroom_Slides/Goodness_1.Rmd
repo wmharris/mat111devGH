@@ -1,0 +1,72 @@
+---
+title: "Goodness of Fit: Pt.1"
+author: "Homer White"
+date: "November, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+require(abd)
+```
+
+# The Wild, Wild West
+
+## The Wild, Wild West
+
+You are the Sheriff of a small town in the Wild, Wild West.
+
+<img src="sheriff_disney_co_uk.jpg" style="width:400px;height:300px"/>
+
+## The Gambler
+
+<img src="dice_www_nj_com.jpg" style="width:250px;height:400px"/>
+
+A Gambler comes to town.  He claims to play with fair dice, but the locals in the saloon are grumbling that he wins too often.  They think his dice are "weighted."
+
+## Investigate!
+
+* You impound one of the Gambler's dice.
+
+* You are about to crack it open, to see if it's weighted.
+
+* The Gambler says it's his "lucky" die, and begs you not to harm it.
+
+* So you roll it sixty times instead.
+
+##  Your Results
+
+In 60 rolls, you get:
+
+Spots|Observed Count
+---|---
+One|8
+Two|18
+Three|11
+Four|7
+Five|9
+Six|7
+
+## Discussion Time!
+
+* If the die were fair, what would you expect to see (give or take some for chance variation in the rolling of the die, of course)?
+
+* How does what you expect compare with what you observed?
+
+* Any suggestions about how we might determine how much evidence these 60 rolls provide against the Gambler's claim that the die is fair?
+
+## Implement
+
+OK, try your method.  what do you think about the Gambler?  Should you let the locals ride him out of town on a rail?
+
+<img src="Huck_Finn_Travelling_by_Rail_wikipedia.jpg" style="width:500px;height:400px"/>
+

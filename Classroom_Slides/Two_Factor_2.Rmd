@@ -1,0 +1,361 @@
+---
+title: "Two Factor Variables: Pt.2"
+author: "Homer White"
+date: "Saturday, August 30, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+
+# The Chi-Square Test
+
+## Inferential Procedure
+
+Suppose we are studying the relationship between two factor variables.
+
+We might find a relationship in our sample.
+
+**Inferetial Question**:  Did it happen by chance, or do we have good evidence that there is a relationship in the population?
+
+## Chi-Square Test
+
+We can answer that question using the *chi-square test*.
+
+There are "steps" in our reasoning process.
+
+## Step One:  State Hypotheses
+
+(Say we are studying sex and seating preference at GC.)
+
+Null Hypothesis:
+
+$H_0:$  Sex and seating preference are not related in the GC population.
+
+Alternative Hypothesis:
+
+$H_a:$  Sex and seating preference ARE related in the GC population.
+
+## Step Two:  The Code
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,data=m111survey,graph=TRUE)
+```
+
+Give it a try!
+
+##  Some Output
+
+The two-way table comes "for free":
+
+```
+Observed Counts:
+        seat
+sex      1_front 2_middle 3_back
+  female      19       16      5
+  male         8       16      7
+```
+  
+## More Output
+
+Expected counts also come "for free":
+
+```
+Counts Expected by Null:
+        seat
+sex      1_front 2_middle 3_back
+  female   15.21    18.03   6.76
+  male     11.79    13.97   5.24
+```
+
+The more difference there is between the observed and the expected counts, the worse it looks for the Null hypothesis!
+
+## More Output
+
+```
+Contributions to the chi-square statistic:
+        seat
+sex      1_front 2_middle 3_back
+  female    0.94     0.23   0.46
+  male      1.22     0.29   0.59
+
+Chi-Square Statistic = 3.734 
+```
+
+The "contributions" add up to the chi-square statistic.  The bigger it is, the more the observed results differ from what the Null expected to see!
+
+## More Output
+
+```
+Degrees of Freedom of the table = 2 
+```
+
+If the Null is correct, then the chi-square statistic should work out to around 2, give or take some for chance error.
+
+## Step Three
+
+In Step Three of our reasoning, we report the test statistic and the P-value:
+
+The test statistic was 3.734.
+
+The machine says that the P-value is 0.1546.
+
+## About the P-Value
+
+* It's based on a mathematical approximation method.
+* Before we could make computers do simulations, it's all people had to go by!
+
+**Interpretation** (always try to say this): "If sex and seating preference are not related, then there is about a 15.46% chance of getting a chi-square statistic at least as big as the one we got in our study."
+
+## Graph of the P-value
+
+```{r echo=FALSE}
+invisible(pchisqGC(3.734,region="above",df=2,graph=T))
+```
+
+The curve approximates what you would get using simulation.
+
+## Step Four:  Decision
+
+Since the P-value is fairly large, we won't reject the Null Hypothesis.
+
+People often use 0.05 as a "cut-off" value:
+
+* if $P < 0.05$, they reject $H_0$
+* If $P \ge 0.05$, they don't reject $H_0$ (though they might be suspicious about it).
+
+## Step Five:  Conclusion
+
+We say how much evidence the study provided for $H_a$:
+
+"This study did not provide very strong evidence that sex and seating preference are related in the GC population."
+
+# More Examples
+
+## Love at First sight
+
+Research Question:
+
+>*In the GC population, do the two sexes differ in their beliefs about love at first sight?*
+
+Null Hypothesis:
+
+$H_0:$  Sex and belief in love at first sight are not related in the GC population.
+
+Alternative Hypothesis:
+
+$H_a:$  These two variables ARE related in the GC population.
+
+## Practice { .practice }
+
+Try it out yourself:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+love_first,data=m111survey,
+            graph=TRUE)
+```
+
+What's the test statistic?
+
+About how big should it be if the Null is correct?
+
+What's the P-value?
+
+Do you think we have strong evidence for a relationship in the population, or could the pattern in the data be due just to chance?
+
+## Race and Guns
+
+The General Social Survey, from the year 2002:
+
+```{r eval=FALSE}
+data(gss02)
+View(gss02)
+help(gss02)
+```
+
+Research Question:
+
+>*In the U.S. population, do the races differ in how likely they are to own a gun?*
+
+Variable analysis:
+
+* **race** (factor, explanatory)
+* **owngun** (factor, response)
+
+## Look at the data
+
+```{r}
+raceGun <- xtabs(~race+owngun,data=gss02); raceGun
+rowPerc(raceGun)
+```
+
+
+## Hypotheses
+
+Null Hypothesis:
+
+$H_0:$  Race and gun ownership are not related in the US population.
+
+Alternative Hypothesis:
+
+$H_a:$  Race and gun ownership ARE related in the US population.
+
+## Practice { .practice }
+
+Try it yourself!  run the code needed for a chi-square test.
+
+What's the test statistic?
+
+About how big should it be if the Null is correct?
+
+What's the P-value?
+
+Do you think we have strong evidence for a relationship in the population, or could the pattern in the data be due just to chance?
+
+# Simulation
+
+## Ledge-Jumping
+
+A study (Great Britain, 1970's) of people who threatened to commit suicide by leaping off of a high structure.  Usually a crowd would gather to watch.
+
+```{r eval=FALSE}
+data(ledgejump)
+View(ledgejump)
+help(ledgejump)
+```
+
+Research Question:  *Is there a relationship between the weather and the behavior of the crowd?*
+
+## Descriptive Work
+
+```{r}
+weBe <- xtabs(~weather+crowd.behavior,data=ledgejump)
+weBe
+```
+
+
+```{r}
+rowPerc(weBe)
+```
+
+Looks like the crowd baited more often in warm weather!
+
+## Inferential Question
+
+But is this due to a relationship between weather and crowd behavior?
+
+Or could it be due just to chance variation in all of the other factors that affect crowd behavior?
+
+## Hypotheses
+
+Null Hypothesis:
+
+$H_0:$  Weather and crowd behavior are not related.
+
+Alternative Hypothesis:
+
+$H_a:$  Weather and crowd behavior ARE related.
+
+## The Code
+
+```{r eval=FALSE}
+chisqtestGC(~weather+crowd.behavior,data=ledgejump)
+```
+
+<br>
+
+Uh-oh! There is a **warning**!
+
+## The Problem
+
+If the expected cell counts are not big enough ... 
+
+... then the math approximation for the P-value may not be reliable!
+
+(each cell  > 5 is usually OK)
+
+## The Solution
+
+We can always fall back on simulation!
+
+```{r eval=FALSE}
+chisqtestGC(~weather+crowd.behavior,data=ledgejump,
+            simulate.p.value="fixed",
+            B=3000)
+```
+
+## Setting a Seed
+
+In data analysis reports, it's useful to get the same P-value whenever you perform the test.  You can accomplish this with the `set.seed()` function:
+
+```{r eval=FALSE}
+set.seed(2020)  #Just pick a number
+chisqtestGC(~weather+crowd.behavior,data=ledgejump,
+            simulate.p.value="fixed",
+            B=3000)
+```
+
+Run the code chunk several times.  Does the P-value change?
+
+
+## Practice { .practice }
+
+Try simulation on the sex and seating-preference study:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,data=m111survey,
+            simulate.p.value="random",
+            B=3000)
+```
+
+Compare the P-value to the P-value you got earlier, without using simulation:  are they about the same, or very different?
+
+
+# (Optional) Types of Simulation
+
+## "Random Sampling" Type
+
+Suppose your data came from a random sample you took from some larger population.  Then when you simulate, you might want to use the "random" option:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,data=m111survey,
+            simulate.p.value="random",
+            B=3000,graph=TRUE)
+```
+
+
+(Students were a random sample from the population.  In the re-sampling, the number of guys and gals in the re-sampling will NOT be fixed at 31 and 40.)
+
+## "Fixed" Type
+
+Sometimes the tally for the explanatory variable is fixed.  Then when you simulate, you might want to use the "fixed" option:
+
+```{r eval=FALSE}
+chisqtestGC(~weather+crowd.behavior,data=ledgejump,
+            simulate.p.value="fixed",
+            B=3000,graph=TRUE)
+```
+
+(The 21 incidents were not a random sample from a larger population.  There were 9 in cold weather and 12 in warm weather, and that's that.  Chance was at play only in how each incident "turned out".)
+
+## "Double-fixed" Type
+
+In this type of random simulation, the tallies are fixed for both the explanatory and response variables.
+
+`simulate.p.value=TRUE` gives you this type of re-sampling.
+
+This type of simulation is ideal for randomized experiment (see Chapter 6).
+
+But you can use it when you aren't sure what type of simulation to do.
+

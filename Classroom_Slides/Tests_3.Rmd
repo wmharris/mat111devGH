@@ -1,0 +1,442 @@
+---
+title: "Tests of Significance: Pt.3"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# One Proportion
+
+## Research Question
+
+
+Are a majority of Georgetown College Students female?
+  
+We'll investigate this question inferentially with the `m111survey` data.
+
+## Parameter and Hypotheses
+
+
+Let
+
+* $p =$ proportion of all GC students who are female
+  
+Our hypotheses are:
+
+* $H_0: p=0.50$
+  
+* $H_a:  p > 0.50$ (one-sided, for variety!)
+  
+Note:  0.50 is $p_0$, the Null's belief about $p$.
+  
+## The Code
+
+
+```{r eval=FALSE}
+binomtestGC(~sex,data=m111survey,
+        success="female",
+        p=0.5,alternative="greater",
+        graph=TRUE)
+```
+
+Notes:
+
+* We set the argument `p` to $p_0$, the Null's belief about $p$.
+* `graph=TRUE` will give us a graph of the P-value
+
+## Some Results
+
+
+* $\hat{p}=40/71=0.5634$
+* $SE(\hat{p})=0.0589$
+* If Null is correct, number of successes $X \sim binom(71,0.5)$
+* No test statistic given!
+* (But you can think of the 40 successes as the test statistic)
+* $P$-value is $P(X \geq 40 \vert p=0.5)$
+
+## Graph of P-Value
+
+
+```{r echo=FALSE}
+pbinomGC(bound=39,region="above",size=71,prob=0.5,graph=TRUE)
+```
+
+## Rest of the Analysis
+
+
+* $P = 0.1712$
+* Interpretation of P-value:  "If only 50% of all GC students are female, then there is about a 17.12% chance of getting 40 or more females in a sample of 71, as we did in this study."
+* Our results are not so unlikely, if $H_0$ is true.
+* Since $P > 0.05$, we do not reject $H_0$.
+* This study did not provide strong evidence that a majority of GC students are female.
+
+
+## Another Example
+
+
+A random sample of 2500 registered voters shows that 1325 of them favor the Affordable Care Act.
+
+*Do a majority of all registered voters in the U.S. favor the Act?*
+  
+## Parameter and Hypotheses
+
+
+Let
+
+* $p =$ proportion of all registered voters in the U.S. who favor the Act
+  
+Our hypotheses are:
+
+* $H_0: p=0.50$
+  
+* $H_a:  p \neq 0.50$ (two-sided)
+  
+## The Code
+
+
+We have summary data.
+
+* argument `x` is set to the number of successes
+* argument `n` is set to the sample size
+
+```{r eval=FALSE}
+binomtestGC(x=1325,n=2500,p=0.50)
+```
+
+## The Results
+
+
+* We had 1325 voters approve of the Act (this is like a test statistic).
+* $\hat{p}=1325/2500=0.53$
+* $SE(\hat{p}) \approx 0.01$
+* Our results are about 3 SE's above what $H_0$ expected.
+* $P = 0.0029$
+* Since $P < 0.05$, we reject $H_0$.
+* We have strong evidence that a majority of registered voters in the U.S. favor the Act.
+
+## Practice { .practice }
+
+In the 2014 Major League season, Detroit Tiger Miguel Cabrera had a batting average of .313 on 611 at-bats.  Can we conclude from this data that in 2014 his chance of getting a hit was more than 30%?
+
+Define $p$ to be the probability that Cabrera gets a hit when he is at bat.
+
+* $H_0: p = 0.3$
+* $H_a: p \neq 0.3$
+
+Perform the two sided test with `binomtestGC()`, using the summary data:
+
+* What should you enter for `n`, the number of trials?
+* What should you enter for `x`, the number of successes
+* What should you enter for `p`?
+* Can you conclude that Cabrera's chance was better than 30%?
+
+# Tests for Two Proportions
+
+
+## Capital Punishment:  GSS 2002
+
+```{r eval=FALSE}
+data(gss02)
+View(gss02)
+help(gss02)
+```
+
+The variable **cappun** says whether or not the respondent favors the death penalty.
+
+## The Tally
+
+```{r}
+xtabs(~cappun,data=gss02)
+```
+
+899 out of 1308 (68.7%) approved of the death penalty.
+
+## Capital Punishment:  GSS 2012
+
+```{r eval=FALSE}
+data(gss2012)
+View(gss2012)
+help(gss2012)
+```
+
+```{r}
+xtabs(~cappun,data=gss2012)
+```
+
+1183 out of 1824 (64.8%) approved.
+
+## Research Question
+
+
+*In the U.S. population, did support for capital punishment decline between 2002 and 2012?*
+  
+**Notice**:  This is a question about the relationship between two factor variables:
+
+* Explanatory variable is the **year under study** (2002,2012).
+* Response variable is **opinion about capital punishment** (favor, oppose).
+* Both variables have two values,
+* so we are interested in $p_1-p_2$.
+  
+## Parameters and Hypotheses
+
+
+Let
+
+* $p_1$ = the proportion of all U.S. adults in 2002 who support capital punishment
+
+* $p_2$ = the proportion of all U.S. adults in 2012 who support capital punishment
+
+Then our hypotheses are:
+
+* $H_0$:  $p_1 - p_2 = 0$
+
+* $H_a$:  $p_1 - p_2 \neq 0$
+  
+## The Code
+
+
+We have summary data:
+
+|Year|$x$|$n$|
+|:---:|:----:|:----:|
+|year 2002|899|1308|
+|year 2012|1183|1824|
+
+<br>
+
+```{r eval=FALSE}
+proptestGC(x=c(899,1183),
+           n=c(1308,1824),
+           p=0,graph=TRUE)
+```
+
+## Estimator and SE
+
+
+```
+Estimate of p1-p2:   0.03873 
+SE(p1.hat - p2.hat):	 0.01701
+```
+* $H_0$ expected $\hat{p}_1-\hat{p}_2$ to be about 0
+* We actually got $\hat{p}_1-\hat{p}_2 = 0.03873$
+* This is a bit more than two SEs above what $H_0$ expected
+
+## Confidence Interval
+
+
+95%-confidence interval for $p_1-p_2$ is
+
+```
+lower       upper          
+0.005399    0.072069
+```
+
+Observe that 0 (Null's belief about  $p_1-p_2$) is below this interval.
+
+## Test Statistic
+
+
+```
+Test Statistic:    z = 2.277
+```
+
+$$z=\frac{\hat{p}_1-\hat{p}_2}{SE(\hat{p}_1-\hat{p}_2)}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+
+* "$z$-score style" (yet again!)
+* Tell you how many SEs $\hat{p}_1-\hat{p}_2$ is above or below what $H_0$ expected
+
+## P-value
+
+Statistical theory says that if $H_0$ is true then:
+
+$$z \approx norm(0,1)$$
+
+R uses this fact to approximate the P-Value.
+
+## P-Value
+
+
+```
+P-value:  P = 0.0228
+```
+
+Interpretation:  If support for the death penalty remained constant from 2002 to 2012, then there is only about a 2.28% chance of getting a test statistic at least as far from 0 as the one we actually got.
+
+## Graph of the P-Value
+
+```{r echo=FALSE}
+pnormGC(c(-2.277,2.277),region="outside",mean=0,sd=1,graph=TRUE)
+```
+
+  
+## Decision and Conclusion
+
+
+* Since $P < 0.05$, we will reject $H_0$.
+* The GSS data provided strong evidence that support for the death penalty declined a bit between 2002 and 2012.
+
+## Astrology and Political Preference
+
+* The [Chapman University Survey on American Fears](http://www.chapman.edu/wilkinson/research-centers/babbie-center/survey-american-fears.aspx) recently published results of a survey of 2500 U.S. Adults.
+
+* 14% of Democrats surveyed said that they believed in astrology
+
+* 8% of Republicans surveyed said that they believed in astrology
+
+## Guess at a Table
+
+Here is a guess at the numbers in the survey:
+
+|Party affiliation|believe in astrology|do not believe|
+|:---:|:----:|:----:|
+|Democratic|81|500|
+|Republican|36|412|
+
+<br>
+
+Do these results provide strong evidence that Democrats are more likely to believe in astrology than Republicans are?
+
+## Parameters and Hypotheses
+
+Define:
+
+* $p_1 =$ the proportion of all Democrats who believe in astrology
+
+* $p_2 =$ the proportion of all Republicans who believe in astrology
+
+Let's test:
+
+* $H_0$:  $p_1 - p_2 = 0$
+
+* $H_a$:  $p_1 - p_2 \neq 0$
+
+## Practice { .practice }
+
+|Party affiliation|believe in astrology|do not believe|
+|:---:|:----:|:----:|
+|Democratic|81|500|
+|Republican|36|412|
+
+<br>
+
+Use `proptestGC()` to perform the two-sided test, from the summary data:
+
+* What should you enter for `x`?
+* What should you enter for `n`?
+* What should you enter for `p`?
+* Can you conclude that Democrats are more likely than Republicans to believe in astrology?
+
+## Thought Question
+
+So there appears to be a relationship, in the U.S. population, between party affiliation and belief in astrology.
+
+* Does your party affliation affect what you believe about astrology?
+* Do you choose your party partly on the basis of your beliefs about astrology?
+* Or is there a confounding factor at work, here?
+
+## Love at First Sight
+
+
+* At Georgetown College, who is more likely to believe in love at first sight:  a female or a male?
+
+## Descriptive Work (From Sample)
+
+
+```{r}
+SexLove <- xtabs(~sex+love_first,data=m111survey)
+SexLove
+rowPerc(SexLove)
+```
+
+  
+## Inferential Work
+
+
+Let
+
+* $p_1$ = the proportion of all GC females who believe in love at first sight
+
+* $p_2$ = the proportion of all GC males who believe in love at first sight
+
+Then our hypotheses are:
+
+* $H_0$:  $p_1 - p_2 = 0$
+
+* $H_a$:  $p_1 - p_2 \neq 0$
+  
+## The Code
+
+
+```{r eval=F}
+proptestGC(~sex+love_first,data=m111survey,
+        success="yes",p=0,graph=TRUE)
+```
+
+Note same old formula for studying relationship between two factor variables:
+
+$$\sim Explanatory + Response$$
+
+## Descriptive Results
+
+
+```
+##        yes  n estimated.prop
+## female  18 40         0.4500
+## male     8 31         0.2581
+```
+
+Notice:
+
+* fewer than 10 successes for the males.
+* `proptestGC()` delivers a warning
+
+## What to Do?
+
+
+We are dealing with two factor variables, so could use:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+love_first,data=m111survey,
+        simulate.p.value="random",
+        B=3000,graph=TRUE)
+```
+
+* this gives us a test of significance
+* but (sadly) no confidence interval for $p_1-p_2$
+
+## Group Order in proptestGC()
+
+
+If you want to be sure that a certain group comes first, then use the argument `first`:
+
+For example:
+
+```{r eval=FALSE}
+proptestGC(~sex+extra_life,data=m111survey,
+        first="male",
+        success="yes",p=0)
+```
+
+## Want Less Output?
+
+
+Just set `verbose` to `FALSE`:
+
+```{r eval=FALSE}
+proptestGC(~sex+extra_life,data=m111survey,
+        first="male",
+        success="yes",p=0,
+        verbose=FALSE)
+```

@@ -1,0 +1,279 @@
+---
+title: "Describing Patterns 1"
+author: "Homer White"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+# One Factor Variable
+
+## Justin Verlander:  Pitcher
+
+```{r eval=FALSE}
+data(verlander)
+View(verlander)
+help(verlander)
+```
+
+## Research Question
+
+>*What types of pitches does Justin Verlander throw most often?*
+
+## Variable Analysis
+
+We are interested in the variable **pitch_type**.
+
+It's a factor variable.
+
+## Numerical Method:  xtabs()
+
+```{r}
+xtabs(~pitch_type,data=verlander)
+```
+
+## Numerical Method:  rowPerc()
+
+Useful to have a table of percentages, not just counts.
+
+```{r}
+rowPerc(xtabs(~pitch_type,data=verlander))
+```
+
+## Another Way
+
+Store table in an object, then can print or re-use the object:
+
+```{r}
+verPitch <- xtabs(~pitch_type,data=verlander)
+verPitch
+rowPerc(verPitch)
+```
+
+
+## Graphical Method:  barchartGC()
+
+```{r eval=FALSE}
+barchartGC(~pitch_type,data=verlander,
+           main="Justin Verlander's Pitches")
+```
+
+## The Result
+
+```{r echo=FALSE}
+barchartGC(~pitch_type,data=verlander,
+           main="Justin Verlander's Pitches")
+```
+
+
+## Percentage Bar Charts:
+
+```{r eval=FALSE}
+barchartGC(~pitch_type,data=verlander,
+           main="Justin Verlander's Pitches",
+           type="percent")
+```
+
+
+
+## The Result
+
+```{r echo=FALSE}
+barchartGC(~pitch_type,data=verlander,
+           main="Justin Verlander's Pitches",
+           type="percent")
+```
+
+He likes to throw fastballs!
+
+# Two Factor Variables
+
+## Research Question
+
+>*Does the type of pitch Verlander throws depend on the stance of the batter?*
+
+## Variable Analysis
+
+* **batter_hand**:  factor variable (left, right)
+
+* **pitch_type**:  factor variable
+
+Compare groups:
+
+* pitches thrown to left-hand batters
+* pitches thrown to right-hand batters
+
+## Numerical Methods
+
+We'll use `xtabs()` to make a two-way table, then look at row percentages:
+
+```{r}
+batPitch <- xtabs(~batter_hand+pitch_type,data=verlander)
+batPitch
+rowPerc(batPitch)
+```
+
+
+## Graphical Method:  Barcharts Again
+
+
+```{r eval=FALSE}
+barchartGC(~batter_hand+pitch_type,data=verlander,
+           main="Verlander's Pitches, by Batter Stance",
+           type="percent")
+```
+
+## The Result
+
+```{r echo=FALSE}
+barchartGC(~batter_hand+pitch_type,data=verlander,
+           main="Verlander's Pitches, by Batter Stance",
+           type="percent")
+```
+
+# One Numerical Variable
+
+
+## Math 111 Survey Data
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+## Research Question
+
+>*What is the typical fastest speed driven by GC students?*
+
+Variable Analysis:
+
+**fastest** is a numerical variable.
+
+No `xtabs()`, no `barchartGC()`!
+
+## Graphical Method:  Density Plot
+
+```{r eval=FALSE}
+densityplot(~fastest,data=m111survey,
+            main="Fastest Speeds at GC",
+            xlab="Fastest Speed Driven (mph)")
+```
+
+## The Result
+
+
+```{r echo=FALSE}
+densityplot(~fastest,data=m111survey,
+            main="Fastest Speeds at GC",
+            xlab="Fastest Speed Driven (mph)")
+```
+
+
+## Numerical Method:  favstats()
+
+```{r}
+favstats(~fastest,data=m111survey)
+```
+
+
+The typical student drives about 105.9 mph, give or take 20.9 mph or so.
+
+
+# One Factor and One Numerical Variable
+
+## Research Question
+
+>*Who drives faster, on average:  a GC guy or a GC gal?*
+
+Variable analysis:
+
+* **sex** is a factor variable (male, female)
+* **fastest** is numerical
+
+Compare groups:
+
+* speeds of the gals
+* speeds of the guys
+
+## Numerical Method:  favstats()
+
+```{r}
+favstats(fastest~sex,data=m111survey)
+```
+
+## Graphical Method:  bwplot()
+
+```{r eval=FALSE}
+bwplot(fastest~sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Sex",
+       ylab="Fastest Speed (mph)")
+```
+
+
+## The Results
+
+```{r echo=FALSE}
+bwplot(fastest~sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Sex",
+       ylab="Fastest Speed (mph)")
+```
+
+## Graphical Method:  Density Plots
+
+
+```{r eval=FALSE}
+densityplot(~fastest|sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Fastest Speed (mph)",
+       layout=c(1,2))
+```
+
+## The Result
+
+
+```{r echo=FALSE}
+densityplot(~fastest|sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Fastest Speed (mph)",
+       layout=c(1,2))
+```
+
+## Practice 1 { .practice }
+
+>**Research Question:**  *How does the speed of a Justin Verlander pitch depend on the type of pitch that it is?*
+
+Variable analysis:
+
+* **pitch_type**: factor or numerical?
+* **speed**:  factor or numerical?
+
+What numerical method will you use?
+
+What graphical method?
+
+## Practice 2 { .practice }
+
+>**Research Question:**  *Who is more likely to believe in love at first sight:  a GC guy or a GC gal?*
+
+Variable analysis:
+
+* **?**: factor or numerical?
+* **??**:  factor or numerical?
+
+What numerical method(s) will you use?
+
+What graphical method?

@@ -1,0 +1,771 @@
+---
+title: "Classification Trees"
+author: "Homer White"
+date: "February, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+library(tree)
+library(tigerTree)
+```
+
+# Introduction to Classification Trees
+
+## Tree Models
+
+Trees are a convenient way to:
+
+* describe how a set of explanatory variables are related to a response variable
+* predict values of the response variable for a new observation
+
+Two types of trees:
+
+* *classification* trees (response is a factor)
+* *regression* trees (response is numerical)
+
+We'll work with classification trees, first.
+
+## A Classification Tree
+
+For the `m111survey` data, let's make a tree model to predict **sex** from:
+
+* **height**
+* **fastest**
+
+```{r eval = FALSE}
+library(tree)
+trSex <- tree(sex ~ fastest + height, data = m111survey)
+plot(trSex); text(trSex)
+```
+
+
+## The Tree Model (graph)
+
+```{r echo = FALSE}
+trSex <- tree(sex ~ fastest + height, data = m111survey)
+plot(trSex); text(trSex)
+```
+
+## Nodes
+
+A tree has *nodes*:
+
+* the *root* node is at the top
+* each node can be split into two *child* nodes, based on the value of a variable
+* nodes that don't get split are called *terminal nodes*
+
+The majority sex in each terminal node is listed under the node.
+
+## The Tree Model (more detail)
+
+```{r}
+trSex
+```
+
+## How Does This Work?
+
+How does the tree decide to make its splits?
+
+How does it decide when to stop splitting?
+
+## By Tree-Control!
+
+Under the hood, `tree` uses the `control` argument and the `tree.control` function:
+
+```{r eval = FALSE}
+trSex <- tree(sex ~ fastest + height, data = m111survey,
+              control = tree.control(
+                nobs = nrow(m111survey),
+                mincut = 5,
+                minsize = 10,
+                mindev = 0.01
+              ))
+```
+
+## nobs
+
+This is the number of observations you are using to build your tree.
+
+We are using all the rows in `m111survey`.
+
+So `minobs = nrow(m111survey)`
+
+## minsize
+
+This is the smallest-sized node that you will consider splitting up into two child nodes.
+
+By default, `minsize = 10`, but we could change that.
+
+## mincut
+
+If you plan to split a node, each of the two child nodes must be at least `mincut` in size.
+
+By default, `mincut = 5`, but you can change this.
+
+**Note**: `mincut` must not be more than half of `minsize`.
+
+## mindev
+
+`mindev` pays attention to the *deviance*.
+
+>*But what is deviance?*
+
+## Deviance
+
+Each node has a deviance.  When you are predicting sex, the deviance formula is:
+
+$$-2 \left(n_{\text{female}} \ln(p_{\text{female}}) + n_{\text{male}} \ln(p_{\text{male}})\right),$$
+
+where:
+
+* $n_{\text{female}} =$ number of females in the node;
+* $p_{\text{female}} =$ proportion of females in the node;
+* $n_{\text{male}} =$ number of males in the node;
+* $p_{\text{male}} =$ proportion of males in the node;
+
+$\ln$ is the *natural logarithm* function.
+
+## Deviance
+
+For the root node of the tree the deviance is:
+
+$$ -2\left(40\ln(40/71) + 31\ln(31/71)\right) \sim 97.280.$$
+
+Deviance is a measure of how "pure" a node is.  The closer the node is to being all male or all female, the closer its deviance is to 0.
+
+## Deviance in Splitting
+
+The idea in splitting a node is to choose a split so that:
+
+>the sum of the deviance of the two child nodes is as small as possible.
+
+## mindev in Splitting
+
+`mindev` sets  limit on this.  To split a node into two child nodes, the deviance of that node must be at least:
+
+$$\text{mindev} \times \text{root deviance}.$$
+
+By default, `mindev = 0.01`, but you can change this.
+
+## A Walk-Through
+
+Let's examine the construction of our `trSex` model, step-by-step.
+
+## Beginning (no splits yet)
+
+```{r echo = FALSE}
+p <- ggplot(data = m111survey, mapping = aes(x = height, y = fastest))
+p + geom_point(mapping = aes(colour = sex))
+```
+
+```
+1) root 71 97.280 female ( 0.56338 0.43662 ) 
+```
+
+##
+
+```{r echo = FALSE}
+obj <- ggplot_build(p)
+xr <- ggplot_build(p)$panel$ranges[[1]]$x.range
+yr <- ggplot_build(p)$panel$ranges[[1]]$y.range
+ggplot(data = m111survey, mapping = aes(x = height, y = fastest)) +
+  geom_rect(xmin = xr[1], xmax = xr[2],
+            ymin = yr[1], ymax = yr[2],
+            fill = "palegreen", alpha = 0.1) +
+  geom_point(mapping = aes(colour = sex)) +
+  geom_vline(xintercept = 69.5)
+```
+
+```
+1) root 71 97.280 female ( 0.56338 0.43662 )  
+  2) height < 69.5 43 34.750 female ( 0.86047 0.13953 )
+  3) height > 69.5 28 19.070 male ( 0.10714 0.89286 ) 
+```
+
+##
+
+```{r echo = FALSE}
+ggplot(data = m111survey, mapping = aes(x = height, y = fastest)) +
+  geom_rect(xmin = 69.5, xmax = xr[2],
+            ymin = yr[1], ymax = yr[2],
+            fill = "palegreen", alpha = 0.1) +
+  geom_point(mapping = aes(colour = sex)) +
+  geom_vline(xintercept = 69.5) +
+  geom_segment(aes(x = 69.5, y = 106.5, xend = xr[2], yend = 106.5)) +
+  geom_vline(xintercept = xr[2])
+```
+
+```
+3) height > 69.5 28 19.070 male ( 0.10714 0.89286 )  
+  6) fastest < 106.5 13 14.050 male ( 0.23077 0.76923 ) *
+  7) fastest > 106.5 15  0.000 male ( 0.00000 1.00000 ) *
+```
+
+##
+
+```{r echo = FALSE}
+ggplot(data = m111survey, mapping = aes(x = height, y = fastest)) +
+  geom_rect(xmin = xr[1], xmax = 69.5,
+            ymin = yr[1], ymax = yr[2],
+            fill = "palegreen", alpha = 0.1) +
+  geom_point(mapping = aes(colour = sex)) +
+  geom_vline(xintercept = 69.5) +
+  geom_vline(xintercept = xr[2]) +
+  geom_segment(aes(x = 69.5, y = 106.5, xend = xr[2], yend = 106.5)) +
+  geom_vline(xintercept = 67.375)
+```
+
+```
+2) height < 69.5 43 34.750 female ( 0.86047 0.13953 )  
+     4) height < 67.375 29  8.700 female ( 0.96552 0.03448 )  
+     5) height > 67.375 14 18.250 female ( 0.64286 0.35714 )
+```
+
+##
+
+```{r echo = FALSE}
+ggplot(data = m111survey, mapping = aes(x = height, y = fastest)) +
+  geom_rect(xmin = 67.375, xmax = 69.5,
+            ymin = yr[1], ymax = yr[2],
+            fill = "palegreen", alpha = 0.1) +
+  geom_point(mapping = aes(colour = sex)) +
+  geom_vline(xintercept = 69.5) +
+  geom_vline(xintercept = xr[2]) +
+  geom_segment(aes(x = 69.5, y = 106.5, xend = xr[2], yend = 106.5)) +
+  geom_vline(xintercept = 67.375) +
+  geom_segment(aes(x = 67.375, y = 97.5, xend = 69.5, yend = 97.5))
+```
+
+```
+5) height > 67.375 14 18.250 female ( 0.64286 0.35714 )  
+  10) fastest < 97.5 6  5.407 female ( 0.83333 0.16667 ) *
+  11) fastest > 97.5 8 11.090 male ( 0.50000 0.50000 ) *
+```
+
+##
+
+```{r echo = FALSE}
+ggplot(data = m111survey, mapping = aes(x = height, y = fastest)) +
+  geom_rect(xmin = xr[1], xmax = 67.375,
+            ymin = yr[1], ymax = yr[2],
+            fill = "palegreen", alpha = 0.1) +
+  geom_point(mapping = aes(colour = sex)) +
+  geom_vline(xintercept = 69.5) +
+  geom_vline(xintercept = xr[2]) +
+  geom_segment(aes(x = 69.5, y = 106.5, xend = xr[2], yend = 106.5)) +
+  geom_vline(xintercept = 67.375) +
+  geom_segment(aes(x = 67.375, y = 97.5, xend = 69.5, yend = 97.5)) +
+  geom_segment(aes(x = xr[1], y = 122.5, xend = 67.375, yend = 122.5)) +
+  geom_vline(xintercept=xr[1])
+```
+
+```
+4) height < 67.375 29  8.700 female ( 0.96552 0.03448 )  
+    8) fastest < 122.5 24  0.000 female ( 1.00000 0.00000 ) *
+    9) fastest > 122.5 5  5.004 female ( 0.80000 0.20000 ) *
+```
+
+## More Predictor Variables
+
+Trees can work with any number of explanatory (predictor) variables.  Each predictor must be a factor or a numerical variable.
+
+>Could we predict sex better if we used more predictor variables?
+
+Let's use all the other variables in `m111survey`!
+
+## Wait a minute ...
+
+... trees don't like missing values.
+
+Let's remove the missing values as follows:
+
+```{r}
+mComp <- subset(m111survey, complete.cases(m111survey))
+```
+
+We removed a couple of rows:
+
+```{r}
+nrow(mComp)
+```
+
+## Use All Other Variables
+
+```{r eval = FALSE}
+trSex2 <- tree(sex ~ ., data = mComp)
+plot(trSex2); text(trSex2)
+```
+
+Note that we are sticking with the default values of `control`.
+
+## The Result
+
+```{r echo = FALSE}
+trSex2 <- tree(sex ~ ., data = mComp)
+plot(trSex2); text(trSex2)
+```
+
+## A Useful Summary
+
+```{r}
+summary(trSex2)
+```
+
+## The Output
+
+Lead-up info:
+
+```
+Classification tree:
+tree(formula = sex ~ ., data = mComp)
+Variables actually used in tree construction:
+[1] "ideal_ht" "GPA"      "fastest" 
+Number of terminal nodes:  4 
+```
+
+## Output:  Deviance
+
+```
+Residual mean deviance:  0.1975 = 12.64 / 64 
+```
+
+R added the deviance at all four terminal nodes, then divided by:
+
+$$\text{observations} - \text{terminal nodes} = 68 - 4 = 64.$$
+
+The smaller the residual mean, deviance, the more "pure" the terminal nodes are, on average.
+
+## Output:  Error Rate
+
+At each terminal node, you predict sex based on which sex is the majority at the node.
+
+The minority observations are "mis-classed."
+
+## Mis-Classed Observations
+
+You can find the three mis-classed observations below:
+
+```{r}
+trSex2
+```
+
+## Caution About the Error Rate
+
+The 3/68 sounds great, but if this is how the tree did *on the same data that was used to build it*.
+
+If you used the tree to predict *new* observations of a similar sort, it probably would not do as well.
+
+## Control Your Tree
+
+Let's allow the tree to grow "big" (i.e., have as many terminal nodes as possible).
+
+```{r eval = FALSE}
+trSex3 <- tree(sex ~ ., data = mComp,
+               control = tree.control(
+                 nobs = nrow(mComp),
+                 mincut = 1,
+                 minsize = 2,
+                 mindev = 0
+               ))
+plot(trSex3); text(trSex3)
+```
+
+## The Model
+
+```{r echo = FALSE}
+trSex3 <- tree(sex ~ ., data = mComp,
+               control = tree.control(
+                 nobs = nrow(mComp),
+                 mincut = 1,
+                 minsize = 2,
+                 mindev = 0
+               ))
+plot(trSex3); text(trSex3)
+```
+
+## The Summary
+
+```{r}
+summary(trSex3)
+```
+
+All terminal nodes are pure!
+
+## Dealing with Factor Predcitors
+
+**seat** didn't make it into the "big" tree model.  Is it relevant to **sex** at all?
+
+```{r eval = FALSE}
+trSex4 <- tree(sex ~ seat, data = m111survey)
+plot(trSex4); text(trSex4)
+```
+
+##
+
+```{r echo = FALSE}
+trSex4 <- tree(sex ~ seat, data = m111survey)
+plot(trSex4); text(trSex4)
+```
+
+## Factors in a Tree Plot:
+
+In the plot, levels of a factor are coded by letters:  a,b,c, ...
+
+```{r}
+trSex4
+```
+
+## seat and sex
+
+**seat** is not much related to **sex**.  Look at the high mis-classification rate:
+
+```{r eval = FALSE}
+summary(trSex4)
+```
+
+```
+Classification tree:
+tree(formula = sex ~ seat, data = m111survey)
+Number of terminal nodes:  2 
+Residual mean deviance:  1.358 = 93.72 / 69 
+Misclassification error rate: 0.4085 = 29 / 71 
+```
+
+## Practice { .practice }
+
+```{r eval = FALSE}
+data(iris)
+View(iris)
+help(iris)
+```
+
+Use the `iris` data to make a tree model that predicts **Species** from **Sepal.Length**, **Sepal.Width**, **Petal.Length** and **Petal.Width**.
+
+How many terminal nodes does it have?
+
+What is the mis-classification rate?
+
+
+# Prediction with Classification Trees
+
+## Thinking about Error Rates and Trees Sizes
+
+We said that the mis-classification rate underestimates the error a tree model will have when applied to new observations.
+
+We also have options about "how large" to grow our tree.
+
+* What's the "best" tree size?
+* How can we properly estimate the error rate for new observations?
+
+## Justin Verlander Again!
+
+```{r eval=FALSE}
+data(verlander)
+View(verlander)
+help(verlander)
+```
+
+The Pitch-fx machine classifies pitches by type.
+
+Research Question:
+
+>Can we predict how the machine will classify a pitch?  What variables are important in determining pitch-type?
+
+## Remove an Unusual Observation
+
+He had one very slow pitch (probably an intentional ball)  Let's get rid of it:
+
+```{r}
+ver2 <- subset(verlander, speed > 60)
+```
+
+We'll work with the `ver2` data frame from now on.
+
+
+
+## Unimportant Variables
+
+**gamedate** probably doesn't matter.  Anyway, it's neither a factor nor numerical, so the trees won't work with it.  Let's remove it:
+
+```{r}
+ver2$gamedate <- NULL
+```
+
+
+## A Classification Tree
+
+```{r eval = FALSE}
+library(tree)
+trMod <- tree(pitch_type ~ ., data = ver2)
+plot(trMod); text(trMod)
+```
+
+##
+
+```{r echo = FALSE}
+trMod <- tree(pitch_type ~ ., data = ver2)
+plot(trMod); text(trMod)
+```
+
+## A Closer Look
+
+```{r}
+trMod
+```
+
+## A Summary of the Tree
+
+```{r}
+summary(trMod)
+```
+
+## Graphical Look
+
+Using the Cloud Addin, we can get something like this:
+
+```{r eval = FALSE}
+cloud(speed ~ pfx_x * pfx_z,
+	data = ver2,
+	screen = list(x = -90,
+			y = 0,
+			z = 0),
+	groups = pitch_type,
+	auto.key = list(
+		space = "top",
+		title = "Type of Pitch",
+		cex.title = 1,
+		columns = 3),
+	pch = 20,
+	zoom = 0.7,
+	main = "Verlander Pitches")
+```
+
+## A Cloud Plot
+
+```{r echo = FALSE}
+cloud(speed ~ pfx_x * pfx_z,
+	data = ver2,
+	screen = list(x = -90,
+			y = 0,
+			z = 0),
+	groups = pitch_type,
+	auto.key = list(
+		space = "top",
+		title = "Type of Pitch",
+		cex.title = 1,
+		columns = 3),
+	pch = 20,
+	zoom = 0.7,
+	main = "Verlander Pitches")
+```
+
+
+## An Overgrown Tree
+
+Our tree is kinda small.  Let's make another tree with lots of terminal nodes:
+
+```{r eval = FALSE}
+tr.Mod2 <- tree(pitch_type ~ ., data = ver2,
+               control = tree.control(nobs = nrow(ver2), 
+                                      mincut = 1, minsize = 2, mindev = 0))
+plot(trMod2); text(trMod2)
+```
+
+## Yuck!
+
+```{r echo = FALSE}
+tr.Mod2 <- tree(pitch_type ~ ., data = ver2,
+               control = tree.control(nobs = nrow(ver2), 
+                                      mincut = 1, minsize = 2, mindev = 0))
+plot(tr.Mod2); text(tr.Mod2)
+```
+
+## What's Going On?
+
+```{r}
+summary(tr.Mod2)
+```
+
+The tree kept growing, making more and more splits until no further helpful splits could be made.
+
+## Which is Better ...
+
+... a tree with lots of terminal nodes, or fewer terminal nodes?
+
+And can we estimate how well our tree will do on new data?
+
+## Training, Quiz, Test
+
+We'll subdivide our data into three groups:
+
+* **training set**
+* **quiz set**
+* **test set**
+
+## Then ...
+
+* We'll build as many trees as we like, using only the training set.
+* We'll try each tree model on the quiz set, and note the error rate.
+* We'll pick the model with the lowest error rate (or one that we like for other good reasons).
+* We will try that model, and ONLY that model, on the test set.
+* The error rate on the test set is our best estimate of the error rate for new data.
+
+## Subdivision
+
+Let's say we'll assign:
+
+* 60% of the data to the training set;
+* 20% to the quiz set;
+* 20% to the test set.
+
+This assignment should be done randomly!
+
+## Subdivision
+
+The package `tigerTree` contains a function that will divide a data frame randomly into the desired groups.
+
+```{r eval = FALSE}
+library(tigerTree)
+dfs <- divideTrainTest(seed = 3030, 
+                       prop.train = 0.6, prop.quiz = 0.2,
+                       data = ver2)
+verTrain <- dfs$train
+verQuiz <- dfs$quiz
+verTest <- dfs$test
+```
+
+```{r echo = FALSE}
+dfs <- divideTrainTest(seed = 3030, 
+                       prop.train = 0.6, prop.quiz = 0.2,
+                       data = ver2)
+verTrain <- dfs$train
+verQuiz <- dfs$quiz
+verTest <- dfs$test
+```
+
+
+## Build Trees with Training Set:
+
+First, a "conservative" tree:
+
+```{r}
+tr.small <- tree(pitch_type ~ ., data = verTrain)
+summary(tr.small)
+```
+
+## Build Trees with Training Set
+
+Next, an "overgrown" tree:
+
+```{r}
+tr.big <- tree(pitch_type ~ ., data = verTrain,
+               control = tree.control(nobs = nrow(verTrain), 
+                                      mincut = 1, minsize = 2, mindev = 0))
+summary(tr.big)
+```
+
+Wow, no errors!
+
+## Try Small Tree on the Quiz Set:
+
+This is done with the `tryTree` function from the `tigerTree` package:
+
+```{r}
+tryTree(mod = tr.small, 
+        testSet = verQuiz, 
+        truth = verQuiz$pitch_type)
+```
+
+Error rate bigger than on the training set!
+
+## Try Big Tree on the Test Set
+
+Again use `tryTree` but with the `tr.big` model:
+
+```{r}
+tryTree(mod = tr.big, 
+        testSet = verQuiz, 
+        truth = verQuiz$pitch_type)
+```
+
+Error rate also bigger than on the training set!
+
+## What's the best Tree Size?
+
+There are very scientific ways to do this, but we'll just work by hand.  Tune the tree by hand with this local Shiny app:
+
+```{r eval = FALSE}
+tuneTree(pitch_type ~ ., data = verTrain,
+         testSet = verQuiz,
+         truth = verQuiz$pitch_type)
+```
+
+## My Choice
+
+I finally decided to go with:
+
+```{r eval = FALSE}
+tr.chosen <- tree(pitch_type ~ ., data = verTrain,
+               control = tree.control(
+                 nobs = nrow(verTrain), 
+                        mincut = 7,
+                        minsize = 14,
+                        mindev = 0.0003))
+```
+
+```
+Variables actually used in tree construction:
+[1] "speed"   "pfx_x"   "pz"      "season"  "pfx_z"   "px"      "pitches"
+Number of terminal nodes:  41 
+Residual mean deviance:  0.07468 = 682.7 / 9142 
+Misclassification error rate: 0.01568 = 144 / 9183 
+```
+
+## On the Quiz Set ...
+
+... my choice gave:
+
+```{r echo = FALSE}
+tr.chosen <- tree(pitch_type ~ ., data = verTrain,
+               control = tree.control(
+                 nobs = nrow(verTrain), 
+                        mincut = 7,
+                        minsize = 14,
+                        mindev = 0.0003))
+```
+
+```{r}
+tryTree(tr.chosen, testSet = verQuiz, truth = verQuiz$pitch_type)
+```
+
+## On the Test Set, I Get ...
+
+```{r}
+tryTree(tr.chosen, testSet = verTest, truth = verTest$pitch_type)
+```
+
+## Note
+
+Our tree does pretty well at imitating Pitch-fx, but it's not exactly how pitch-fx makes it classifications:
+
+* Pitch-fx may use other predictors besides the one in `verlander`
+* It probably uses more sophisticated predictions methods
+
+Take STA 300 in the Fall to learn more!
+
+
+
+
+
+
+
+

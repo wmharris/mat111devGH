@@ -1,0 +1,214 @@
+---
+title: "Sampling and Surveys: Pt.1"
+author: "Homer White"
+date: "September, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(mosaic)
+library(tigerstats)
+```
+
+# Population vs. Sample
+
+
+## Population and Sample
+
+Definitions:
+
+* The *population* is the set of all items of interest.
+  
+* The *sample* is the subset of the population for which we have data.
+  
+## Parameters
+
+Another definition:
+
+* A *parameter* is a number that you could compute if you knew the entire population.
+  
+Suppose the population is **all adults**.
+
+Examples of parameters:
+
+* The mean height $\mu$ of the population
+* The standard deviation $\sigma$ of the heights
+* The proportion $p$ of the population that plays tennis
+
+## Statistics
+
+Another definition:
+
+
+* A *statistic* is a number that you can compute from your sample data.
+  
+Suppose that we have a sample from the population of all adults.  Examples of statistics:
+
+* The sample mean $\bar{x}$ of the heights
+* The sample standard deviation $s$ of the heights
+* The proportion $\hat{p}$ of the sample that plays tennis
+    * Note:  $\hat{p}$ is the number $X$ in the sample who play tennis, divided by the sample size $n$.
+    
+## The Basic Ideas
+
+
+* The parameters are fixed, but we don't know them
+* The statistics depend on the sample
+* We use statistics to estimate parameters.  That is, we hope that:
+    * $\bar{x} \approx \mu$
+    * $s \approx \sigma$
+    * $\hat{p} \approx p$
+ 
+ 
+# How to Sample
+
+## Important Thought
+
+For the approximations to be good, the sample should be *representative* of the population.
+  
+So we should employ methods of sampling for which the sample is **likely** to be representative of the population.
+
+*How do we get a representative sample?*
+
+## One Try:  a Volunteer Sample
+
+Should we let potential subjects choose whether or not to be in the sample?
+
+(This is called a *volunteer* sample.)
+
+**Example**:  When conducting an opinion survey on food in the Cafe, you leave forms at the entrance for people to fill out.
+
+
+## There is a Problem!
+
+
+The volunteers might differ from the general population in some important way.
+
+(In our example, the students who take the time to fill out the survey might have stronger opinions---one way or another---than those who don't bother.)
+  
+## Another Try:  Researchers Decide Sample
+
+
+Should the researchers decide who gets into the sample?
+
+Example:  *Quota* sampling in the 1948 U.S. presidential elections.
+
+## Problem Here, Too!
+
+
+When researchers use their own judgement to decide on the sample, they could (intentionally or unintentionally) choose an unrepresentative sample.
+
+In the 1948 quota sampling, pollsters ended up interviewing "approachable" folks, who turned out to be wealthier than average, thus biasing poll results toward the Republican candidate.
+
+## Wait a Minute ...
+
+
+* If you can't let subjects decide whether to be in the sample,
+* and you can't let researchers decide who should be in the sample ...
+
+... then what should decide who gets into the sample?
+
+## Surprising Answer
+
+
+  *Let chance decide who gets into the sample!*
+  
+We should use some form of *random sampling*.  That is, we should use chance in a controlled, quantifiable way.
+
+This is called **random sampling**.
+
+## Simple Random Sampling
+
+
+There are many types of random sampling.  The one we will think about the most is *simple random sampling.*
+
+Suppose you are planning to take a sample of size $n$ from a population. If you take the sample so that
+
+* every set of $n$ subjects in the population has the same chance to be the sample selected
+  
+then you are doing *simple random sampling* (SRS).
+
+## SRS is Like ...
+
+
+Having a box full of tickets, one for each member of the population.
+
+*  You randomly pick out one ticket ...
+* and set it aside ...
+* then randomly pick out another ticket
+* and set it aside ...
+* ... and so on until you have drawn $n$ tickets.
+
+(You draw $n$ tickets at random from the box, **without** replacement.)
+
+## "Is it SRS?"
+
+Suppose you have 4 rows in a class.  Each row has six people.
+
+You need a sample of size 4.
+
+You pick one person at random, from each row.
+
+*Is this simple random sampling?*
+
+## No!
+
+Not every set of size four has the same chance to be the sample selected.
+
+For example, a set like this:
+
+* two people from row 1,
+* one person from row 3 and
+* one person from row 4
+
+Has NO chance to be the sample selected!
+
+## "Is it SRS?" { .practice }
+
+You have a population of 1000 people, all lined up by order of their height.  You need a sample of size 10.
+
+You pick a number at random from 1 to 100.  (Say you get 17.)
+
+Then you pick people numbered:
+
+17, 117, 217, 317, ..., 917
+
+Is this procedure simple random sampling?
+
+## Another Way to Think of It
+
+In SRS:
+
+* every individual in the population has the same chance to be in the sample;
+* knowing some members of the sample doesn't tell you anything "extra" about who else is or is not in the sample.
+
+
+## SRS Works Amazingly Well ...
+
+... especially when the sample size $n$ is large.
+
+Try this app:
+
+```{r eval=FALSE}
+require(manipulate)
+SimpleRandom2(n=100) #n specifies the sample size
+```
+
+*In this course we will assume that all random sampling is SRS, unless otherwise stated.*
+
+## Random Sampling Methods
+
+SRS is not the only good random sampling method.  Some other useful methods are:
+
+* *stratifed sampling*
+* *cluster sampling*
+
+To compare SRS with these two methods, try the Shiny app **Sampling Methods**:
+
+* [http://homer.shinyapps.io/SamplingMethods](http://homer.shinyapps.io/SamplingMethods)

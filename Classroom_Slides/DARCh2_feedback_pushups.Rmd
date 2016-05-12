@@ -1,0 +1,258 @@
+---
+title: "DAR Ch.2 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Methods
+
+## Variable Analysis
+
+You must include this in your methods!
+
+Two variables involved:
+
+* **position** (a factor variable, explanatory)
+* **pushups** (a numerical variable, response)
+
+This leads to:
+
+* density plots, or
+* histograms, or
+* box plots
+* and `favstats()` (for numerical summaries)
+
+# Graphical Results
+
+## Density Plots A
+
+Some folks chose density plots, as in class slides:
+
+```{r eval=FALSE}
+densityplot(~pushups|position,data=pushups,
+            main="Pushups in Two Minutes, by Position",
+            xlab="Number of Pushups Done",
+            layout=c(1,2))
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+densityplot(~pushups|position,data=pushups,
+            main="Pushups in Two Minutes, by Position",
+            xlab="Number of Pushups Done",
+            layout=c(1,2))
+```
+
+## Density Plots B
+
+Some folks "grouped", as taught in website slides and Course Notes:
+
+```{r eval=FALSE}
+densityplot(~pushups,data=pushups,
+            groups=position,
+            main="Pushups in Two Minutes, by Position",
+            xlab="Number of Pushups Done",
+            auto.key=TRUE)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~pushups,data=pushups,
+            groups=position,
+            main="Pushups in Two Minutes, by Position",
+            xlab="Number of Pushups Done",
+            auto.key=TRUE)
+```
+
+## Box Plots A
+
+Some folks followed the procedure in class slides:
+
+```{r eval=FALSE}
+bwplot(pushups~position,data=pushups,
+       main="Pushups in Two Minutes, by Position",
+       xlab="Type of Position",
+       ylab="Number of Pushups Done")
+```
+
+## The Graph
+
+```{r echo=FALSE}
+bwplot(pushups~position,data=pushups,
+       main="Pushups in Two Minutes, by Position",
+       xlab="Type of Position",
+       ylab="Number of Pushups Done")
+```
+
+## Box Plots B
+
+Other folks discovered that you could lay the box plots flat:
+
+```{r eval=FALSE}
+bwplot(position~pushups,data=pushups,
+       main="Pushups in Two Minutes, by Position",
+       ylab="Type of Position",
+       xlab="Number of Pushups Done")
+```
+
+## The Graph
+
+```{r echo=FALSE}
+bwplot(position~pushups,data=pushups,
+       main="Pushups in Two Minutes, by Position",
+       ylab="Type of Position",
+       xlab="Number of Pushups Done")
+```
+
+## Histograms A
+
+Some folks blindly imitated the code for in the example report:
+
+```{r eval=FALSE}
+histogram(~pushups|position,data=pushups,
+      main="Pushups in Two Minutes, by Position",
+      xlab="Number of Pushups Done",
+      layout=c(1,2),width=1)
+```
+
+## Not So Good!  (Too "Spikey")
+
+```{r echo=FALSE}
+histogram(~pushups|position,data=pushups,
+      main="Pushups in Two Minutes, by Position",
+      xlab="Number of Pushups Done",
+      layout=c(1,2),width=1)
+```
+
+## Better Histograms
+
+Exercise good judgement, modify the rectangle widths:
+
+```{r eval=FALSE}
+histogram(~pushups|position,data=pushups,
+      main="Pushups in Two Minutes, by Position",
+      xlab="Number of Pushups Done",
+      layout=c(1,2),width=5)
+```
+
+## A Better Graph
+
+```{r echo=FALSE}
+histogram(~pushups|position,data=pushups,
+      main="Pushups in Two Minutes, by Position",
+      xlab="Number of Pushups Done",
+      layout=c(1,2),width=5)
+```
+
+# Numerical Results
+
+## favstats()
+
+
+```{r}
+favstats(pushups~position,data=pushups)
+```
+
+In your discussion, focus primarily on:
+
+* means, or
+* medians, or even
+* how the middle 50% for Skill players lies entirely above the middle 50% for Line players
+
+But not on mins or maxes!
+
+
+## A Poor Choice
+
+Don't try `xtabs()`:
+
+```{r}
+xtabs(~position+pushups,data=pushups)
+```
+
+`xtabs()` is for factor variables!
+
+# Conclusion
+
+## Inference to a Population
+
+Many had questions about whether the results in the sample might apply to a larger population:
+
+* all GC football players?
+* all college football players?
+* all GC football players a few years ago, but maybe not today?
+
+Good questions.
+
+## What About Weight?
+
+The weight of each player was recorded, but **weight** was not involved in the Research Question.
+
+Some folks wondered whether **weight** might be related to **pushups**, maybe even be what *causes* the number of push-ups you can do.
+
+## Studying Weight and Pushups
+
+We could do that with Chapter 4 methods:
+
+```{r eval=FALSE}
+xyplot(pushups~weight,data=pushups,
+       main="Pushups Done, by Weight",
+       xlab="weight of player (lbs)",
+       ylab="number of pushups in two minutes",
+       pch=19,type=c("p","r"))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+xyplot(pushups~weight,data=pushups,
+       main="Pushups Done, by Weight",
+       xlab="weight of player (lbs)",
+       ylab="number of pushups in two minutes",
+       pch=19,type=c("p","r"))
+```
+
+## Grouping
+
+You can even break down by **position**:
+
+```{r eval=FALSE}
+xyplot(pushups~weight|position,data=pushups,
+       main="Pushups Done, by Weight",
+       xlab="weight of player (lbs)",
+       ylab="number of pushups in two minutes",
+       pch=19,type=c("p","r"),
+       layout=c(2,1))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+xyplot(pushups~weight|position,data=pushups,
+       main="Pushups Done, by Weight",
+       xlab="weight of player (lbs)",
+       ylab="number of pushups in two minutes",
+       pch=19,type=c("p","r"),
+       layout=c(2,1))
+```
+
+
+
+
+

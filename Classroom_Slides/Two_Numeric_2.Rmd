@@ -1,0 +1,454 @@
+---
+title: "Two Numeric Variables: Pt.2"
+author: "Homer White"
+date: "August, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# Numerical Methods
+
+## Father and Child
+
+```{r eval=FALSE}
+require(mosaicData)
+data(Galton)
+View(Galton)
+help(Galton)
+```
+
+**Research Question**:  What is the relationship between father's height and his child's height?
+
+* **father** (explanatory, numerical)
+* **height**  (response, numerical)
+
+## Scatterplot
+
+```{r echo=FALSE}
+xyplot(height~father,data=Galton,
+       main="Father and Child Heights",
+       xlab="father's height (inches)",
+       ylab="child's height (inches)",
+       pch=19,type=c("p","r"))
+```
+
+Linear relationship:  the points follow the *regression line*.
+
+## Drawing the Line
+
+```{r eval=FALSE}
+xyplot(height~father,data=Galton,
+       main="Father and Child Heights",
+       xlab="father's height (inches)",
+       ylab="child's height (inches)",
+       pch=19,type=c("p","r"))
+```
+
+In the `type` argument:
+
+* "p" says to plot the points
+* "r" says to draw the regression line
+
+
+## Numerical Methods
+
+Study the relationship with a *linear model*:
+
+```{r eval=FALSE}
+lmGC(height~father,data=Galton)
+```
+
+## Correlation
+
+```
+Correlation coefficient r =  0.2754 
+```
+
+r measures the strength of a linear relationship.
+
+$$-1 \le r \le 1$$
+
+## Strong Positive Relationship
+
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- 2*x+rnorm(100,sd=3)
+xyplot(y~x,pch=19,type=c("p","r"))
+rpos <- cor(x,y)
+```
+
+$r=$ `r round(rpos,3)` (close to 1)
+
+## Weaker Positive Relationship
+
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- 2*x+rnorm(100,sd=40)
+xyplot(y~x,pch=19,type=c("p","r"))
+rpos2 <- cor(x,y)
+```
+
+$r=$ `r round(rpos2,3)` (positive, but not so big)
+
+## Strong Negative Relationship
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- -2*x+rnorm(100,sd=9)
+xyplot(y~x,pch=19,type=c("p","r"))
+rneg <- cor(x,y)
+```
+
+$r=$ `r round(rneg,3)` (close to -1)
+
+## Weak Negative Relationship
+
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- -2*x+rnorm(100,sd=50)
+xyplot(y~x,pch=19,type=c("p","r"))
+rneg2 <- cor(x,y)
+```
+
+$r=$ `r round(rneg2,3)` (not close to -1)
+
+##  No Relationship
+
+```{r echo=FALSE}
+set.seed(2040)
+x <- rnorm(100,mean=50,sd=10)
+y <- rnorm(100,mean=50,sd=10)
+xyplot(y~x,pch=19,type=c("p","r"))
+rzip <- cor(x,y)
+```
+
+$r=$ `r round(rzip,3)` (close to 0)
+
+## Regression Line
+
+```
+Equation of Regression Line:
+
+   height = 39.1104 + 0.3994 * father 
+```
+
+Use it to predict response value from an explanatory value.
+
+## Prediction
+
+Suppose a father is 67 inches tall.  How tall do we predict the child is?
+
+```
+height = 39.1104 + 0.3994 * father 
+```
+
+
+```{r}
+39.1104+0.3994*67
+```
+
+## Prediction
+
+Another Way:
+
+```{r}
+myModel <- lmGC(height~father,data=Galton)
+predict(myModel,x=67)
+```
+
+## Prediction Standard Error
+
+The "give or take" figure is known as the prediction standard error, $SE_{pred}$.
+
+The actual height could easily be one or two predictions standard errors away from the predicted height!
+
+## Prediction Intervals
+
+A 95%-prediction interval for the son's height:
+
+```{r}
+predict(myModel,x=67,level=0.95)
+```
+
+## Roughly ...
+
+... the 95%-prediction interval is
+
+$$prediction \pm 2 \times SE_{pred}$$.
+
+* lower bound:  $59.098 \approx 58.97 = 65.87-2 \times 3.45$;
+
+* upper bound:  $72.64 \approx 72.77 = 65.87 + 2 \times 3.45$.
+
+You can be about 95%-confident that the child's height is between 59.098 and 72.64 inches.
+
+## Different Levels
+
+A 80%-prediction interval for the son's height:
+
+```{r}
+predict(myModel,x=67,level=0.80)
+```
+
+It's narrower, but you are less confident that the child's height lies within it!
+
+## Slope of the Line
+
+```
+Equation of Regression Line:
+
+   height = 39.1104 + 0.3994 * father 
+```
+
+The slope of the line is 0.3994.
+
+**Its practical meaning**:  "For every extra inch in a father's height, the predicted height for the child increases by 0.3994 inches."
+
+## Residual Standard Error
+
+```
+Residual Standard Error:  s   = 3.4463 
+```
+
+This indicates the typical distance between a point on the scatterplot and the regression line.
+
+Roughly:
+
+* about 68% of the points lie within one $s$ of the line
+* about 95% of the points are within two $2s$ of the line
+
+## Line +/- One s
+
+```{r echo=FALSE}
+galtmod1 <- summary(lm(height~father,data=Galton))
+rse <- galtmod1$sigma
+galtmod <- lm(height~father,data=Galton)
+err <- stats::predict(galtmod,newdata=Galton)
+Galton$lower68 <- err - rse
+Galton$upper68 <- err+ rse
+Galton$lower95 <- err - 2*rse
+Galton$upper95 <- err + 2*rse
+q <- ggplot(Galton,aes(x=father,y=height)) +
+  geom_point(position='jitter') + geom_smooth(method=lm,se=FALSE) +
+  geom_ribbon(aes(ymin = lower68, ymax = upper68), data=Galton,
+              alpha=0.3)
+q
+between68 <- (Galton$lower68 < Galton$height) & (Galton$height < Galton$upper68)
+prop68 <- sum(between68)/nrow(Galton)
+between95 <- with(Galton, lower95 < height & height < upper95)
+prop95 <- sum(between95)/nrow(Galton)
+```
+
+In fact, the proportion between is `r sum(between68)`/`r nrow(Galton)` $\approx$ `r round(prop68,3)`.
+
+## Line +/- Two s
+
+```{r echo=FALSE}
+q2 <- ggplot(Galton,aes(x=father,y=height)) +
+  geom_point(position='jitter') + geom_smooth(method=lm,se=FALSE) +
+  geom_ribbon(aes(ymin = lower95, ymax = upper95), data=Galton,
+              alpha=0.3)
+q2
+```
+
+In fact, the proportion between is `r sum(between95)`/`r nrow(Galton)` $\approx$ `r round(prop95,3)`.
+
+## R-Squared Value
+
+```
+R^2 (unadjusted):  	R^2 = 0.0758 
+```
+
+$R^2 = r^2$, the square of the correlation.
+
+$$0 \le R^2 \le 1$$
+
+The closer to 1, the better the line does at predicting response from explanatory.
+
+# Example
+
+## Beetles and Stumps
+
+```{r eval=FALSE}
+data(stumps)
+View(stumps)
+help(stumps)
+```
+
+**Research Question**:  Are there more larvae cluster in plots where there are more cottonwood stumps?
+
+## Scatter Plot
+
+Always look at a scatter plot first:
+
+```{r eval=FALSE}
+xyplot(larvae~stumps,data=stumps,
+       main="Beetles and Cottonwood Stumps",
+       xlab="number of stumps in plot",
+       ylab="larvae clusters in plot",
+       pch=19,
+       type=c("p","r"))
+```
+
+## Results
+
+```{r echo=FALSE}
+xyplot(larvae~stumps,data=stumps,
+       main="Beetles and Cottonwood Stumps",
+       xlab="number of stumps in plot",
+       ylab="larvae clusters in plot",
+       pch=19,
+       type=c("p","r"))
+```
+
+
+Looks like a positive linear relationship.  The more stumps, the more clusters there are.
+
+## Practice { .practice }
+
+Make the linear model:
+
+```{r eval=FALSE}
+lmGC(larvae~stumps,data=stumps)
+```
+
+Is the relationship strong or weak?  Why?
+
+Predict the number of clusters in a plot with 3 stumps.
+
+By how much is this prediction liable to be in error?
+
+What is the R-squared value?
+
+
+# Cautions
+
+## Watch for Curvilinear Relationships
+
+Speed and fuel efficiency study:
+
+```{r eval=FALSE}
+help(fuel)
+```
+
+Check scatter plot:
+
+```{r eval=FALSE}
+xyplot(efficiency~speed,data=fuel,
+       main="Speed and Fuel Efficiency",
+       xlab="speed (km/hr)",
+       ylab="fuel efficiency (liters/100k)",
+       pch=19,
+       type=c("p","r"))
+```
+
+## Curvy!
+
+```{r echo=FALSE}
+xyplot(efficiency~speed,data=fuel,
+       main="Speed and Fuel Efficiency",
+       xlab="speed (km/hr)",
+       ylab="fuel efficiency (liters/100k)",
+       pch=19,
+       type=c("p","r"))
+rfuel <- cor(fuel$speed,fuel$efficiency)
+```
+
+$r=$ `r round(rfuel,3)` is meaningless!  Regression line is useless!
+
+## Distrust Extrapolation
+
+```{r eval=FALSE}
+data(temperature)
+View(temperature)
+help(temperature)
+```
+
+Let's study the relationship between latitude (explanatory) and August temperature (response).
+
+## The Scatterplot
+
+```{r echo=FALSE}
+xyplot(AugTemp~latitude,data=temperature,
+       xlab="latitude (degrees North of equator)",
+       ylab="August temperature (degrees Fahrenheit)",
+       pch=19,
+       type=c("p","r"))
+```
+
+Negative linear relationship, not so weak.
+
+## Practice { .practice }
+
+Make the linear model to predict August temperature of a city from its latitude.
+
+Use it to predict the August temperature of Georgetown, KY (latitude 39.21 deg N).
+
+Use it to predict the August temperature of Singapore (1.3 deg N).
+
+## Problem with Singapore
+
+The actual August temperature of Singapore is about 88 degrees Fahrenheit.
+
+*Extrapolation* is making a prediction based on an x-value far outside the range of of the x-values in your data.  It is often unreliable.
+
+## Problem with Extrapolation
+
+```{r echo=FALSE}
+xyplot(gasbill~temp,data=Utilities,
+       main="Temperature and Gas Bill",
+       xlab="temperature (deg Fahrenheit)",
+       ylab="gas bill (dollars)",
+       pch=19)
+```
+
+Most relationships are "locally" linear, "globally" curvilinear.
+
+## Curvy Overall, Straight Up Close!
+
+```{r include=FALSE}
+library(googleVis)
+```
+
+
+```{r echo=FALSE,results='asis'}
+set.seed(2020)
+x <- seq(0,100,by=0.5)
+y <- (50-x)^2+rnorm(length(x),sd=100)
+
+curvy <- data.frame(x,y)
+
+
+gvScat <- gvisScatterChart(curvy,
+                   options=list(
+                     explorer="{actions: ['dragToZoom',
+                     'rightClickToReset'],
+                     maxZoomIn:0.05}",
+                     chartArea="{width:'85%',height:'80%'}",
+                     hAxis="{title: 'Explanatory x',
+                     titleTextStyle: {color: '#000000'}}",
+                     vAxis="{title: 'Response y',
+                     titleTextStyle: {color: '#000000'}}",
+                     width=550, height=500,
+                     legend="none"),
+                   chartid="ZoomZoom")
+
+print(gvScat,'chart')
+```
+

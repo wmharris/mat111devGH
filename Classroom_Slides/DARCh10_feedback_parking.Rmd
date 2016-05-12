@@ -1,0 +1,375 @@
+---
+title: "DAR Ch.10 Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+require(tigerData)
+```
+
+
+# Methods
+
+## Departure and Being Honked At
+
+Research Question:  Do people takes longer to vacate a parking spot if a waiting car honks at them?
+
+Variable Analysis:
+
+* **horn** (explanatory, factor, two values)
+* **time** (response, numerical)
+
+Notice:  this was a randomized experiment, because researchers chose which subjects to honk at.
+
+## Departure and Being Honked At
+
+Research Question:  Who takes longer to vacate a parking spot:  a male or a female?
+
+Variable Analysis:
+
+* **sex** (explanatory, factor, two values)
+* **time** (response, numerical)
+
+Notice:  this was an observational study, because researchers did not assign subjects their sex!
+
+## Methods
+
+For these two Research Questions:
+
+* graphical:  `densityplot()`
+* numerical:  `favstats()`
+* inferential:  `ttestGC()`
+
+## Departure and Car Value
+
+Research Question:  Do drivers of expensive cars take longer to vacate their spot?
+
+Variable Analysis:
+
+* **carval** (explanatory, numerical)
+* **time** (response, numerical)
+
+Notice:  this was an observational study, because researchers just measured the value of the car the subject was driving.
+
+## Methods
+
+For this Research Question:
+
+* graphical:  `xyplot()`
+* numerical:  `lmGC()`
+
+# Results
+
+## Horn and Time
+
+```{r eval=FALSE}
+densityplot(~time|horn,data=parkExp,
+            main="Departure Time Based on\nBeing Honked at",
+            xlab="departure time (seconds)",
+            layout=c(1,2))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~time|horn,data=parkExp,
+            main="Departure Time Based on\nBeing Honked at",
+            xlab="departure time (seconds)",
+            layout=c(1,2))
+```
+
+## Numerical
+
+```{r}
+favstats(time~horn,data=parkExp)
+```
+
+## Inferential:  Parameters
+
+Define:
+
+$\mu_1 =$ mean time to depart for all shoppers, if all could be honked at by the waiting car.
+
+
+$\mu_2 =$ mean time to depart for all shoppers, if all could be NOT honked at by the waiting car.
+
+
+## Inferential:  Safety Check
+
+This was a randomized experiment.
+
+Both samples were right-skewed but the samples sizes (79 honked at, 77 not) were pretty large.
+
+So we are probably safe.
+
+## Inferential:  Code
+
+```{r eval=FALSE}
+ttestGC(time~horn,data=parkExp,mu=0,
+        first="yes_horn",graph=TRUE)
+```
+
+## Inferential:  Discussion
+
+
+```
+Estimate of mu1-mu2:   12.27 
+SE(x1.bar - x2.bar):	 2.753 
+```
+
+$\mu_1-\mu_2$ is about 12.27 seconds, give or take about 2.753 seconds or so for chance variation in the assignment of subjects to their groups.
+
+
+## Inferential:  Interval
+
+```
+95% Confidence Interval for mu1-mu2:
+
+          lower.bound         upper.bound          
+          6.834534            17.712180            
+```
+
+We are 95%-confident that $\mu_1-\mu_2$ is between 6.8 and 17.7 seconds.  This interval lies entirely above 0, so the data provides strong evidence that people who are honked at take longer to depart, on average.
+
+## Inferential:  Test of Significance
+
+Here are the hypotheses:
+
+```
+H_0:  mu1-mu2 = 0 
+H_a:  mu1-mu2 != 0 
+```
+
+## Inferential:  Test Statistic and P-Value
+
+```
+Test Statistic:  	t = 4.458  
+P-value:		P = 1.596e-05 
+```
+
+Our results are 4.458 standard errors above what the Null expected.  Looks bad for the Null!
+
+There is about a 1.6 in 100,000 chance of getting a test statistic at least as far from 0 as the one we got, if $H_0$ is true!
+
+## Inferential:  Wrap It Up
+
+The P-value was tiny, so we will reject $H_0$.
+
+This data provided very strong evidence that people take longer to depart, on average, when they are honked at.
+
+
+
+## Sex and Time
+
+```{r eval=FALSE}
+densityplot(~time|sex,data=parkExp,
+            main="Departure Time Based on\nSex of the Driver",
+            xlab="departure time (seconds)",
+            layout=c(1,2))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~time|sex,data=parkExp,
+            main="Departure Time Based on\nSex of the Driver",
+            xlab="departure time (seconds)",
+            layout=c(1,2))
+```
+
+## Numerical
+
+```{r}
+favstats(time~sex,data=parkExp)
+```
+
+## Inferential:  Parameters
+
+Define:
+
+$\mu_1 =$ mean time to depart for all female shoppers.
+
+
+$\mu_2 =$ mean time to depart for all male shoppers.
+
+
+## Inferential:  Safety Check
+
+This was an observational study.  Hopefully the subjects were like a random sample from the population of all shoppers.
+
+Both samples were right-skewed but the samples sizes (84 female, 72 male) were pretty large.
+
+So we are probably safe.
+
+## Inferential:  Code
+
+```{r eval=FALSE}
+ttestGC(time~sex,data=parkExp,mu=0,
+        first="female",graph=TRUE)
+```
+
+## Inferential:  Discussion
+
+
+```
+Estimate of mu1-mu2:   4.143 
+SE(x1.bar - x2.bar):	 2.941 
+```
+
+$\mu_1-\mu_2$ is about 4143 seconds, give or take about 2.941 seconds or so for chance variation in who got into the study.
+
+
+## Inferential:  Interval
+
+```
+95% Confidence Interval for mu1-mu2:
+
+          lower.bound         upper.bound          
+          -1.668900           9.954773         
+```
+
+We are 95%-confident that $\mu_1-\mu_2$ is between -1.67 and 9.95 seconds.  This contains 0, so the data does NOT provide strong evidence that departure time is, on average, related to sex of the driver.
+
+## Inferential:  Test of Significance
+
+Here are the hypotheses:
+
+```
+H_0:  mu1-mu2 = 0 
+H_a:  mu1-mu2 != 0 
+```
+
+## Inferential:  Test Statistic and P-Value
+
+```
+Test Statistic:  	t = 1.409 
+P-value:		P = 0.161 
+```
+
+Our results are 1.4 standard errors above what the Null expected.  This is not so far off from what the Null expects!
+
+There is about a 16% chance of getting a test statistic at least as far from 0 as the one we got, if $H_0$ is true!
+
+## Inferential:  Wrap It Up
+
+The P-value was $> 0.05$, so we will NOT reject $H_0$.
+
+This data did NOT provide strong evidence that males and females differ, on average, in how long they take to depart.
+
+## Car Value and Time to Depart
+
+```{r eval=FALSE}
+xyplot(time~carval,data=parkExp,
+       main="Departure Tiem and Car Value",
+       xlab="Blue Book value of driver's car (dollars)",
+       ylab="time to depart (seconds)",
+       type=c("p","r"))
+```
+
+## The Graph
+
+```{r echo=FALSE}
+xyplot(time~carval,data=parkExp,
+       main="Departure Tiem and Car Value",
+       xlab="Blue Book value of driver's car (dollars)",
+       ylab="time to depart (seconds)",
+       type=c("p","r"))
+```
+
+## Linear Model
+
+```{r eval=FALSE}
+lmGC(time~carval,data=parkExp)
+```
+
+
+## Output
+
+```
+Correlation coefficient r =  0.02252 
+
+Equation of Regression Line:
+
+   time = 36.3682 + 1e-04 * carval 
+
+Residual Standard Error:	s   = 18.2914 
+R^2 (unadjusted):		R^2 = 5e-04 
+```
+
+Correlation very small.  Essentially no relationship, here.
+
+# Discussion
+
+## Interaction between honking and sex?
+
+Interesting new question:  Do men and women differ in how they respond to being honked at?
+
+```{r eval=FALSE}
+densityplot(~time|sex*horn,data=parkExp)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~time|sex*horn,data=parkExp)
+```
+
+## Numerical Approach
+
+```{r}
+favstats(time~sex+horn,data=parkExp)[c(".group","mean")]
+```
+
+Guys and gals both take longer when being honked at, but the difference is about the same.
+
+## Time and Confronting Car Status
+
+Some folks mistook the final Research Question to be this:
+
+Is time to departure related to the status of the car that is waiting?
+
+## Quick Numerical Look
+
+
+```{r}
+favstats(time~ccstatus,data=parkExp)[c(".group","mean")]
+```
+
+Does not look like much of a difference, here.
+
+## Interaction between ccstatus and sex?
+
+But what if we brak down by ccstatus AND by sex?
+
+```{r}
+favstats(time~sex+ccstatus,data=parkExp)[c(".group","mean")]
+```
+
+
+Wow, big difference here between how men and women react to the different types of waiting car!
+
+## Graphical Look
+
+```{r eval=FALSE}
+bwplot(time~ccstatus|sex,data=parkExp)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+bwplot(time~ccstatus|sex,data=parkExp)
+```
+
+
+
+

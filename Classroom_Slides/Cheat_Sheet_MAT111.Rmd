@@ -1,0 +1,220 @@
+---
+title: "Cheat Sheet"
+author: "Homer White"
+date: "September, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# One Factor Variable
+
+## Graphics
+
+$$barchartGC(\sim variable, data = MyData)$$
+
+```{r eval=FALSE}
+barchartGC(~seat,data=m111survey)
+```
+
+
+## The Graph
+
+
+```{r echo=FALSE}
+barchartGC(~seat,data=m111survey)
+```
+
+
+
+## Numerical Summaries
+
+`xtabs()` and `rowPerc()`:
+
+```{r}
+seating <- xtabs(~seat,data=m111survey)
+seating
+```
+
+```{r}
+rowPerc(seating)
+```
+
+
+
+# Two Factor Variables
+
+## Graphics
+
+$$barchartGC(\sim exp + resp, data = MyData)$$
+
+```{r eval=FALSE}
+barchartGC(~sex+seat,data=m111survey)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+barchartGC(~sex+seat,data=m111survey)
+```
+
+##Numerical Summaries
+
+`xtabs()` and `rowPerc()`:
+
+```{r}
+sexSeat <- xtabs(~sex+seat,data=m111survey)
+sexSeat
+```
+
+```{r}
+rowPerc(sexSeat)
+```
+
+## Inference
+
+Use `chisqtestGC()`:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,data=m111survey)
+```
+
+## Some Output
+
+```
+Pearson's Chi-squared test 
+
+Observed Counts:
+        seat
+sex      1_front 2_middle 3_back
+  female      19       16      5
+  male         8       16      7
+
+Counts Expected by Null:
+        seat
+sex      1_front 2_middle 3_back
+  female   15.21    18.03   6.76
+  male     11.79    13.97   5.24
+```
+  
+## More Output
+
+```
+Contributions to the chi-square statistic:
+        seat
+sex      1_front 2_middle 3_back
+  female    0.94     0.23   0.46
+  male      1.22     0.29   0.59
+
+
+Chi-Square Statistic = 3.734 
+Degrees of Freedom of the table = 2 
+P-Value = 0.1546 
+```
+
+
+# One Numeric Variable
+
+
+## Graphics
+
+`histogram()`, `densityplot()`, or `bwplot()`.
+
+$$function(\sim variable,data=myData)$$
+
+```{r eval=FALSE}
+densityplot(~fastest,data=m111survey)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~fastest,data=m111survey)
+```
+
+## Numerical Summaries
+
+Use `favstats()`:
+
+```{r}
+favstats(~fastest,data=m111survey)
+```
+
+
+# One Factor and One Numeric
+
+## Graphics
+
+$$histogram(\sim numeric \vert factor, data=MyData)$$
+
+$$densityplot(\sim numeric \vert factor, data=MyData)$$
+
+$$bwplot(numeric \sim factor, data=MyData)$$
+
+```{r eval=FALSE}
+densitplot(~fastest|sex,data=m111survey)
+```
+
+## The Graph
+
+```{r echo=FALSE}
+densityplot(~fastest|sex,data=m111survey)
+```
+
+## Numerical Summaries
+
+`favstats()` again:
+
+$$favstats(numeric \sim factor, data=myData)$$
+
+```{r}
+favstats(fastest~sex,data=m111survey)
+```
+
+
+
+# Two Numeric Variables
+
+## Graphics
+
+Scatter plots:
+
+$$xyplot(response \sim explanatory, data = myData)$$
+
+```{r eval=FALSE}
+xyplot(GPA~fastest,data=m111survey,type=c("p","r"))
+```
+
+## The Graph
+
+
+```{r echo=FALSE}
+xyplot(GPA~fastest,data=m111survey,type=c("p","r"))
+```
+
+## Numerical Summaries
+
+$$lmGC(response \sim explanaotry, data=myData)$$
+
+```{r eval=FALSE}
+lmGC(GPA~fastest,data=m111survey)
+```
+
+## The Linear Model Output
+
+
+```{r}
+lmGC(GPA~fastest,data=m111survey)
+```
+
+

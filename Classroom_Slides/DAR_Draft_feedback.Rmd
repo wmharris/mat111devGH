@@ -1,0 +1,312 @@
+---
+title: "DAR Draft Feedback"
+author: "Homer White"
+date: ""
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# A Detail To Start With
+
+## A Possible Outlier
+
+```{r}
+bwplot(~ wage, data = CPS85)
+```
+
+One person makes a lot more than everyone else!
+
+## Who Is This?
+
+```{r}
+CPSRich <- subset(CPS85, wage > 40)
+CPSRich
+```
+
+## Decide
+
+Should you exlude the outlier?  (Maybe it's a typo.  For sure it will mess up graphs a bit!)
+
+Or keep it?  Or maybe keep it in numerical summaries, but exclude it from graphs.
+
+Make your choice and explain it to the reader in the Methods section.
+
+## Removing the Outlier
+
+If you decide to remove the outlier, you can do it with:
+
+```{r}
+CPS2 <- subset(CPS85, wage < 44)
+```
+
+Then use `CPS2`.
+
+
+# Understanding the Assignment
+
+## The Assignment
+
+>"Your assignment involves using `CPS85` to investigate the question of whether women are the victims of wage discrimination.  If a man and a woman are alike in all respects---age, education, work experience, type of job, etc.---that might affect wage, does the man still make more money?"
+
+Let's think about what this means, step-by-step.  Here is ONE POSSIBLE way  to "unpack" the assignment's meaning.
+
+## A Thesis
+
+You could have a thesis:
+
+>*Women are the victims of sex discrimination.*
+
+## Reason for the Thesis
+
+>Women are being paid less than men.
+
+## Back It Up! 
+
+You can back it up with numbers:
+
+```{r}
+favstats(wage ~ sex, data = CPS85)[c("sex","mean","median","n")]
+```
+
+## Back It Up!
+
+You can (and should) also back it up with a graph:
+
+```{r eval = FALSE}
+bwplot(wage ~ sex,
+	data = CPS2,
+	panel = function(..., box.ratio) {
+		panel.bwplot(..., fill = NULL, box.ratio = 0.1)
+		panel.violin(..., col = "burlywood", border = "grey60", alpha = 0.5, varwidth = FALSE)},
+	xlab = "Sex",
+	ylab = "wages ($/hour)")
+```
+
+Labels, captions, etc!
+
+## The Graph
+
+```{r echo = FALSE}
+bwplot(wage ~ sex,
+	data = CPS2,
+	panel = function(..., box.ratio) {
+		panel.bwplot(..., fill = NULL, box.ratio = 0.1)
+		panel.violin(..., col = "burlywood", border = "grey60", alpha = 0.5, varwidth = FALSE)},
+	xlab = "Sex",
+	ylab = "wages ($/hour)")
+```
+
+## Objections
+
+But there are objections to consider.
+
+## The "Education" Objection
+
+Someone could raise the following objection:
+
+>*The wage gap between men and women is due not to sex discrimination, but rather to differences in education between men and women.*
+
+## Understanding the Objection
+
+The objection really involves two claims:
+
+1. Men have more education than women.
+2. If you were to compare men and women who have the same level of education, then the wage gap would vanish.
+
+You need to explain this to your reader!
+
+## Responding to the Objection
+
+You have two choices:
+
+* You could attack Claim 1 by showing that men don't have more education than women.
+* You could attack Claim 2 by "correcting" for education and showing that the wage gap persists.
+
+It's OK to do both!
+
+## Attacking Claim 1
+
+To attack Claim 1, you need to examine the relationship between **educ** and **sex**.
+
+## Attacking Claim 1 (Graphical)
+
+One possibility:
+
+```{r eval = FALSE}
+densityplot( ~ educ,
+	data = CPS2,
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	xlab = "education level (years completed)")
+```
+
+## The Graph
+
+```{r echo = FALSE}
+densityplot( ~ educ,
+	data = CPS2,
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	xlab = "education level (years completed)")
+```
+
+## Attacking Claim 1 (Numerical)
+
+You should complement this with a numerical analysis:
+
+```{r}
+favstats(educ ~ sex, data = CPS85)[c("sex","median","mean","n")]
+```
+
+## Attacking Claim 2
+
+You could also deal with the objection by attacking Claim 2:  "correct" for **educ** and see that the wage gap persists.
+
+## Graphical Attack
+
+**wage** and **educ** are both numerical.  So one possibility is to look at a scatter plot, but group by **sex**.
+
+## The Attack Code
+
+```{r eval = FALSE}
+xyplot(wage ~ educ,
+	data = CPS2,
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	type = c("p","smooth"),
+	pch = 20,
+	xlab = "Education (years)",
+	ylab = "Wages ($/hr)")
+```
+
+## The Graph
+
+```{r echo = FALSE}
+xyplot(wage ~ educ,
+	data = CPS2,
+	groups = sex,
+	auto.key = list(
+		space = "top",
+		title = "Sex",
+		cex.title = 1,
+		columns = 2),
+	type = c("p","smooth"),
+	pch = 20,
+	xlab = "Education (years)",
+	ylab = "Wages ($/hr)")
+```
+
+
+## Numerical Attack
+
+One possible approach:  "cut" **educ** into groups, then break down by the groups.
+
+```{r eval = FALSE}
+EdGrp <- with(CPS85, cut(educ, breaks = 4))
+favstats(wage ~ sex + EdGrp, 
+         data = CPS85)[c("sex.EdGrp","median","mean","n")]
+```
+
+## The Table
+
+```{r echo = FALSE}
+EdGrp <- with(CPS85, cut(educ, breaks = 4))
+favstats(wage ~ sex + EdGrp, 
+         data = CPS85)[c("sex.EdGrp","median","mean","n")]
+```
+
+## Choices
+
+You can attack the "Education" Objection at either point, or at both points.  The choice is up to you.
+
+You can use graphs or numbers, or both.  You should use both if it seems that one approach alone does not conclusively make your point.
+
+Use your judgement.
+
+## Many Other Objections:
+
+* the "age" objection
+* the "experience" objection
+* the "geography" objection
+* the "marital status" objection
+
+Some are more plausible than others, but you should consider them all.
+
+## Further Suggestions
+
+* You could include your thesis in the Introduction.
+* In the Methods section you could:
+    * Provide the basic argument for your thesis.
+    * Then consider just one objection, and *explain in detail* what claims it involves.
+    * Then *explain* how each claim could be attacked.
+* Then in Results you could deal with each objection, one per sub-section.
+* Some other variables don't make for plausible objections, but correcting for them can lead to special insight.  When/if this happens, include your analysis of that variable in your report, under Discussion/Conclusion.
+
+# Graphs and Tables
+
+## Pretty, and with Captions!
+
+* Graphs should have captions.  (Use `fig.cap`.)
+* When a graph has a good caption it does not need a title.
+* Use the caption to explain technical points of a graph (i.e., that the black dots in a box-and-whisker plot represent medians).
+* Conclusions drawn from the graph usually belong in the surrounding text, not in the caption itself.
+* Tables should be done with `kable()` as much as possible.
+* They should have captions, using the `caption` argument.
+
+## Graph/Table Placement
+
+You have two choices:
+
+* You can put all graphs and tables in a separate, final section called **Appendix**.  If you have both graphs and tables there, then it should have a subsection for tables and another subsection for graphs.
+* Or, you can try to keep graphs and tables very close to the places in the report where they are discussed.
+
+## Tips on Keeping Graphs Close
+
+* Use the `fig.height` and `fig.width` chunk options.  Smaller graphs are less likely to get moved far away from where you want them.
+* You can make page breaks by inserting `\newpage` (have one blank line before and one blank line after each such insertion).
+
+# Final Advice
+
+## Read the Directions, Use the Resources ...
+
+* Read the Assignment Again
+* Read the Supporting Documents:
+    * The Sample Report
+    * The Rubrics
+    * The SAT slides
+    * Watch the R Markdown Video
+
+
+## ... and Put in the Effort!
+
+* Start revising now, not two days before deadline
+* Go to the Writing Center
+* Use the Spell Checker (Edit -> Check Spelling) ...
+* ... and then keep checking your spelling and grammar!
+* Ask when you are stuck on anything
+* But don't bother to ask at the lat minute!
+
+
+
+

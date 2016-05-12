@@ -1,0 +1,446 @@
+---
+title: "Confidence Intervals: Pt.3"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+
+# Intervals for One Proportion
+
+## Research Question
+
+
+> Are a majority of GC students female?
+
+We will investigate this question with the `m111survey` data.
+
+
+
+## Recall:  Four-Step Procedure
+
+
+1.  Define the parameter of interest.
+2.  Run the code, and perform a "safety check".
+3.  Report the confidence interval and interpret it.
+4.  Use the interval to answer your Research Question.
+
+## Step 1:  Parameter
+
+
+Let:
+
+* $p=$ the proportion of all GC students that are female.
+
+If $p > 0.5$, then a majority of GC students are female.
+
+We will make a 95% confidence interval for $p$.
+
+
+## Step 2 (1):  Run Code
+
+
+Run the code:
+
+```{r,eval=FALSE}
+binomtestGC(~sex,data=m111survey,
+            success="female")
+```
+
+Additional argument, `success`, specifies which value of the variable is of interest.
+
+
+## The Output
+
+```
+Descriptive Results:
+
+40 successes in 71 trials
+
+Inferential Results:
+
+Estimate of p:  0.5634
+SE(p.hat):  0.0589
+
+95% Confidence Interval for p:
+
+lower.bound       upper.bound
+0.440455          0.680850
+```
+
+
+
+## Step 2 (2):  Safety Check
+
+
+Similar to before:
+
+* Need to have taken a simple random sample from the population.
+
+* No restriction on sample size when using `binomtestGC()` because this function does not rely on any kind of an approximation.
+
+## Are We Safe?
+
+
+At least with regards to the variable **sex**, the `m111survey` data is like a simple random sample of the GC population.
+
+
+## Step 3 (1):  Report Interval
+
+Report it:
+
+``` 
+95% Confidence Interval for p:
+
+lower.bound          upper.bound
+0.440455             0.680850
+```
+
+
+
+## Step 3 (2):  Interpret the Interval
+
+
+* Based on the data at hand, we are 95% confident that $p$ is somewhere between 0.44 and 0.68.
+
+
+
+
+
+## Step 4:  Conclusion
+
+Use the interval to answer the Research Question:
+
+* The interval (0.44 to 0.68) contains some values below 0.5,
+* and some values above 0.5!
+* We don't have enough evidence to conclude that $p > 0.5$
+
+## Note
+
+In the output we saw:
+
+```
+Estimate of p:  0.5634
+SE(p.hat):  0.0589
+```
+
+* The estimate of $p$ was $\hat{p} = 40/71$
+* $SE(\hat{p})$ = 0.0589
+
+## A Rough 95%-Confidence Interval
+
+The 69-95 Rule for Estimation says that a rough 95%-confidence interval for $p$ is:
+
+$$\hat{p} \pm 2 \times SE(\hat{p})$$
+
+```{r}
+0.5634 - 2*0.0589 #lower bound
+0.5634 + 2*0.0589 #lower bound
+```
+
+Differs a bit from the more exact interval given by `binomtestGC()`!
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+View(m111survey)
+```
+
+Do more than one-third of all GC students prefer to the in the Middle?
+
+To answer this question, make a 95%-confidence interval for $p$, the proportion of all GC students who prefer the middle.
+
+
+  
+## Additional Example
+
+Research Question:
+
+
+* A simple random sample of 1000 U.S. adults showed that 49% are in favor of the Affordable Care Act.  What is the percentage of all Americans that favor this law?
+
+## Step 1:  Parameter
+
+
+Let: 
+
+* $p=$ the proportion of all Americans in favor of the Affordable Care Act.
+
+We will make a 95% confidence interval for $p$.
+
+## Step 2 (1):  Run Code
+
+Since we are given summary data instead of access to a data set in R, we run the code:
+
+
+```{r eval=FALSE}
+binomtestGC(x=490,n=1000)
+```
+
+where
+
+* $x$ is the number of successes in the sample.
+
+* $n$ is the sample size.
+
+## Step 2 (2):  Safety Check
+
+
+* We are told this is a simple random sample.
+
+* Since we are using `binomtestGC()`, there is no restriction on sample size.
+
+  
+## Step 3:  Report & Interpret Interval
+
+```
+95% Confidence Interval for p:
+
+lower.bound     upper.bound
+0.458585        0.521474
+```
+
+**Interpretation**:  Based on the data at hand, we are 95% confident that $p$ is somewhere between 0.46 and 0.52.
+
+## Step 4:  Conclusion
+
+(The Research Question was not very specific, so our conclusion cannot do much more than restate the interpretation of the confidence interval.)
+
+
+
+## Practice { .practice }
+
+Out of 2500 randomly-selected voters, 1200 says that they approve of the job that Barak Obama is doing..
+
+Make a 99%-confidence interval for $p$, the proportion of all voters who approve of the job Obama is doing.
+
+(Hint:  Add the argument `conf.level=0.99` to your code.)
+
+
+# Difference of Two Proportions
+
+
+## Research Question
+
+
+*In the GC population, who is more likely to believe in extra-terrestrial life:  gals or guy?*
+
+We will investigate this question with the `m111survey` data.
+
+## Step 1:  Parameters
+
+
+Let
+
+* $p_1=$ proportion of all GC gals that believe in extra-terrestrial life.
+* $p_2=$ proportion of all GC guys that believe in extra-terrestrial life.
+
+
+
+* Explanatory variable is **sex**, a factor.
+* Response variable is **belief in extra-terrestrial life**, also a factor.
+* Both variables have two values.
+* We are interested in estimating the parameter $p_1-p_2$ using a 95% confidence interval.
+
+## Step 2 (1):  Run Code
+
+We will use a new function called `proptestGC()`.
+
+```{r eval=FALSE}
+proptestGC(~sex+extra_life,data=m111survey,
+           success="yes",first="female")
+```
+
+Note the input format (for two factor variables)
+
+$$\sim  explanatory + response$$
+
+Important:
+
+* `success` specifies the value of the factor variable **extra_life** that we want to count
+* `first="female"` guarantees that the females will be the first group, males second.
+
+## Some Output
+
+```
+Descriptive Results:
+
+       yes  n estimated.prop
+female  10 40         0.2500
+male    20 31         0.6452
+```
+
+Safety Check:
+
+  * $10 \geq 10$ gals that believe (success)
+  * $30 \geq 10$ gals that do not believe (failure)
+  * $20 \geq 10$ guys that believe (success)
+  * $11 \geq 10$ guys that do not believe (failure)
+  
+## More Output
+
+```
+Estimate of p1-p2:	 -0.3952 
+SE(p1.hat - p2.hat):	 0.1099
+```
+
+The statistic is
+
+$$\hat{p_1}-\hat{p_2} = \dfrac{X_1}{n_1}-\dfrac{X_2}{n_2}$$
+
+where 
+
+* $X_1=$ # of gals that believe in extra-terrestrial life,
+* $X_2=$ # of guys that believe in extra-terrestrial life,
+* $n_1=$ # of gals in sample, $n_2=$ # of guys in sample.
+
+This time $\hat{p_1}-\hat{p_2} = -0.3952.$
+
+  
+## Step 3 (1):  Report Interval
+
+```
+95% Confidence Interval for p1-p2:
+
+lower.bound     upper.bound
+-0.610510       -0.179812
+```
+
+## Step 3 (2):  Interpret Interval
+
+
+* Based on the data at hand, we are 95% confident that $p_1-p_2$ is somewhere between -0.61 and -0.18.
+
+Since $p_1$ was defined to be the proportion of gals and $p_2$ the proportion of guys, 
+
+* negative values for $p_1-p_2$ indicate that the proportion of guys that believe in extra-terrestrial life is bigger than the proportion of gals.
+
+
+## Step 4:  Conclusion/Answer
+
+
+(Here is where we use the interval to answer the Research Question, as specifically as possible.)
+
+* The confidence interval contains only negative values (corresponding to gals being less likely than guys to be believe in ET life).
+* We can be pretty confident that GC gals are less likely to believe in ET-life than GC guys are.
+
+## Another Example:  Union Membership
+
+**Research Queston:**
+
+>*In 1985, who was more likely to belong to a union:  a male worker or a female worker?*
+
+## Descriptive Look
+
+```{r}
+sexUnion <- xtabs(~ sex + union, data = CPS85)
+sexUnion
+```
+
+Check row percents:
+
+```{r}
+rowPerc(sexUnion)
+```
+
+## Inferential Work
+
+Let
+
+* $p_1=$ proportion of all male employees in 1985 who belonged to a union.
+* $p_2=$ proportion of all female employees in 1985 who belonged to a union.
+
+```{r eval = FALSE}
+proptestGC(~ sex + union, data = CPS85,
+           success = "Union", first = "M")
+```
+
+## Results
+
+```
+Estimate of p1-p2:	 0.121 
+SE(p1.hat - p2.hat):	 0.03218 
+
+95% Confidence Interval for p1-p2:
+
+          lower.bound         upper.bound          
+          0.057930            0.184086             
+```
+
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+Let $p_1$ be the proportion of all UC-Davis females who prefer to sit in the front.
+
+Let $p_2$ be the proportion of all UC-Davis males who prefer to sit in the front.
+
+Make a 90%-confidence interval for $p_1-p_2$.
+
+Hints:
+
+* use the `success` argument to count people who prefer the Front
+* use the `conf.level` argument for confidence levels other than 95%
+* use the `first` argument to say which group should come first
+
+
+## Example:  Summary Data
+
+
+The function `proptestGC()` can be used with summary data as well:
+
+Suppose we took two samples from two populations and:
+
+* there were 23 successes out of 100 trials in the first sample;
+* there were 33 out of 110 successes in the second sample.  
+
+```{r eval=F}
+proptestGC(x=c(23,33),n=c(100,110))
+```
+
+## Results
+
+```
+Descriptive Results:
+
+        successes   n estimated.prop
+Group 1        23 100           0.23
+Group 2        33 110           0.30
+
+Inferential Results:
+
+Estimate of p1-p2:   -0.07 
+SE(p1.hat - p2.hat):   0.06066 
+
+95% Confidence Interval for p1-p2:
+
+lower.bound         upper.bound          
+-0.188899           0.048899
+```
+
+## Practice { .practice }
+
+* In a random sample of 2000 adults in the year 1940, 800 had completed high school.
+* In a random sample of 2500 adults in the years 1991, 1900 had completed high school.
+
+Let $p_1$ be the proportion of all adults in 1991 who had completed high school.
+
+Let $p_2$ be the proportion of all adults in 1940 who had completed high school.
+
+Find a 95%-confidence interval for $p_1-p_2$.

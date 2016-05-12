@@ -1,0 +1,285 @@
+---
+title: "Two Numerical Variables:  Pt. 3"
+author: "Homer White"
+date: "December, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+```{r eval=FALSE,echo=FALSE}
+install.packages("maps","plyr")
+devtools::install_github("bwlewis/rthreejs")
+```
+
+
+# Curvilinear Models
+
+## Ricky Henderson
+
+```{r eval=FALSE}
+data(henderson)
+View(henderson)
+help(henderson)
+```
+
+Let's see how Ricky's slugging average (SLG) varied over the course of his career.
+
+## A Scatterplot
+
+```{r eval=FALSE}
+xyplot(SLG~Season,data=henderson,
+       pch=19,main="Career Slugging for Ricky Henderson",
+       type=c("p","r"))
+```
+
+This will give us a regression line, too.
+
+## The Plot
+
+```{r echo=FALSE}
+xyplot(SLG~Season,data=henderson,
+       pch=19,main="Career Slugging for Ricky Henderson",
+       type=c("p","r"))
+```
+
+The linear fit just doesn't seem right!
+
+## Let's Check!
+
+```{r eval=FALSE}
+lmGC(SLG~Season,data=henderson,check=TRUE)
+```
+
+## Results
+
+```
+Correlation coefficient r =  -0.2719 
+
+Equation of Regression Line:
+
+   SLG = 5.7685 + -0.0027 * Season 
+
+Residual Standard Error:	s   = 0.0661 
+R^2 (unadjusted):		R^2 = 0.0739 
+```
+
+* $R^2$ is rather small!
+* the regression line will do a poor job of predicting SLG from Season
+
+## The Checking Graph
+
+```{r echo=FALSE,results='hide'}
+lmGC(SLG~Season,data=henderson,check=TRUE)
+```
+
+## How to Use It
+
+* the loess curve makes (almost) no assumptions about the type of relationship between the two variables
+
+* there is an approximate 95%-confidence band around the loess curve
+
+* if your fit wanders much outside of that band, maybe you should try another fit!
+
+## Career Statistics
+
+For many players:
+
+* the first couple of years are tough
+* then there is a long peak
+* followed by a few final years of decline
+
+The relationship is liable to be curvilinear!
+
+## Quadratic Equations
+
+$$y=ax^2+bx+c$$
+
+These graph as parabolas.
+
+## Fit a Parabola Yourself!
+
+Run this scary R-code:
+
+```{r eval=FALSE}
+require(manipulate)
+initc <- mean(henderson$SLG)
+manipulate(
+  a = slider(-.002,.002,initial=0,step=0.0001),
+  b = slider(-0.05,0.05,initial=0,step=0.0001),
+  c = slider(0,1,initial=initc,step=0.001),
+  { n <- with(henderson,Season - 1978)
+    slug <- henderson$SLG
+    ssr <- round(sum((slug - (a*n^2+b*n+c))^2),5)
+    with(henderson,
+         plot(n,SLG,main=paste0("SSR = ",ssr),xlab="Season Number"))
+    curve(a*x^2+b*x+c,add=TRUE)
+  })
+```
+
+<!-- Instructors:  For the fitted curve, the sum of the squares of the residuals is about 0.0611.) -->
+
+
+
+## Let R Fit the Curve!
+
+```{r eval=FALSE}
+polyfitGC(SLG~Season,data=henderson,degree=2,graph=TRUE)
+```
+
+## Results
+
+```
+Polynomial Regression, Degree = 2
+
+Residual Standard Error:  s   = 0.0553 
+R^2 (unadjusted):		R^2 = 0.3825 
+```
+
+* $R^2$ is higher!
+
+* the curve should do a better job of predicting SLG from Season
+
+## The Graph
+
+```{r echo=FALSE,results='hide'}
+polyfitGC(SLG~Season,data=henderson,graph=TRUE)
+```
+
+## Check the Fit
+
+```{r eval=FALSE}
+polyfitGC(SLG~Season,data=henderson,check=TRUE)
+```
+
+## The Checking Graph
+
+```{r echo=FALSE,results='hide'}
+polyfitGC(SLG~Season,data=henderson,check=TRUE)
+```
+
+## Predicting SLG
+
+Actually, Ricky Henderson played 72 games in 2002, and another 30 games in the 2003 season.  what do our models predict for these seasons?
+
+## Linear Predictions
+
+```{r}
+linModel <- lmGC(SLG~Season,data=henderson)
+predict(linModel,x=2002)
+predict(linModel,x=2003)
+```
+
+## Quadratic Predictions
+
+```{r}
+quadModel <- polyfitGC(SLG~Season,degree=2,data=henderson)
+predict(quadModel,x=2002)
+predict(quadModel,x=2003)
+```
+
+## Comparison with Actual Values
+
+Season|Linear Pred|Quadratic Pred|Actual
+|:---:|:---:|:---:|:---:|
+2002|0.386|0.293|0.352|
+2003|0.383|0.267|0.306|
+
+<br>
+
+By 2003, the quadratic prediction is definitely better!
+
+## Another Example
+
+```{r eval=FALSE}
+data(Utilities)
+View(Utilities)
+help(Utilities)
+```
+
+Let's think about predicting gas bill from average temperature:
+
+```{r eval=FALSE}
+xyplot(gasbill~temp,data=Utilities,
+       type=c("p","r"),pch=19)
+```
+
+## The Scatter Plot
+
+```{r echo=FALSE}
+xyplot(gasbill~temp,data=Utilities,
+       type=c("p","r"),pch=19)
+```
+
+
+## Practice { .practice }
+
+```{r eval=FALSE}
+data(Utilities)
+View(Utilities)
+help(Utilities)
+```
+
+Construct a linear model to predict **gasbill** from **temp**.  Use it to predict the gasbill in a billing period when the average temperature is 80 degrees.
+
+Construct a second-degree polynomial model to predict **gasbill** from **temp**.  Use it to predict the gasbill in a billing period when the average temperature is 80 degrees.
+
+Which prediction do you think is more reliable?  Why?
+
+# 3-D Scatter Plots
+
+## Irises
+
+<img src="iris.jpg" style="width:400px;height:400px"/>
+
+## Iris Data
+
+```{r eval=FALSE}
+data(iris)
+View(iris)
+help(iris)
+```
+
+* Three species represented
+    * setosa
+    * versicolor
+    * virginica
+* 50 specimens of each species
+* Numerical variables recorded:
+    * sepal width, sepal length
+    * petal width, petal length
+
+## A 3-D Scatter Plot
+
+The function `cloud()` will plot three numerical variables at once.
+
+```{r eval=FALSE}
+cloud(Petal.Length ~ Sepal.Length * Sepal.Width,
+      data=iris, auto.key=list(space="right"),
+      group=Species,pch=19,
+      screen=list(x=-90,y=40,z=0)
+      )
+```
+
+## The Plot
+
+```{r echo=FALSE}
+cloud(Petal.Length ~ Sepal.Length * Sepal.Width,
+      data=iris, auto.key=list(space="right"),
+      group=Species, pch=19,
+      screen=list(x=-90,y=40,z=0)
+      )
+```
+
+
+

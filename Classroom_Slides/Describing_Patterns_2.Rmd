@@ -1,0 +1,233 @@
+---
+title: "Describing Patterns 2"
+author: "Homer White"
+date: "Sunday, August 17, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+# Median and Quartiles
+
+## Justin Verlander:  Pitcher
+
+```{r eval=FALSE}
+data(verlander)
+View(verlander)
+help(verlander)
+```
+
+## favstats() Again
+
+```{r}
+favstats(~speed,data=verlander)
+```
+
+* Q1:  first Quartile.  About 25% are below this value.
+
+* median:  50th percentile.  About 50% are below this value.
+
+* Q3:  third Quartile.  about 75% are below this value.
+
+* IQR = Q3 - Q1 = 96.4 - 85.3 = 11.1.  Middle 50% are spread this far apart.
+
+## Boxplot for Speeds
+
+```{r eval=FALSE}
+bwplot(~speed,data=verlander)
+```
+
+
+## The Boxplot
+
+```{r echo=FALSE}
+bwplot(~speed,data=verlander)
+```
+
+The 58.9 mph pitch was an outlier!
+
+## Practice 1 { .practice }
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+*Find the median and IQR of the fastest speeds driven.*
+
+# Shapes of Numerical Distributions
+
+## Unimodal, Left-Skewed
+
+
+```{r echo=FALSE}
+set.seed(12345)
+dunileft <- rbeta(1000,shape1=10,shape2=1)
+plot(density(dunileft),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,at=F,labels=F)
+axis(2,at=F,labels=F)
+```
+
+## Unimodal, Right-Skewed
+
+```{r echo=FALSE}
+set.seed(12345)
+duniright <- rbeta(1000,shape1=1,shape2=10)
+plot(density(duniright),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+## Bimodal, Right-Skewed
+
+
+```{r echo=F}
+set.seed(12345)
+dbiright <- c(duniright,rnorm(400,mean=0.5,sd=0.1))
+plot(density(dbiright),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+## Unimodal, Symmetric
+
+
+```{r echo=FALSE}
+set.seed(12345)
+dunisymm <- rnorm(1000)
+plot(density(dunisymm),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+This is often called "bell-shaped."
+
+## Bimodal, Symmetric
+
+
+```{r echo=FALSE}
+set.seed(12345)
+dbisymm <- rbeta(1000,shape1=0.25,shape2=0.25)
+plot(density(dbisymm),
+     axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+## Bimodal, Symmetric
+
+
+```{r echo=F}
+set.seed(12345)
+dbisymm2 <- rbeta(1000,shape1=0.25,shape2=0.25)
+plot(density(dbisymm2,from=0,to=1),
+     axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+## Practice 2 { .practice }
+
+```{r echo=FALSE}
+densityplot(~speed,data=verlander,
+            main="Verlander Pitches",
+            xlab="speed (mph)",
+            plot.points=F,
+            subset=speed > 60)
+```
+
+Describe the shape:  symmetric or skewed?  Unimodal, bimodal, or trimodal?
+
+
+# Mean and Standard Deviation
+
+## Verlander Again
+
+```{r}
+favstats(~speed,data=verlander)
+```
+
+* Mean:  sum of values, divided by how many
+
+* SD:  standard deviation.  Typical values are within a SD of the mean.
+
+## 68-95 Rule
+
+When the distribution is roughly bell-shaped:
+
+* About 68% of the values are within one SD of the mean
+
+* About 95% are within two SDs of the mean
+
+* About 99.7% are within 3 SDs of the mean.
+
+*Click the curve on the GC Stats website!*
+
+## Verlander Four-Seam Fastballs
+
+```{r}
+verlanderFF <- subset(verlander,pitch_type=="FF")
+favstats(~speed,data=verlanderFF)
+```
+
+The mean speed is about 96 mph.  The SD is about 2 mph.
+
+## Verlander Fastballs
+
+```{r echo=FALSE}
+densityplot(~speed,data=verlanderFF,
+            xlab="speed (mph)",
+            plot.points=F)
+```
+
+Distribution is roughly bell-shaped.
+
+## Practice 3 { .practice }
+
+* About 68% of Justin Verlander's fastballs were between ? and ? (Find the numbers to fill in the ?'s.)
+
+* About what percentage of the time did Verlander throw faster than 100 mph?
+
+* Find a speed so that about 16% of his fastballs were slower than that speed.
+
+# z-scores
+
+## The z-score
+
+$$ z = \frac{\textbf{value}-\textbf{mean}}{SD}.$$
+
+This tells you how many SDs above or below the mean any given value is.
+
+* Large positive z ($z > 2$) means the value was unusually large.
+* Large negative z ($z < -2$) means the value was unusually small.
+
+
+
+## Example z-score
+
+Mean speed of Verlander's fastball = 96 mph.
+
+SD of speeds is 2 mph.
+
+He throws a 99 mph pitch.  *What is its z-score?*
+
+$$ z= \frac{99-96}{2}=1.5.$$
+
+
+## Practice 4 { .practice }
+
+* Find the z-score of a 91 mph fastball.
+* Was this fastball unusually slow?
+* Find the z-score of a 95 mph fastball.  Was this pitch unusually slow?

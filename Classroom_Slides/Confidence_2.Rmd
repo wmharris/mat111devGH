@@ -1,0 +1,314 @@
+---
+title: "Confidence Intervals: Pt.2"
+author: "Homer White"
+date: "April, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# The t-Statistic
+
+
+## 68-95 Rule for Estimation
+
+
+We say that we are about 95% confident that
+  
+$$\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x}),$$
+
+**because** before the sample was taken
+
+$$P(\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x})) \approx 0.95.$$
+
+## Some Logic
+
+
+$$\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x})$$
+
+means the same as:
+
+* $\mu$ is within 2 SE's of $\bar{x}$,
+  
+which means the same as
+
+* $\bar{x}$ is within two SE's of $\mu$.
+  
+## Logic (Continued)
+
+
+But this means the same thing as:
+
+$$-2 < \frac{\bar{x}-\mu}{SE(\bar{x})} < 2.$$
+
+
+## t-statistic
+
+For short, let's define the *t-statistic* as:
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}.$$
+
+* This is the "t" in `ttestGC()`.
+* $t$ says how many SEs $\bar{x}$ is above/below the population mean $\mu$.
+* It reminds us of z-scores:  $z=\frac{x-\bar{x}}{s}$
+* So $t$ has "$z$-score style"!
+
+## Logic (Concluded)
+
+
+
+Then all along we were saying that before the sample is taken:
+
+$$P(-2 < t < 2) \approx 0.95.$$
+
+How good is this approximation?  Can we do better?
+
+## A Random Variable
+
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}, \\
+SE(\bar{x})=\frac{s}{\sqrt{n}}.$$
+
+So $t$ depends on:
+
+* $\bar{x}$ and $s$, which depend on ...
+* the sample, which depends on ...
+* ... **chance!**
+
+So $t$ is a random variable!
+
+
+
+# The t-Curves
+
+## Statistical Theory Says:
+
+
+If
+
+* you take a random sample from a population and
+* the population in perfectly normal and
+* your sample is of size $n$
+
+then
+
+* probabilities for $t$ are given by a *t-density curve* with $n-1$ *degrees of freedom*.
+
+## What are t-Curves?
+
+
+* There is a $t$-curve for each degree of freedom $df = 1,2,3,\ldots$
+* They are symmetric and centered around 0
+* They have fatter tails than the standard normal curve does
+* But the bigger the degree of freedom is, the more the $t$-curve resembles the standard normal curve
+
+```{r eval=FALSE}
+require(manipulate)
+tExplore()
+```
+
+## ptGC()
+
+
+To find probabilities for $t$-random variables, use `ptGC()`.
+
+**Example:**  Say that you are going to take a SRS of size $n=40$ from a population.  What is
+
+$$P(-2 < t <2)?$$
+
+```{r eval=FALSE}
+ptGC(c(-2,2),region="between",
+     df=39,graph=TRUE)
+```
+
+
+---
+
+```{r echo=FALSE}
+ptGC(c(-2,2),region="between",
+     df=39,graph=TRUE)
+```
+
+At size $n=40$, rough 95% intervals are not so bad!
+
+
+## ptGC()
+
+
+**Example:**  Say that you are going to take a SRS of size $n=4$ from a population.  What is
+
+$$P(-2 < t <2)?$$
+
+```{r eval=FALSE}
+ptGC(c(-2,2),region="between",
+     df=3,graph=TRUE)
+```
+
+---
+
+```{r echo=FALSE}
+ptGC(c(-2,2),region="between",
+     df=3,graph=TRUE)
+```
+
+At size $n=4$, rough 95% intervals are not reliable!
+
+
+
+# Finding Multipliers
+
+
+## Multipliers
+
+
+Our rough 95%-confidence intervals for are of the form:
+
+$$\bar{x} \pm 2SE(\bar{x})$$
+
+or more generally:
+
+$$\textbf{estimator} \pm 2SE(\textbf{estimator})$$
+
+The 2 is a *multiplier*.  It makes the interval a rough 95%-confidence interval.
+
+## Multipliers
+
+
+We used 1 as a multiplier to make rough 68%-confidence intervals:
+
+$$\bar{x} \pm SE(\bar{x})$$
+
+We used 3 as a multiplier to make rough 99.7%-confidence intervals:
+
+$$\bar{x} \pm 3SE(\bar{x})$$
+
+## Multipliers
+
+
+* `ttestGC()` also uses multipliers to make its confidence intervals.
+* If the population is exactly normal, then they yield exactly the advertised level of confidence!
+
+<br>
+
+*How does R find the multipliers?*
+
+## Example
+
+
+Say that:
+
+* you have taken a random sample of size $n=16$ from a population;
+* you know the population is normally distributed,
+* you don't know $\mu$ or $\sigma$;
+* you want to make a 95%-confidence interval for $\mu$.
+
+## Example
+
+
+Your interval will look like:
+
+$$\bar{x} \pm t^*SE(\bar{x}),$$
+
+where $t^*$ is the multiplier for a 95%-confidence interval for $\mu$, at sample size $n=16$.
+
+We want
+
+$$P(-t^* < t < t^*) = 0.95.$$
+
+---
+
+```{r echo=FALSE}
+ptGC(c(-2.13145,2.13145),region="between",
+     df=15,graph=TRUE)
+```
+Looks like $t^*$ should be about 2.13145.
+
+## What R Computes
+
+
+So at sample size $n=16$, R computes a 95%-confidence interval using the formula:
+
+$$\bar{x} \pm 2.13145 \times SE(\bar{x}).$$
+
+The multiplier depends on:
+
+* the sample size $n$
+* the desired level of confidence
+
+## Reminder
+
+
+If the population is not exactly normal
+
+* then R's formula for confidence intervals is not exactly correct!
+* (but as sample size $n$ increases, it is closer and closer to correct)
+
+
+# The Importance of Safety Checks
+
+
+## Truth in Advertising
+
+
+Suppose you make intervals at a certain level of confidence, say 95%.
+
+* For your method to be reliable, your intervals should contain $\mu$ 95% of the time, in repeated sampling.
+* If the population is normal and you took a random sample, this will happen!
+* (No matter what the sample size is!)
+
+
+## What if ...
+
+
+... the population is not normal?
+
+Then your intervals are only approximately 95%-confidence intervals.
+
+* At very large sample sizes, this is not a problem (CLT).
+* But at smaller sample sizes, you must have some reason to believe that the population is not "too far" from normal.
+
+## See for Yourself
+
+Try this app:
+
+[Intervals for One Mean](http://homer.shinyapps.io/CIMean)
+
+## Practice { .practice }
+
+Try the app with:
+
+* the population set at "Way-Out Outlier Group"
+* sample size at n = 10
+* confidence level set at 95%
+
+Take at least 10,000 samples.
+
+* What percent of the time did your confidence intervals contain the mean of the population?
+* Describe the distribtuion of the t-statistics?  Does it resemble the t-curve very closely?
+
+Try the same things again, but with sample size set at n = 50.  Even at sample size 50, can you fully "trust" confidence intervals based on samples from this population?
+
+## Safety Check for One Mean
+
+* Always good to make a graph of your sample (histogram. boxplot, density plot)
+* At smaller sample sizes ($n < 30$, say), look carefully at the graph.
+* If you see much skewness, be worried.
+* If you see outliers, be worried.
+* The smaller the sample size, the more the skewness/outliers should worry you.
+
+## Important
+
+
+The other part of the safety check is:
+
+* *Did we take a random sample from the population?*
+  
+If our sample was not random, no amount of clever probability theory will help us make reliable confidence intervals.

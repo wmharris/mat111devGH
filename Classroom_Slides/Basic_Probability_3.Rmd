@@ -1,0 +1,297 @@
+---
+title: "Basic Probability: Pt.3"
+author: "Homer White"
+date: "September, 2014"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# Continuous Random Variables
+
+## Continuous Random Variable
+
+
+> A **continuous random variable** is a random variable whose possible values lie in a range of real numbers.
+
+## Examples
+
+$X=\mbox{amount of sugar in a randomly-chosen  orange.}$
+
+* Range of $X$ = $(0,\infty)$.
+
+$Y=\mbox{height of a random student at GC}$
+
+* Range of $Y=(0,\infty)$.
+
+$Z=\mbox{grade of a random student in MAT 111} (\%)$
+
+* Range of $Z=[0,100]$
+
+## Probabilities 
+
+For a *discrete* random variable you get probabilities from a table or a histogram:
+
+Example:  Let $X$ = number of heads in 3 flips of a fair coin.
+
+$x$|$P(X=x)$
+---|---
+0|1/8
+1|3/8
+2|3/8
+3|1/8
+
+## Probability Histogram
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(3,0.5),kind="histogram",type="percent", xlab="Number of Heads x")
+```
+
+## Probabilities
+
+For a *continuous* random variable, you get probabilities from a smooth *density curve*.
+
+```{r, echo=FALSE}
+pchisqGC(3,region="above",df=5,graph=TRUE)
+```
+
+## Normal Random Variable
+
+PDF for a **normal** random variable $X$:
+
+* is called a "normal curve"
+* it is bell-shaped
+* Symmetric about $EV(X)=\mu$
+* $SD(X)=\sigma$
+* the 68-95 Rule applies
+
+##
+
+```{r, echo=FALSE}
+plotDist("norm",params=list(mean=0,sd=1),kind='density',labels=FALSE)
+```
+
+
+## 68-95 Rule for Probability
+
+When a random variable is roughly normal:
+
+* Probability that $X$ falls within 1 standard deviation of the mean:
+
+$$P(\mu-\sigma< X < \mu+\sigma)\approx 0.68$$
+
+* Probability that $X$ falls within 2 standard deviations of the mean:
+
+$$P(\mu-2\sigma< X < \mu+2\sigma)\approx 0.95$$
+
+* Probability that $X$ falls within 3 standard deviations of the mean:
+
+$$P(\mu-3\sigma< X < \mu+3\sigma)\approx 0.997$$
+
+## Normal Random Variable:  Example
+
+
+The heights of college males follow a normal distribution with $\mu=72$ inches and $\sigma=3.1$ inches.  Let 
+
+$$X= \mbox{ height of a college male.}$$  
+
+About 95% of college males are between what two heights? 
+
+$P($ ________ < $X$ < ________$)$ $\approx$ 0.95
+
+```{r,eval=FALSE}
+require(manipulate)
+EmpRuleGC(mean=72,sd=3.1)
+```
+
+## Normal Probabilities (Greater Than)
+
+When you can't use the 68-95 Rule, use `pnormGC()`:.
+
+To find $P(X>70.9)$:
+
+```{r,eval=FALSE}
+pnormGC(70.9,region="above",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+##
+
+```{r,echo=FALSE}
+pnormGC(70.9,region="above",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+## Normal Probabilities (Less Than)
+
+To find $P(X<69)$:
+
+```{r,eval=FALSE}
+pnormGC(69,region="below",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+##
+
+```{r,echo=FALSE}
+pnormGC(69,region="below",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+## Normal Probabilities (Between)
+
+To find $P(69 < X < 72)$:
+
+```{r,eval=FALSE}
+pnormGC(c(69,72),region="between",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+##
+
+```{r,echo=FALSE}
+pnormGC(c(69,72),region="between",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+
+
+## Normal Probabilities (Outside)
+
+
+To find $P(X<69.9 \mbox{ or } X>75.1)$:
+
+```{r,eval=FALSE}
+pnormGC(c(68.9,75.1),region="outside",
+        mean=72,sd=3.1,graph=TRUE)
+```
+
+
+##
+
+```{r,echo=FALSE}
+pnormGC(c(68.9,75.1),region="outside",mean=72,
+         sd=3.1,graph=TRUE)
+```
+
+## Note on <= and >=
+
+When a random variable is continuous,
+
+$$P(X <= x)  = P(X < x).$$
+
+for any value $x$.
+
+Why?  Well,
+
+$$P(X=x)=0.$$
+
+## Really?
+
+Yes!  Consider our normal random variable.  To get $P(X=73)$, we compute:
+
+```{r,eval=FALSE}
+pnormGC(c(73,73),region="between",
+        mean=72,sd=3.1,graph=TRUE)
+```
+
+
+##
+
+```{r,echo=FALSE}
+pnormGC(c(73,73),region="between",
+        mean=72,sd=3.1,graph=TRUE)
+```
+
+## Practice { .practice }
+
+A population of bats has wingspans that are normally distributed, with a mean $\mu$ of 25 centimeters and a standard deviation of 5 centimeters.
+
+Let $X=$ the wingspan of a randomly-captured bat.  Find:
+
+* $P(X<27)$
+* $P(X>29)$
+* $P(20 < X < 30)$
+
+
+
+# Percentiles
+
+## Percentiale Ranks
+
+Suppose we want to know the height of a male who is taller than 80% of college men.  We know:
+
+$$P(X\leq x)=0.80$$
+
+We need to find $x$.  It is called a the "80th percentile" of the heights.
+
+## Computing Percentiles
+
+To find the 80th percentile, compute:
+
+```{r}
+qnorm(0.80,mean=72,sd=3.1)
+```
+
+
+A 74.61 inch tall male is taller than 80% of college men.
+
+We also say:  the 80th percentile of the heights of college males is 74.61 inches.
+
+## Another Way
+
+You can also use `qnormGC()`.  This will give you a graph, if you like:
+
+```{r eval=FALSE}
+qnormGC(0.80,region="below",mean=72,sd=3.1,graph=TRUE)
+```
+
+## The Result
+
+```{r echo=FALSE}
+qnormGC(0.80,region="below",mean=72,sd=3.1,graph=TRUE)
+```
+
+
+
+## Another Example
+
+Find a height so that a person with that height is shorter than 10% of college males.
+
+Such a person is taller than 90% of college males, so compute:
+
+```{r}
+qnorm(0.90,mean=72,sd=3.1)
+```
+
+Using `qnormGC()`:
+
+```{r eval=FALSE}
+qnormGC(0.10,region="above",mean=72,sd=3.1,graph=TRUE)
+```
+
+## The Result
+
+```{r echo=FALSE}
+qnormGC(0.10,region="above",mean=72,sd=3.1,graph=TRUE)
+```
+
+
+
+## Practice { .practice }
+
+Back to the population of bats whose wingspans average 25 centimeters, with a standard deviation of 5 cm.
+
+* Harry the Bat has a wingspan that is right at the 35th percentile for all the bats.  What is Harry's wingspan?
+
+* Dolores the Bat has a wingspan that is longer than all but 25% of the bats.  What is her wingspan?

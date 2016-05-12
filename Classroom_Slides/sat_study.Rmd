@@ -1,0 +1,219 @@
+---
+title: "Student Success on the SAT"
+author: "Homer White"
+date: "February, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+    mathjax: default
+    widescreen: yes
+    standalone:  true
+    css:  slide_styles.css
+---
+
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# SAT and School Expenditure
+
+## Research Question:
+
+>*How does expenditure on schools affect student performance?*
+
+```{r eval = FALSE}
+data(sat)
+View(sat)
+help(sat)
+```
+
+
+## Teacher Salary and SAT Scores
+
+Looking at relationship between:
+
+* **salary** (numerical)
+* **sat** (numerical)
+
+```{r eval = FALSE}
+xyplot(sat ~ salary, data = sat,
+       type = c("p","r"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(sat ~ salary, data = sat,
+       type = c("p","r"))
+```
+
+Hmm, not what we would expect!
+
+## Expenditure per Student and SAT
+
+
+Looking at relationship between:
+
+* **expend** (numerical)
+* **sat** (numerical)
+
+```{r eval = FALSE}
+xyplot(sat ~ expend, data = sat,
+       type = c("p","r"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(sat ~ expend, data = sat,
+       type = c("p","r"))
+```
+
+Again, not what we would expect!
+
+## How about smaller Class sizes?
+
+Looking at relationship between:
+
+* **ratio** (numerical)
+* **sat** (numerical)
+
+```{r eval = FALSE}
+xyplot(sat ~ ratio, data = sat,
+       type = c("p","r"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(sat ~ ratio, data = sat,
+       type = c("p","r"))
+```
+
+Again, not what we would expect!
+
+## So it appears that ...
+
+... in order to raise ACT scores we should:
+
+* pay teachers less
+* spend less on the students
+* pack 'em in like sardines!
+
+This can't be right!  What's going on?
+
+## Percentage in State Taking the SAT
+
+**frac** is the percentage of seniors in the state that take the SAT test.
+
+How does this relate to student performance?
+
+```{r eval = FALSE}
+xyplot(sat ~ frac, data = sat,
+       type = c("p","r"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(sat ~ frac, data = sat,
+       type = c("p","r"))
+```
+
+High frac goes with low act!
+
+## frac and salary
+
+```{r eval = FALSE}
+xyplot(frac ~ salary, data = sat,
+       type = c("p","r"))
+```
+
+##
+
+```{r echo = FALSE}
+xyplot(frac ~ salary, data = sat,
+       type = c("p","r"))
+```
+
+States with high **frac** also pay their teachers more!
+
+## Confounding Variable
+
+**frac** is a *confounding variable*:
+
+* it's related to the explanatory variable **salary**
+* It helps to cause the response variable **sat**
+
+We need to "correct" for **frac**.
+
+##
+
+```{r eval = FALSE}
+Percentage <- equal.count(sat$frac, number = 3, overlap = 0.1)
+xyplot(sat ~ salary | Percentage,
+	data = sat,
+	layout = c(3,1),
+	type = c("p","r"),
+	pch = 19,
+	main = "Salary and Mean SAT,\nby percentage taking SAT",
+	xlab = "Mean Teacher Salary ($1000s)",
+	ylab = "Mean SAT Score")
+```
+
+##
+
+```{r echo = FALSE}
+Percentage <- equal.count(sat$frac, number = 3, overlap = 0.1)
+xyplot(sat ~ salary | Percentage,
+	data = sat,
+	layout = c(3,1),
+	type = c("p","r"),
+	pch = 19,
+	main = "Salary and Mean SAT,\nby percentage taking SAT",
+	xlab = "Mean Teacher Salary ($1000s)",
+	ylab = "Mean SAT Score")
+```
+
+## Another Tool:  Grouping
+
+You can also group by **frac**.  It's a numerical variable, though, so you have to break it up first:
+
+```{r eval = FALSE}
+sat$fracGroup <- cut(sat$frac, 
+                     breaks = 3, 
+                     labels = c("low","middle","high"))
+sat
+```
+
+
+##
+
+```{r echo = FALSE}
+sat$fracGroup <- cut(sat$frac, 
+                     breaks = 3, 
+                     labels = c("low","middle","high"))
+xyplot(sat ~ salary,
+	data = sat,
+	groups = fracGroup,
+	auto.key = list(
+		space = "top",
+		title = "Group",
+		cex.title = 1,
+		columns = 3),
+	type = c("p","smooth"),
+	pch = 19)
+```
+
+
+
+## Practice { .practice }
+
+Make a graph to examine the relationship between ratio and SAT, but correct for the percentage of students who take the SAT.
+
+
+
+
+
+
