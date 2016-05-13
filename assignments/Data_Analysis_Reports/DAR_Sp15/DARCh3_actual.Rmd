@@ -1,0 +1,99 @@
+---
+title: "Choose a Title"
+author: "Your Name Here"
+date: "Put the Date Here"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+```
+
+# Introduction
+
+<Do not modify anything in this section:  it loads important packages and sets the assignment for you.>
+
+This assignment continues our study of the data frame `CPS85` from the `mosaicData` package.  Review the data frame with the R commands:
+
+```{r eval=FALSE}
+data(CPS85)
+View(CPS85)
+help(CPS85)
+```
+
+Recall that `CPS85` gives data on 534 people, who were selected randomly from the millions of people who filled out the Current Population Survey in 1985.  (Hence this is somewhat like a random sample from the population of all United States adults.)
+
+While doing the previous assignment, you probably saw that sex and wages are related:  apparently females tend to be paid less than males.  But is this due to wage discrimination based on sex, or could it be due to differences in the types of jobs (as recorded in the variable **sector**) that men and women tend to take?  We'll call this explanation the *sector theory*.
+
+In order for the sector theory to hold water, mean and women have to differ in the sector of work they choose, and the sectors typically chosen by men have to be be better-paid, on the whole.  Therefore you need to consider the following two specific Research Questions:
+
+* Is a worker's sector (job type) is related to his/her wages?  (This may repeat an analysis you chose to do in the previous assignment, but we need the results here.)  Which sectors get paid the most.  Which sectors are less well paid?
+* Is a worker's sex related to which sector he or she works in?
+
+Even if you do find that men tend to choose higher-paying sectors, the sector theory is not upheld until we *correct*, for sector.  That mean that we need to compare wages for men and women who are working in the *same sector*.  If the men still make more, then the sector theory does not account for all of the difference between the wages of men and women:  some other force -- possibly sex discrimination -- must be at work.  I will give you some R code that allows you to compare the wages of men and women, correcting for sector.
+
+
+At the end you will combine your results and consider to what extent the data resolves the question of whether women were being discriminated against in 1985.)
+
+# Methods
+
+<In this section you determine which graphical and numerical methods will be relevant to your research.  In order to do this you must perform a variable analysis, as we do in class.  For each Research Question you have in mind:
+
+* identify the variables that pertain to the Research Question;
+* classify each one as either numerical or a factor variable;
+* choose your graphical and numerical methods on that basis.
+
+Each Research Question must be examined with one graphical method and one numerical method.  In addition, you should employ a chi-square test on the sex-and-sector question, to see whether the relationship you found in the sample is liable to be present in the population as well.>
+
+
+
+
+# Results
+
+<Divide Your results into two sub-sections, one for each of your Research Questions.  Each subsection will include both the graphical and the numerical technique that you chose for the Research Question.  Graphs should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical or numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+## Sector and Wages
+
+
+## Sector and Sex
+
+
+### Graphicxal and Numerical Approach
+
+
+
+
+### Inferential Approach:  Chi-Square Test
+
+
+
+## Correcting for Sector
+
+<Here is a numerical way to correct for sector.  it gives you the mean wage for men and for women, in each sector separately.>
+
+```{r}
+with(CPS85,tapply(wage,
+            INDEX=list(sex,sector),
+            FUN=function(x) round(mean(x),2)))
+```
+
+<For a graphical approach to correction, consider using density plots:>
+
+```{r}
+densityplot(~wage|sector,data=CPS85,
+            group=sex,
+            main="Wage and Sex,\n(correcting for sector of employment)",
+            xlab="wage (dollars per hour)",
+            auto.key=TRUE,
+            plot.points=FALSE)
+```
+
+<You need to discuss the numerical summaries and the graph.  What do they tell you about the sector theory?  Does it completely explain why women make less than men do?>
+
+# Discussion and Conclusion
+
+<In this section you should look back at your results and draw them all together.  Explain the sector theory, and say what evidence you found for it, and what evidence you found against it.  In the end, did you find the sector theory convincing?  Why or why not?
+
+When you are done, knit the document into a pdf file, download the document onto your computer and print it out.  You will turn it in in class.  Also, make sure that the final copy of your R Markdown document is saved into your Submit folder.>

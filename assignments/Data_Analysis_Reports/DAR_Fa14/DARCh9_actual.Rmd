@@ -1,0 +1,83 @@
+---
+title: "Your Title Here"
+author: "Your Name Here"
+date: "The Date Here"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+<Do not modify the text in this section:  it sets the assignment for you.>
+
+Do people make decisions rationally, based only upon information that is relevant to the issue they must decide, or is their decision affected by factors unrelated to finance?
+
+This question was studied in a survey of 267 MAT 111 students at Georgetown College in the fall semester of 2022.  Each student was given a survey form that included a question about attendance at a rock concert, but not all forms were the same.  In fact, there were two types of form.
+
+```{r eval=FALSE,include=FALSE}
+#for the benedfit of a reader of the R Markdown source file:
+data(attitudes)
+View(attitudes)
+help(attitudes)
+```
+
+Some of the subjects were looking at forms where the question was stated as follows:
+
+  >"You have purchased a $30 ticket to see a rock concert in Rupp Arena. When you arrive at the Arena on the night of the performance, you find that you have lost the ticket. You have no receipt, so it will not be possible to see the concert unless you purchase another ticket. Would you purchase another ticket?"
+
+The rest of the subjects were looking at forms where the question was stated as follows:
+
+  >"You plan to see a rock concert in Rupp Arena. Tickets for the performance are $30. When you arrive at the Arena on the night of the performance, you find that you have lost two bills from your purse or wallet: a ten and a twenty. Would you buy the ticket anyway?"
+
+In either hypothetical case, you find that you are 30 dollars down from where you thought you were:  either you lost 30 dollars directly, or you lost it indirectly by purchasing a ticket and losing the ticket.  Either way, you lost thirty dollars.  If you are thinking rationally about whether to see the concert, your answer should be the same regardless of how you lost the previous thirty dollars.
+
+The scenario in which the money was lost called an *anchor*.  Behavioral psychologists believe that anchors can affect the way we think about that question, even when the anchor should have no logical bearing on the question itself.
+
+We'll use the data from this survey to investigate the the following Research Question:
+
+
+  >Who is more likely to purchase a ticket for the rock concert:  a person who finds he/she has lost thirty dollars, or a person who finds he/she has lost a thirty dollar ticket?
+  
+
+
+# Methods
+
+<Methods go here.  Perform your variable analysis.  On the basis of that analysis, choose at least one graphical descriptive method, at least one numerical descriptive method, and an appropriate inferential method involving confidence intervals to investigate the Research Question.  NOTE:  Your inferential method should be one that can produce a confidence interval for a parameter of interest.  Suggestion:  In this section you should identify and define the population parameter that you are interested in.>
+
+# Results
+
+<Put some introductory sentence in this section.>
+
+## Descriptive Results
+
+<Put some introductory sentence in this section.>
+
+### Graphical Descriptive Results
+
+<Introduce your graph to the reader, and then make the graph.  After the graph, include a discussion of the graph, pointing out specific features of the graph that help you answer your research question.>
+
+### Numerical Descriptive Results
+
+<Introduce your numerical descitpuive results, and then produce them.  Afterwards, include a discussion of the results, pointing out how specific numvers in the results help you to answer the research question.>
+
+## Inferential Results
+
+<Inferential results here.  Try to explain all important parts of the printed output of your inferential routine.  You should discuss address all steps of the confidence interval process, but you don't have to number them explicitly and you don't have to address them in the standard order.  Just make sure you adresss the in a logical way.  In particular, make sure that you define the parameter(s) of interest, make sure that you report and interpret the confidence interval for the reader, and explain to the reader how the confidence interval helps us address the Research Question.  If the P-value in your test is reported in scientific notation, you should re-state it in a way that does not use scientific notation (see class slides and website slides for guidance on this matter). NOTE:  Many people choose to address the "Safety Check"" in the final Discussion and Conclusion section, but other discussion of inferential results shold go in this section.>
+
+# Discussion and Conclusion
+
+<Draw a general conclusion here, if possible.  If you can't draw a conclusion, say why not. Many people choose to address the Safety Check in this section.  This section is also a good place to suggest new Research Questions suggested by the results of the current study.>

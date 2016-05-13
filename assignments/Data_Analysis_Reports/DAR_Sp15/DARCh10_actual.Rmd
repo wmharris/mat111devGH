@@ -1,0 +1,124 @@
+---
+title: "Choose a Title"
+author: "Your Name Here"
+date: "Put the Date Here"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+require(tigerData)
+```
+
+# Introduction
+
+<Do not modify anything in this section:  it loads important packages and sets the assignment for you.>
+
+This assignment concerns the data frame `parkingEXp` in the `mosaicData` package.  Learn more about it with the R commands:
+
+```{r eval=FALSE}
+require(tigerData)
+data(parkExp)
+View(parkExp)
+help(parkExp)
+```
+
+You should more about the experiment by consulting the original article (provided in the DAR folder as a pdf document).  `parkExp` gives data for the portion of Study 2 in the article that was a randomized experiment.  Note the exact data for the original experiment have been lost.  The `parkExp` data frame preserves information on 156 of the original 160 subject since the experiment.
+
+Researchers waited in a parking lot for people to get into their parked cars.  When a person opened the door of his/her car, one of the researchers drove up in another car, stopped and pretended to be waiting to take the parking spot.  About half of the time, the car being driven by the researcher was a very expensive Infinity Q45; the other half of the time the researcher pulled up in a rather cheap Nissan Maxima.  Also, the researcher would either honk at the parked vehicle as soon as he had stopped the waiting car, or he would wait without honking.  In each case, another researcher recorded the time in seconds for the subject (who did not know he/she was part of a study) to vacate the parking spot.
+
+The primary Research Questions were:
+
+* Do people takes longer to vacate a parking spot if a waiting car honks at them?
+* Who takes longer to vacate a parking spot:  a female driver or a male driver?
+
+You'll also look at a secondary Research Question:
+
+* Do drivers of expensive cars take longer to vacate their spot than driver of cheap cars do?
+
+
+At the end you will put your results together and see what light they shed on the issue of whether people exhibit territorial behavior in public places.
+
+# Methods
+
+<In this section you determine which graphical and numerical methods will be relevant to your research.  In order to do this you must perform a variable analysis, as we do in class.  For each of the four Research Questions mentioned in the previous section:
+
+* identify the variables that pertain to the Research Question;
+* classify each one as either numerical or a factor variable;
+* choose your graphical and numerical methods on that basis.
+
+Each Research Question must be examined with one graphical method and one numerical method.  For each of the first three research Questions, you should include a confidence interval in your analysis as well as a test of significance.>
+
+
+
+
+# Results
+
+<Divide Your results into four sub-sections, one for each of your Research Questions.>
+
+
+## Honking and Departure Time
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.
+
+The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.
+
+Your inferential analysis should address all of the basic elements:
+
+* deine your parameter(s)
+* state the Null and Alternative Hypothesis
+* code and safety check
+* report the confidence interval and provide a practical interpretation of it
+* say how the interval addresses the Research Question
+* report the test statistic
+* if there is a standard error, report it and say how the test statistic together
+with the standard error says about whether or not eh Null Hypothesis is reasonable
+* report the P-value
+* provide a practical interpretation of it
+* use the P-value to decide whether or not to reject the Null Hypothesis
+* write a brief conclusion that says how much evidence your study provided for the Alternative Hypothesis>
+
+
+
+
+## Sex and Departure Time
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.
+
+The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.
+
+Your inferential analysis should address all of the basic elements:
+
+* deine your parameter(s)
+* state the Null and Alternative Hypothesis
+* code and safety check
+* report the confidence interval and provide a practical interpretation of it
+* say how the interval addresses the Research Question
+* report the test statistic
+* if there is a standard error, report it and say how the test statistic together
+with the standard error says about whether or not eh Null Hypothesis is reasonable
+* report the P-value
+* provide a practical interpretation of it
+* use the P-value to decide whether or not to reject the Null Hypothesis
+* write a brief conclusion that says how much evidence your study provided for the Alternative Hypothesis>
+
+
+
+
+## Driver's Car Value and Departure Time
+
+<Hint:  If you do your variable analysis correctly, you will realize that this question pertains to chapter 4.
+
+As usual, this subsection should include both the graphical and the numerical technique that you chose for the Research Question.
+
+The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+
+# Discussion and Conclusion
+
+<OK, now you put it all together.  What factors have been shown to influence departure time?  Which ones were especially surprising or interesting to you?  Were there any problems with the safety checks in your inferential analysis?  Are your results consistent with the results given in article?  (Keep in mind that the won't be identical, since we are missing four of the original subjects.  Aldo keep in mind that the article doesn't give any confidence intervals, and uses some tests of significance that aren't covered in this course.)
+
+
+When you are done, knit the document into a pdf file, download the document onto your computer and print it out.  You will turn it in in class.  Also, make sure that the final copy of your R Markdown document is saved into your Submit folder.>

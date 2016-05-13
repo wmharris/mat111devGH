@@ -1,0 +1,78 @@
+---
+title: "Choose a Title"
+author: "Your Name Here"
+date: "Put the Date Here"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+```
+
+# Introduction
+
+<Do not modify anything in this section:  it loads important packages and sets the assignment for you.>
+
+This assignment deals with the data frame `CPS85` from the `mosaicData` package.  Learn more about it with the R commands:
+
+```{r eval=FALSE}
+data(CPS85)
+View(CPS85)
+help(CPS85)
+```
+
+`CPS85` gives data on 534 people, who were selected randomly from the millions of people who filled out the Current Population Survey in 1985.  (Hence this is somewhat like a random sample from the population of all United States adults.)
+
+In this assignment we are interested in knowing which factors are most strongly related to a worker's wages.  In particular, you are to consider the following questions:
+
+* Is a worker's race is related to his/her wages?
+* Is a worker's marital status related to his/her wages?
+* Is whether or not a worker belongs to a labor union related to his or her wages?
+
+You must also find another variable that you think might relate strongly to wages, and to check whether your suspicion is supported by the data.
+
+At the end  you will look back at all of the variables you investigated and decide which one of them relates most strongly to wages.
+
+# Methods
+
+<In this section you determine which graphical and numerical methods will be relevant to your research.  In order to do this you must perform a variable analysis, as we do in class.  For each Research Question you have in mind:
+
+* identify the variables that pertain to the Research Question;
+* classify each one as either numerical or a factor variable;
+* choose your graphical and numerical methods on that basis.
+
+Each Research Question must be examined with one graphical method and one numerical method.>
+
+
+
+
+# Results
+
+<Divide Your results into four sub-sections, one for each of your Research Questions.  Each subsections should include both the graphical and the numerical technique that you chose for the Research Question.  Graphs should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical or numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+## Sex and Wages
+
+
+
+
+
+## Marital Status and Wages
+
+
+
+
+
+
+## Union Memberhsip and Wages
+
+
+
+
+
+
+
+# Discussion and Conclusion
+
+<In this section you will decide which of the variables was most strongly related to wages.  (It's OK if two or more variables are tied or approximately tied.)  Be sure to justify your conclusion with specific observations you made in the Results section of the paper.  When you are done, knit the document into a pdf file, download the document onto your computer and print it out.  You will turn it in in class.  Also, make sure that the final copy of your R Markdown document is saved into your Submit folder.>

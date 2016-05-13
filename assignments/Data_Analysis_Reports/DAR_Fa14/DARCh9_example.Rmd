@@ -1,0 +1,143 @@
+---
+title: "The Anchoring Effect"
+author: "Homer White"
+date: "August, 2014"
+output:
+  pdf_document: default
+  html_document:
+    fig_height: 4.5
+    fig_width: 5
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+Do people make choices rationally, based only upon information that is relevant to the issue they must decide, or is their decision affected in part by irrelevant information.
+
+Psychologists today believe that we often are influenced by irrelevant information.  One manifestation of this is the so-called *anchoring effect*.  As described in a [Wikipedia article:](http://en.wikipedia.org/wiki/Anchoring)
+
+  >"*Anchoring and adjustment* is a psychological heuristic that influences the way people intuitively assess probabilities. According to this heuristic, people start with an implicitly suggested reference point (the "anchor") and make adjustments to it to reach their estimate. A person begins with a first approximation (anchor) and then makes incremental adjustments based on additional information. These adjustments are usually insufficient, giving the initial anchor a great deal of influence over future assessments."
+  
+The anchoring effect was studied in a survey of 89 MAT 111 students at Georgetown College in the fall semester of 2012.  Each student was given a survey form that included a question about the population of Canada, but not all forms were the same.  In fact, there were two types of form.
+
+```{r eval=FALSE,include=FALSE}
+#for the benedfit of a reader of the R Markdown source file:
+data(m111surveyfa12)
+View(m111surveyfa12)
+help(m111surveyfa12)
+```
+
+Some of the subjects were looking at forms where the question about Canada was stated as follows:
+
+  >"The population of Australia is about 23 million.  What do you think is the population of Canada?  (Give your answer in millions.)"
+
+The rest of the subjects were looking at forms where the question about Canada was stated as follows:
+
+  >"The population of the United States is about 312 million.  What do you think is the population of Canada?  (Give your answer in millions.)"
+
+
+The country whose population is given is called an *anchor*.  Behavioral psychologists believe that anchors can affect the way we think about that question, even when the anchor has no logical bearing on the question itself.
+
+We'll use the data from this survey to investigate the the following Research Question:
+
+
+  >Do people give a higher estimate, on average, when they are anchored by a large number than when they are anchored by a small number?
+  
+
+
+# Methods
+
+What methods are appropriate for analyzing our data?  The choice of method all depends on the nature of the variables involved in the Research Question.
+
+The two variables in the data that are of interest are:
+
+* **canada**, the subject's estimate of the population of Canada, in millions of people.  Clearly this is a numerical variable.which is a numerical variable;
+* **anchor**, which tells us which country was mentioned in the question about Canada.  This is clearly a factor variable, with two values: "United States and "Australia"."
+
+We are wondering whether the anchoring information affects the estimate, so we should think of **anchor** as the explanatory variable and **canada** as the response.
+
+Note that, since the forms were distributed randomly to the subjects, the values of the explanatory variable were being assigned randomly to subjects by the researchers.  That makes this study a randomized experiment, rather than an observational study.
+
+For a descriptive approach, we'll use some parallel boxplots and grouped density curves to investigate graphically the relationship between the factor variable and the numerical variable. For a numerical investigation we'll compare mean and medians of the two groups.
+
+We can also look at the question inferentially, and since we are dealing with a two-value explanatory factor variable and a numerical response variable, it makes sense to construct a confidence interval for the difference of two means.
+
+We've decided upon our methods.  Let's apply them and see what we get!
+
+# Results
+
+We'll look at the questions descriptively, first, and then take an inferential approach,
+
+## Descriptive Results
+
+We have both graphical and numerical results to consider.
+
+### Graphical Descriptive Results
+
+Here are parallel boxplots of **canada** vs. **anchor**, produced (like all statistical output in this paper) by the R statistical programming language:
+
+```{r echo=FALSE,fig.width=3.5,fig.height=3}
+bwplot(canada~anchor,data=m111surveyfa12,
+       xlab="Anchor",
+       ylab="estimate of Canada \npopulation (millions)",
+       main="Estimates for Canada\nby the Two Treatment Groups")
+```
+
+The Australia group is rather skewed to the right (the closely-bunched individual dots should be considered a right tail rather than high outliers); the U.S. group is somewhat right-skewed, with a an outlier.  The main thing to notice, though, is that the median for the U.S. group, indicated by the black dot, is much higher than the median for the Australia group.
+
+Next, we look at grouped density plots:
+
+```{r echo=FALSE}
+densityplot(~canada,data=m111surveyfa12,
+       groups=anchor, plot.points=FALSE,auto.key=TRUE,from=0,
+       xlab="estimate of Canada population (millions)",
+       main="Estimates for Canada\nby the Two Treatment Groups")
+```
+
+Most of the U.S. curve is well to the right of the Australia curve, meaning that most estimates in the U.S. group were much higher than in the Australia group.
+
+### Numerical Descriptive Results
+
+We get the same results when we compare the two groups numerically:
+
+```{r echo=FALSE}
+favstats(canada~anchor,data=m111surveyfa12)
+```
+
+
+
+The U.S. estimates are much larger, on average, than the Australian estimates are (U.S. sample mean of 177 million vs. Australia sample mean of 30.1 million, with a similarly impressive difference between the two sample medians.)
+
+## Inferential Results
+
+We have seen that the average for the U.S.-anchor group is quite a bit higher than the average for the Australia-anchor group.  Does this difference indicate that estimates are being affected by the anchors, or could the results just be due to chance variation in the random assignment of forms to subjects?  Is it reasonable to believe that, just by chance, subjects who were predisposed to give a high estimate for Canada happened usually to be handed the U.S. Form?  If that were so, then the difference in estimates would not be due to the difference in the anchors.
+
+In order to investigate this question, let's define:
+
+  >$\mu_1 =$ mean estimate of the population of Canada given by all 89 subjects in the experiment, if all 89 of them had been given a form where the anchor was the United States.
+  
+  >$\mu_2 =$ mean estimate of the population of Canada given by all 89 subjects in the experiment, if all 89 of them had been given a form where the anchor was the Australia.
+  
+We will make a 95%-confidence interval for $\mu_1-\mu_2$:
+
+```{r echo=FALSE}
+ttestGC(canada~anchor,data=m111surveyfa12,first="united_states")
+```
+
+Our best single estimate for $\mu_1-\mu_2$ is that it is about 146.9 million, the difference in the sample means for the two groups.  The standard error above indicates that this estimate could easily be off by 26.9 million or so,  However, if someone believed that anchor has no effect on estimate then they would believe that $\mu_1-\mu_2$ equals 0, so they would expect the difference in the sample means to be around 0, give or take 26.9 million or so.  The observed difference of 146.9 million is many standard errors away from zero, indicating that $\mu_1-\mu_2$ probably differ.
+
+We get the same idea from the confidence interval:  we are 95%-confident that $\mu_1-\mu_2$ is somewhere between 91.5 and 202.2 million.  This interval lies entirely above 0, so we are pretty sure, based on the data, that $\mu_1$ is bigger than $\mu_2$.
+
+
+# Discussion and Conclusion
+
+The belief -- widespread among behavioral psychologists -- in an anchoring effect appears to have been confirmed by the experiment discussed in this report.  We do want to make two small cautionary notes.
+
+* **Reliability of the inferential procedures**. We did a randomized experiment with two treatment groups, and our "t-test" procedure for making confidence intervals can be applied to such studies.  The larger the two groups sizes, the more reliable the results of the procedures are.  However at smaller sample sizes (and the Australia group, at size 26, is somewhat on the small side), we depend upon the sample not being too strongly skewed, and not having large outliers.  In our study the Australia sample was somewhat right-skewed.  The claim that our confidence interval has confidence level 95% is probably off a bit.
+
+* **Applicability of the results to a larger population.**  Note that we defined the parameters $\mu_1$ and $\mu_2$ in terms of the group of 89 subjects, rather than in terms of some larger population (such as all Georgetown College students).  This is because the survey was a sample of convenience, given to all members of MAT 111 in Fall 2012.  That's not a random sample! If the group is unlike the population in some way related to how anchoring information affects estimates, then the results for the group don't apply to the population as a whole.  Here, our non-random sample probably is not unlike the population as far as anchoring is concerned, but we sound a note of caution nonetheless.

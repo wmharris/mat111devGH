@@ -1,0 +1,77 @@
+---
+title: "Napkin Use in the Cafe at GC"
+author: "Homer White"
+date: "August, 2014"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+require(pander)
+```
+
+# Introduction
+
+Several years ago some MAT 111 students data at the Cafe.  They observed randomly selected students eating their meal, and recorded both the sex of each student and how many napkins the student used during the meal.  The results are contained in the data frame `napkins` in the `tigerstats` package.
+
+```{r eval=FALSE}
+data(napkins)
+View(napkins)
+help(napkins)
+```
+
+The students were interested in the following Research Question:
+
+  >Who uses more napkins, on average:  a GC female or a GC male?
+  
+In what follows we would like to analyze the students' data to see if we can provide an informal, answer to their question, using the descriptive statistics we learned in Chapter 2 of the course.
+
+# Methods
+
+What methods are appropriate for analyzing our data?  The choice of method all depends on the nature of the variables involved in the Research Question.
+
+The two variables involved are:
+
+* **sex**, which is a factor variable;
+* **napkins**, which is numerical.
+
+In this study we'll think of **sex** as the explanatory variable and **napkins** as the response.
+
+Our variable analysis has shown us that we are interested in the relationship between a factor variable and a numerical variable.  Histograms, boxplots and density plots are all good graphical tools for the study of a numerical variable.  In this study, we'll make two histograms, one for each of the two sexes, and compare them.
+
+As for numerical methods, we'll compare the mean and the median napkin use for the two sexes.
+
+We've decided upon our methods.  Let's apply them and see what we get!
+
+# Results
+
+We have both graphical and numerical methods, so we have both graphical and numerical results to consider.
+
+## Graphical Results
+
+Here is a pair of histograms for the napkins used by each of the two sexes:
+
+```{r}
+histogram(~napkins|sex,data=napkins,
+          main="Napkins Use by Sex in the Cafe",
+          xlab="Number of Napkins Used",
+          layout=c(1,2),width=1)
+```
+
+The `layout` argument is set to align the two histograms so that one is on top of the other (one column and two rows, as it were).  The `width` argument is set to 1, making each rectangle one unit wide, centering over a whole number of napkins, which is useful when the data cover onyl a small range of whole number values.
+
+The alignment and choice of rectangle-widths makes it easy to see that the guys tend to use more napkins:  whereas a majority of gals seem to use one to three napkins, guys are centered more around 4, with a fair number of guys using lots of napkins:  6,7,8 and even 9 napkins!
+
+## Numerical Results
+
+```{r numsum, echo=FALSE,fig.cap="Numerical summaries of napkins use, by sex."}
+pander(favstats(napkins~sex,data=napkins)[,c(".group","Q1","median","Q3","mean","n")])
+```
+
+There were 43 gals and 43 guys in the study.  Guys appear to use more napkins, on average:  the median for guys was 3 napkins, as compared to 2 for the gals.  The mean for the guys was also higher:  3.6 napkins as compared to a mean of 2.28 for the gals.
+
+# Discussion and Conclusion
+
+Both our graphical and numerical results indicate that the guys in the sample were using more napkins, on average, than the gals were.  It remains an open question as to whether this data provides strong evidence that the same is true in the Georgetown College population at large.  Could it be that the difference between the sexes that we observed in the sample arose just from chance variation in the process of randomly selecting students in the Cafe to observe?

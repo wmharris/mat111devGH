@@ -1,0 +1,181 @@
+---
+title: "Choose a Title"
+author: "Your Name Here"
+date: "Put the Date Here"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(tigerstats)
+```
+
+# Introduction
+
+<Do not modify anything in this section:  it loads important packages and sets the assignment for you.>
+
+This assignment continues our study of the data frame `CPS85` from the `mosaicData` package.  Learn more about it with the R commands:
+
+```{r eval=FALSE}
+data(CPS85)
+View(CPS85)
+help(CPS85)
+```
+
+`CPS85` gives data on 534 people, who were selected randomly from the millions of people who filled out the Current Population Survey in 1985.  (Hence this is somewhat like a random sample from the population of all United States adults.)
+
+In the Chapter 2 assignment, we considered what factor variables (such as race, sex, or union) might be strongly related to wages.  Among other things, we saw that the sex of a worker was related to wages, in that women tended to paid less than men.  In Chapter 3 we considered whether this difference in wages might be due to men and women making different choices about sector of employment, and we found that this was not the case.
+
+In this assignment you will consider two other possible explantions for the difference between men and women in wages.
+
+One possible explanation -- we'll call it the *education theory* -- is that men earn more because they have more education.  For this theory to have a chance of working out, it needs to be the case that people with more education earn more, and it also needs to be the case that men have more education than women do.  Hence you need to examine the following two Research Questions:
+
+* Is a worker's education related to his/her wages?
+* Do men and women differ in how much education they have?
+
+Another possible explanation -- we'll call it the *experience theory* -- is that men earn more because they have more work experience.  For this theory to have a chance of working out, it needs to be the case that people with more experience earn more, and it also needs to be the case that men have more experience than women do.  Hence you need to examine two more Research Questions:
+
+* Is a worker's number of years of work experience related to his/her wages?
+* Do men and women differ in how much experience they have?
+
+
+Another way to test the education and experience theories is to *correct* for education, and to *correct* for experience.  In order to accomplish this, you will make some predictions about wages based on education and work experience, for men and for women separately.  I'll help you to make R do this.
+
+At the end you will put your results together and see if they shed light on our continuing question of whether there was sex-based wage discrimination in the United States workforce in 1985.
+
+# Methods
+
+<In this section you determine which graphical and numerical methods will be relevant to your research.  In order to do this you must perform a variable analysis, as we do in class.  For each of the four Research Questions mentioned in the previous section:
+
+* identify the variables that pertain to the Research Question;
+* classify each one as either numerical or a factor variable;
+* choose your graphical and numerical methods on that basis.
+
+Each Research Question must be examined with one graphical method and one numerical method.>
+
+
+
+
+# Results
+
+<Divide Your results into four sub-sections, one for each of your Research Questions.  Each subsection should include both the graphical and the numerical technique that you chose for the Research Question.  Graphs should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical or numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+## Education and Wages
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.  The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+
+
+## Sex and Education
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.  The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+
+
+## Work Experience and Wages
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.  The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+
+## Sex and Work Experience
+
+<This subsection should include both the graphical and the numerical technique that you chose for the Research Question.  The graph should have a brief but descriptive title, and axes should be labeled appropriately, as needed.  You must discuss the result of each technique -- graphical and numerical -- saying specifically how it sheds light on your Research Question.>
+
+
+
+
+## Predicting Wages from Education
+
+<In order to make separate predictions for each sex, you will need to break the data frame up into pieces,one for men and one for the women.  I'll give you the code for this.>
+
+
+### Predictions for Men
+
+<The code to make the linear model just for men is:>
+
+```{r}
+educWageMale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="M"))
+```
+
+<Now I would like you to predict the wage for a male who has 6 years of education, and to predict the wage for a male who has 15 years of education.>
+
+
+
+### Predictions for Women
+
+<The code to make the linear model just for women is:>
+
+```{r}
+educWageFemale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="F"))
+```
+
+<Now I would like you to predict the wage for a male who has 6 years of education, and to predict the wage for a male who has 15 years of education.>
+
+
+
+## Predicting Wages from Work Experience
+
+
+### Predictions for Men
+
+<The code for men from the previous prediction question is given below.  Modify it so that it creates a model for predicting the wage of a man from his years of work experience.>
+
+```{r}
+educWageMale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="M"))
+```
+
+<Now use the model to predict the wages of a man who has 10 years of experience, and to predict the wages of a man who has 40 years of experience.>
+
+
+
+### Predictions for Women
+
+<The code for women from the previous prediction question is given below.  Modify it so that it creates a model for predicting the wage of a woman from her years of work experience.>
+
+```{r}
+educWageFemale <- lmGC(wage~educ,
+                     data=subset(CPS85,sex=="F"))
+```
+
+<Now use the model to predict the wages of a woman who has 10 years of experience, and to predict the wages of a woman who has 40 years of experience.>
+
+
+# Discussion and Conclusion
+
+<In this section you will integrate your results.  Does education relate to wages?  does experience relate to wages?  For a given level of experience or a given level of education, whose wages is expected to be higher:  a man's or a woman's?  Justify your answers using your previous work.  You might find it easier to draw a general conclusion if you make the following graph and use it in your discussion:
+
+```{r echo=FALSE}
+par.settings <- list(
+  superpose.symbol = list(col = c("blue", "red"), fill = c("blue", "red")),
+  superpose.line = list(col =c("blue", "red")))                                                                                                                       
+xyplot(wage~educ,data=CPS85,groups=sex,auto.key=list(space="right"),
+       type=c("p","r","g"),pch=19,par.settings=par.settings,
+       main="Wages vs. Education, by Sex",
+       xlab="years of education",
+       ylab="wages (dollar per hour")
+```
+
+
+You might also want to examine and discuss a similar plot:
+
+```{r echo=FALSE}
+par.settings <- list(
+  superpose.symbol = list(col = c("blue", "red"), fill = c("blue", "red")),
+  superpose.line = list(col =c("blue", "red")))                                                                                                                       
+xyplot(wage~exper,data=CPS85,groups=sex,auto.key=list(space="right"),
+       type=c("p","r","g"),pch=19,par.settings=par.settings,
+       main="Wages vs. Experience, by Sex",
+       xlab="years of experience",
+       ylab="wages (dollar per hour")
+```
+
+This are just suggestions, but they are worth looking at, I think!  If you would like to use this code in your report, make a copy of it OUTSIDE of these instructions.  Otherwise, it won't be recognized and be run when the document is knit!
+
+When you are done, knit the document into a pdf file, download the document onto your computer and print it out.  You will turn it in in class.  Also, make sure that the final copy of your R Markdown document is saved into your Submit folder.>

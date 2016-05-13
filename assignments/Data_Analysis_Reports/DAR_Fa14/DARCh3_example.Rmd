@@ -1,0 +1,134 @@
+---
+title: "Seating Preferences"
+author: "Homer White"
+date: "August, 2014"
+output: pdf_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+require(pander)
+```
+
+# Introduction
+
+In a survey of students conducted at the University of California at Davis, a random sample of students were asked where they prefer to sit in a classroom, when they have a choice, and they were also asked what kind of major they intended to pursue.  The majors were then grouped into two categories:
+
+* Liberal Arts (disciplines such as English, Philosophy, Physics, mathematics, etc.)
+* non-Liberal-Arts ("professional" programs such as education, Business, Engineering, etc.)
+
+The results are contained in the data frame `ucdavis` in the `tigerstats` package.
+
+```{r eval=FALSE, echo=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+The source for the original data is the textbook *Mind on Statistics*, Fourth Edition, by Uts and Heckard.
+
+We are interested in the following Research Question:
+
+  >*Do Liberal Arts and non-Liberal Arts students at UC-Davis differ in their seating preferences?*
+  
+In what follows we would like to analyze the data to see if we can provide an informal, answer to our Question question.
+
+# Methods
+
+What methods are appropriate for analyzing our data?  The choice of method all depends on the nature of the variables involved in the Research Question.
+
+The two variables involved are:
+
+* **class**, which is a factor variable with two values ("LibArts" and "NonLib");
+* **Seat**, which is also a factor variable, but with three values:  "Back", "Front", and "Middle."
+
+In this study we'll think of **Seat** as the explanatory variable and **class** as the response:  although we don't really believe that where you sit causes or explains the type of major you choose, we might wish to use where someone's seating position to predict their type of major.
+
+Our variable analysis has shown us that we are interested in the relationship between two factor variables.  Hence we will make barcharts to examine the data graphically, and two-way tables with some row percentages to detect and describe any patterns we find in the data.
+
+We will also want to see if any relationship that we find in the data between seating and major preferences might also be present in the population from which the data was drawn.  That's an inferential question, and to investigate an inferential question about the relationship between two factor variables the chi-square test is appropriate.
+
+We've decided upon our methods.  Let's apply them and see what we get!
+
+# Results
+
+First we'll describe the sample, then we'll see if any patterns we find in the sample are strong enough to indicate that like patterns exist in the whole population.
+
+## Descriptive Results
+
+We have both numerical and graphical descriptive results to consider.
+
+### Numerical DescriptiveResults
+
+Here is a two-way table of that gives type of major, broken down by seating preference:
+
+```{r echo=FALSE}
+seatMajor <- xtabs(~Seat+class,data=ucdavis1)
+pander(seatMajor)
+```
+
+The seating groups are not all the same size, so we need to correct for that by computing some row percentages:
+
+```{r echo=FALSE}
+pander(rowPerc(seatMajor))
+```
+
+In the data, it seems that front-sitters are are morel likely than other folks to prefer a Liberal Arts major:  21.95% of front-sitters prefer such a major, vs. only 13.98% of middle-sitters and 8.11% of back-sitters.
+
+## Graphical Results
+
+We can view the relationship graphically as well, in the following bar-chart:
+
+```{r}
+barchartGC(seatMajor,type="percent")
+```
+
+Although all in all three groups of students the majority prefer a non-liberal arts major, the light-colored bar that represents percentage of Liberal Arts majors is distinctly highest in the front-sitting group.
+
+## Inferential Results
+
+Of course we are only looking at s sample of students.  The difference in row-percentages that we pointed out earlier could be due to chance variation in who got into the sample, rather than to a greater preference for Liberal Arts majors among front-sitters in the entire population of UC-Davis students.  In order to see if our sample results are too extreme to be explained by such chance variation, we perform a chi-square test.
+
+Our Null Hypothesis shall be:
+
+$H_0:$  There is no relationship between seating preference and major preference in the UC-Davis population.
+
+The Alternative Hypothesis is:
+
+$H_a:$  There IS a relationship between seating preference and major preference in the UC-Davis population.
+
+The output of the test follows:
+
+```{r echo=FALSE}
+chisqtestGC(seatMajor)
+```
+
+The chi-square statistic turned out to be 3.053.  If the Null Hypothesis is correct, then one would expect the chi-square statistic to be about 2 (the degrees of freedom of the two-way table), give or take a bit for chance error in the random sampling process.
+
+The approximate P-value is 0.2173.  This means that if the Null is correct, then there is about a 21.73% chance of getting at chi-square statistic at least as large as the one we actually got in the study.
+
+Note that the Null's expected cell counts were all reasonably large (above 5), so we can trust the approximation to the P-value that this routine provides.  We don't have to perform simulation in order to get a more reliable approximation.  Still, it might be instructive to see how the simulations results compare:
+
+```{r}
+set.seed(1984)
+chisqtestGC(seatMajor,
+            simulate.p.value="random",
+            B=10000,
+            verbose=FALSE)
+```
+
+Sure enough, the simulation routine with 10,000 resamples provided almost the same P-value (0.2224 as compared to 0.2173).
+
+Since the P-value is larger than our conventional cut-off of 0.05, we will not reject the null Hypothesis.  This data did not provide strong evidence that seating preference and major preference are related in the UC-Davis population.
+
+# Discussion and Conclusion
+
+When you see the sample data, the difference in some of the row percentages are striking:  front-sitters in the sample are about twice as likely to prefer the Liberal arts, as compared to back and middle-sitters.  It might have been tempting to begin to put forth speculative explanations for the observed pattern.  For example, could it be that liberal arts students more engaged students, and thus more likely to prefer the front?
+
+However, two of the groups (front and back sitters) that generated these percentages were fairly small.  When group sizes are small, there is a lot of chance variation in percentages that you compute form these groups.
+
+The chi-square test keeps us from rushing to speculative explanations.  In this case we actually found that when there is no pattern in the population then the sort of pattern we observed in the data could quite easily occur, simply by chance variation in the process of sampling students randomly from the population.
+
+If there really is a relationship between seating and major preferences, we would need to collect a much larger sample in order to have a good shot at detecting that relationship.

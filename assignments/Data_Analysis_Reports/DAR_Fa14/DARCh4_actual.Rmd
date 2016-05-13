@@ -1,0 +1,58 @@
+---
+title: "Choose a Good Title!"
+author: "Put Your Name Here!"
+date: "put the date here!"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+Can you tell, from how much a fellow weighs, how fast he can a drink a can of pop or beer?  The package `tigerstats` contains the data frame `chugtime`:
+
+```{r eval=FALSE}
+data(chugtime)
+View(chugtime)
+help(chugtime)
+```
+
+This data was gathered by students who challenged several of their male friends to chug down a certain beverage--of the alcoholic variety, most likely.  The students also weighed each subject in the study.  The Research Question was:
+
+  >*What is the relationship, if any,  between the weight of a college-aged male and the time it takes him to drink a can of beverage?*
+  
+In what follows we would like to analyze the researcher's data to see if we can answer their question
+
+# Methods
+
+<Decide on your methods:  begin with a variable analysis, then then choose your methods based on the outcome of that nalysis.  Make sure to choose at least one graphical method and at least one numerical method.>
+
+
+# Results
+
+<Note that the Results ection is divided into two sub-sections:  one for your graphical results and one for your numerical results.>
+
+## Graphical Results
+
+<Graphical results go hereProvide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Also, include a regression line in your graph.  Then discuss your graph, with particular emnphasis on specific features of the graph that help to answer your research question.>
+
+## Numerical Results
+
+<Numerical results go here.  This is where you will make your linear model.  Describe all important features of the output.  Provide a practical interpretation of the slope of the regression line.  Also, use the regression line to predict the chug-time of a person who weighs 170 pounds.  By how much is that prediction liable to be in error?>
+
+# Discussion and Conclusion
+
+<Discussion and conclusion here.  If you found a relationship between weight and chug-time, consider whether that relationship occurs because one of the variables causes the other, or whether they perhaps are related for some other reason.  It might help to look at Chapter 6 before finishing this part of your report.>

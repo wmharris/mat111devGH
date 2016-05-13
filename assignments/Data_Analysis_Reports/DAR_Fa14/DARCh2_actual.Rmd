@@ -1,0 +1,51 @@
+---
+title: "Title Here"
+author: "Your Name Here"
+date: "Put the Date Here!"
+output: html_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+Several years ago some MAT 111 students who were on the footbal team conducted a study of their team-mates.  The results are contained in the data frame `pushups` in the `tigerstats` package.
+
+```{r eval=FALSE}
+data(pushups)
+View(pushups)
+help(pushups)
+```
+
+Among other things, the students recorded the type of position a player had on the team (either line or skill), and also the number of push-ups each player could perform in a two-minute period.
+
+Line players are on the offensive or defensive line.  They need to be a certain kind of speed, but they must also be quite big and strong.  Skill players do a lot of runninga and catching:  they are the quarterback, running backs, receivers, etc.
+
+Our Research Question is:
+
+  >Who does more pushups, on average: a line player or a skill player?
+
+
+# Methods
+
+<Perform a variable analysis, and based on that nalysis choose at least one apprpriate graphical method and one appropriate numerical method to address the research question.>
+
+# Results
+
+<You have both graphical and numerical methods, so you will have both graphical and numerical results to consider.>
+
+## Graphical Results
+
+<Your graph should have a good title, and axes should be labled as needed.  Discuss your graphical results, showing how they answer the research question.  Use specific features of the graph in your discussion.>
+
+## Numerical Results
+
+<Discuss only the features of your numericla output that are relvant to answerting the Research Question.  Mention these features explicitly in your discussion.>
+
+# Discussion and Conclusion
+
+<State your overall conclusion.  This is also a good place to mention other Research Questions that came to mind as you were carrying out this study.>

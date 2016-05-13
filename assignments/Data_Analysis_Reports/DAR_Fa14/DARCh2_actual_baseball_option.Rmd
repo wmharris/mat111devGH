@@ -1,0 +1,86 @@
+---
+title: "Title Here"
+author: "Your Name Here"
+date: "Put the Date Here!"
+output: html_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+The famous Lahman baseball database (see Sean Lahaman's [Baseball Archive](http://www.seanlahman.com/baseball-archive/)) contains extensive historical records on Major League baseball, stretching back into the nineteenth century.  The `tigerstats` package contains two data frames that are drawn from this database.
+
+The data frame `hofbatting` contains career statistics on all Major League batters who were inducted into the Hall of Fame (as of 2012):
+
+```{r eval=FALSE}
+data(hofbatting)
+View(hofbatting)
+help(hofbatting)
+```
+
+
+The `hofpitching` data frame contains lifetime statistics on pitchers inducted into the Hall of Fame:
+
+```{r eval=FALSE}
+data(hofpitching)
+View(hofpitching)
+help(hofpitching)
+```
+
+In this project we would like to explore how baseball has changed over time, as indicated by change sin the performance of the game's greatest stars.
+
+Baseball history is often divided into various "eras":
+
+* the 19th Century (before the 1900 season);
+* the Dead Ball Era (1900-1919);
+* the Lively Ball Era (1920-1940);
+* Integration (1941-1959);
+* Expansion (1960-1975);
+* Free Agency (1976-1992);
+* the Long Ball Era (1993 onward).
+
+You can read about these areas in various summaries of baseball history, for example Wikipedia has good article on the [Dead Ball Era](http://en.wikipedia.org/wiki/Dead-ball_era) and on its successor, the [Lively Ball Era](http://en.wikipedia.org/wiki/Live-ball_era).
+
+Some of the eras were characterized by changes in game rules or in styles of play that in turn had a significant impact on certain measurements of player performance.  In this project we would like to analyze the data to identify performance trends that might be related to historical changes in the game.
+
+Some of the Research Questions we might investigate are:
+
+* *How did hitting change over time, especially in the transition from the Dead Ball to the Live Ball Era?  Specifically:
+    * What happened to the rate at which HOF batters hit home runs?
+    * How about the rate at which they hit triples?
+    * Did their batting averages change much over the eras?
+    * Did their strikeout rates change over time?
+* How did pitching performance change over time?  Specifically:
+    * Did HOF pitchers' strikeout rates increase over time?
+    * Did their Earned Run Averages change over the eras?
+    * When did they most frequently walk batters?
+  
+Our investigation of these questions will allow us to construct a partial history, in numbers, of the National Pastime.
+
+<Note to students:  This project could be a lot of fun, but it also might require more work than the standard DAR for Chapter 2.  If you would like to work on this project, please notify me soon.  Study baseball history using the links provided above and using other sources that you may know about, and study the two data frames carefully, then pick a few of the above Research Questions to address in detail. You may wish to meet with me once or twice in order to monitor your progress.>
+
+# Methods
+
+<Perform a variable analysis, and based on that analysis choose at least one appropriate graphical method and one appropriate numerical method to address each of your chosen research questions.>
+
+# Results
+
+<You have both graphical and numerical methods, so you will have both graphical and numerical results to consider, for each Research Question.>
+
+
+## Graphical Results
+
+<Your graphs should have good titles, and axes should be labeled as needed.  Discuss your graphical results, showing how they answer the Research Question.  Use specific features of the graph in your discussion.>
+
+## Numerical Results
+
+<Discuss only the features of your numerical output that are relevant to answering the Research Question.  Mention these features explicitly in your discussion.>
+
+# Discussion and Conclusion
+
+<State your overall conclusion.  This is also a good place to mention other Research Questions that came to mind as you were carrying out this study.>

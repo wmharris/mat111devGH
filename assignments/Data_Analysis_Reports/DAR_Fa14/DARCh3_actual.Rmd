@@ -1,0 +1,55 @@
+---
+title: "Your Title Here"
+author: "Your Name Here"
+date: "The Date Here"
+output: html_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+# Introduction
+
+The data for this project `KidsFeet`, is found in package `mosaic`:
+
+```{r eval=FALSE}
+data(KidsFeet)
+View(KidsFeet)
+help(KidsFeet)
+```
+
+The data are the result of an observational study of 39 fourth grade students in Ann Arbor, MI in October 1997.  (See the article "Wider Shoes for Wider Feet?", *Journal of Statistics Education*, 14(1), linked to [here](www.amstat.org/publications/jse14n1/datasets.meyer.html)).
+
+We will assume that these 39 children are like a simple random sample from all fourth-grade children.
+
+The researchers who collected the data had a number of interesting questions in mind.  Here we will focus on only one question that is suggested by the data:
+
+>*Is there a relationship, in fourth-grade-age children, between which foot is wider and which hand is the dominant hand?*
+
+# Methods
+
+<Begin with a variable analysis.  Based on that analysis, choose numerical and graphical descritpive methods to examine the research question for your data,and choose an appropriate inferential method as well.>
+
+# Results
+
+
+## Descriptive Results
+
+
+### Numerical Descriptive Results
+
+<Use your numerical results to describe the patter (if any) that you find in your data.  Your discussion shoudl focus on using th data to address the Research Question.>
+
+## Graphical Results
+
+<Use your graphical results to describe the patter (if any) that you find in your data.  Your discussion shoudl focus on using th data to address the Research Question.>
+
+## Inferential Results
+
+<State hypotheses clearly.  Make sure that your discussion of inferential test addresses all of the important features of the output such as test statistic, P-value, etc.  Make a decision about the Null Hypothesis.  Be sure to choose a routine that produces a P-value approximation on which you can rely.>
+
+# Discussion and Conclusion
+

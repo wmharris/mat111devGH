@@ -1,0 +1,168 @@
+---
+title: "Repeatability of Lizard Sprinting Speed"
+author: "Homer White"
+date: "Fall, 2014"
+output:
+  pdf_document:
+    fig_height: 4
+    fig_width: 5
+  html_document:
+    fig_height: 4.5
+    fig_width: 5
+  word_document:
+    fig_height: 4
+    fig_width: 5
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(abd)
+require(tigerstats)
+```
+
+# Introduction
+
+
+
+In their article [Repeatability of Locomotor Performance in Natural Populations of the Lizard *Sceleporus Merriami*](http://faculty.washington.edu/hueyrb/new/HueyDunhamEvol1987repeatability.pdf), published in the Journal *Evolution* in 1987, the authors Raymond Huey and Arthur Dunham discuss the repeatability of measurements on animal specimens in the field.  Some measurements, such as the speed at which an animal can run, are used as indicators of the animal's adaptive fitness for its environment.  However, their value as indicators of fitness over a long period of study may be lessened if they tend to change quickly over the lifespan of the animal in question.
+
+The data frame `LizardSprint` from the `abd` package gives the sprinting speed, in meters per second, for 34 Canyon Lizards.  (These lizards were studied by Huey and Dunham:  see the article above.)  The measurements took place once year part, so each lizard was actually measured twice: once at the beginning of the study, and again about one year later.
+  
+```{r eval=FALSE,echo=FALSE}
+#for the benedfit of a reader of the R Markdown source file:
+data(LizardSprint)
+View(LizardSprint)
+help(LizardSprint)
+```
+
+We are interested in the following Research Question:
+
+  >*Do Canyon lizard sprinting speeds change, on average, in the period of one year?*
+  
+
+# Methods
+
+The first dozen lines of the `LizardSprint` data frame are as follows:
+
+```{r}
+head(LizardSprint,12)
+```
+
+The variable **lizard** gives a number identifying individual lizards, so we get two lines for each lizard (numbered 1 through 34).  In each two-line pair, the first line gives the initial speed measurement, in meters per second, and the second line gives the speed measurement one year later.
+
+In order to facilitate analysis, we created at new data frame called `lizards`, in which the speeds were given as separate variables.  This was accomplished by the following R code:
+
+```{r}
+first <- LizardSprint[seq(1,67,by=2),2]
+second <- LizardSprint[seq(2,68,by=2),2]
+lizards <- data.frame(first,second)
+
+```
+
+The first six rows of the data frame are as follows:
+
+```{r echo=FALSE}
+head(lizards,n=6)
+```
+
+The numerical variable **first** gives the initial speed for each lizard, and the numerical variable **second** gives the speed a year later.
+
+Since we are interested in the *change* in speed, it makes sense to create a new variable **speedDiff** (second speed minus first speed) and to add it to the data frame, as follows:
+
+```{r}
+lizards$speedDiff <- with(lizards,second-first)
+```
+
+For a descriptive approach to our Research Question, we'll make a density plot of **speedDiff**, and we'll also take a look at some numerical measures of center such as the mean and the median of these sample differences.  As for inference, we'll make a 95% confidence interval for $\mu_d$, the mean difference in speed for all Canyon lizards (if we could have somehow measured all of them one year apart, not just the 34 lizards in the study).  We'll also perform a test of significance to see whether the data provide strong evidence that the speeds changed, on average (i.e., whether or not $\mu_d$ is 0).
+
+# Results
+
+We'll look at the questions descriptively first, and then take an inferential approach,
+
+## Descriptive Results
+
+We have both graphical and numerical results to consider.
+
+### Graphical Descriptive Results
+
+```{r echo=FALSE}
+densityplot(~speedDiff,data=lizards,
+            xlab="Difference in speeds (m/sec)",
+            main="Sprinting Speed Differences\n(Year 2 - Year 1)",
+            plot.points=TRUE)
+```
+
+
+The distribution of the differences is unimodal and symmetric, with a center fairly close to 0 meters per second.  Some lizards got faster (positive difference) and some got slower (negative difference) but on average there does not appear to have been much change in speed.
+
+The value near -1 might be considered an outlier.  Indeed, in the following boxplot it is flagged for consideration as an outlier:  
+
+```{r echo=FALSE}
+bwplot(~speedDiff,data=lizards,
+            xlab="Difference in speeds (m/sec)",
+            main="Sprinting Speed Differences\n(Year 2 - Year 1)")
+```
+
+We have no reason, however to exclude it from the study.
+
+### Numerical Descriptive Results
+
+We can also examine the differences numerically:
+
+```{r echo=FALSE}
+favstats(~speedDiff,data=lizards)
+```
+
+The median difference is -0.08 meters per second, and the mean difference is -0.087.  In average, the lizards slowed down by about 0.087 meters per second.
+
+If lizards do have a systematic tendency to slow down during this one year period, then they don't slow down by much in comparison to their actual speeds.  We can see this by computing the speed change as a percentage of the original speed, as follows:
+
+```{r}
+lizards$percentDiff <- with(lizards,speedDiff/first*100)
+favstats(~percentDiff,data=lizards)
+```
+
+On average, the lizards in the sample lost only about 2.7% of their original speed in the course of one year (mean percentage difference = -2.698).
+
+## Inferential Results
+
+Let us now test the hypotheses:
+
+  >$H_0: \mu_d=0$
+  
+  >$H_a: \mu_d \neq 0$
+  
+The results are as follows:
+  
+```{r echo=FALSE}
+ttestGC(~second - first,data=lizards,mu=0)
+```
+  
+Note that the sample mean difference in speeds (-0.087 m/sec) differed from what $H_0$ would expect by less than two standard error (0.05 m/sec).  In fact the results are 1.72 standard errors below that the Null expects (see the reported test statistic of -1.72).  Thus our results would not be very surprising to someone who believes that lizard speeds don't change, on average, over this one year period.
+
+The confidence interval (-0.19 to 0.016 m/sec) contains 0, the value corresponding to the Null Hypothesis.  Hence it would seem that our data don't rule out as unreasonable the possibility that lizard speeds remain the same on average.
+
+The P-value for the test of significance was about -.095.  This means that if the Null Hypothesis is true then there is about a 9.5% chance of getting a test statistic at least as far from 0 as the one we actually got.  This doesn't seem like a terribly small chance, so we won't reject $H_0$.
+
+Note, by the way, that the sample size was 34 -- not too small a sample --  and the distribution of the changes (see the density plot above) was rather like a normal curve.  If the sample of lizards can be considered as being like a random sample from the population of all lizards, then we can rely fairly well on the results of the inferential procedures discussed above.
+
+# Discussion and Conclusion
+
+
+Our data did not provide very strong evidence in favor of the notion that lizard speeds decrease (on average, in the population) during this one year period.  Even if there is a decrease, it may not be very important.
+
+How can we see this?  Well, the confidence interval's lower bound was -0.19 m/sec.  On the other hand the mean initial speed can be computed as follows:
+
+```{r}
+firstMean <- mean(~first,data=lizards)
+firstMean
+```
+
+The percentage change (if there is one at all!) is probably no more than
+
+```{r}
+-0.19/firstMean*100
+```
+
+That's an 8.7% decrease, corresponding to the lower bound of the confidence interval.  If biologists think that such a percentage change is important, then they might want to repeat the study with a larger sample of lizards in order to get a narrower confidence interval for the mean speed change.

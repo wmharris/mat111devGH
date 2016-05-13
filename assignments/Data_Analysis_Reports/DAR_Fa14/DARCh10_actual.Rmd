@@ -1,0 +1,66 @@
+---
+title: "Title Here"
+author: "Author Here"
+date: "Date Here"
+output:
+  pdf_document:
+    fig_height: 4
+    fig_width: 5
+  html_document:
+    fig_height: 4.5
+    fig_width: 5
+  word_document:
+    fig_height: 4
+    fig_width: 5
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(abd)
+require(tigerstats)
+```
+
+# Introduction
+
+When dolphins are asleep, they usually swim in little circles.  Studies of dolphins in the oceans of the Northern Hemisphere show that they are asleep they spend a majority of their time swimming in counter-clockwise circles.  Stafne and Manger (see "Predominance of clockwise swimming during rest in Southern Hemisphere dolphins" in *Physiology and Behavior* Vol. 82, pp. 919-926) observed eight dolphins who lived in the Southern Hemisphere, and recorded the percentage of time each dolphin spent swimming *clockwise* while asleep.  The results are recorded in the data frame `Dolphins` from package `abd`:
+
+```{r eval=FALSE}
+data(Dolphins)
+View(Dolphins)
+help(Dolphins)
+```
+
+
+We are interested in the following Research Question:
+
+  >*Do Southern Hemisphere dolphins resemble Northern Hemisphere dolphins in their sleep behavior, or do they spend a majority of their sleep-time swimming clockwise?*
+  
+
+# Methods
+
+<Methods go here.  Perform your variable analysis.  On the basis of that analysis, choose at least one graphical descriptive method, at least one numerical descriptive method, and an appropriate inferential method involving a confidence interval and a test of significance, in order to investigate the Research Question.  Suggestion:  In this section you should identify and define the population parameter that you are interested in.>
+
+# Results
+
+<Put some introductory sentence in this section.>
+
+## Descriptive Results
+
+<Put some introductory sentence in this section.>
+
+### Graphical Descriptive Results
+
+<Introduce your graph to the reader, and then make the graph.  After the graph, include a discussion of the graph, pointing out specific features of the graph that help you answer your research question.>
+
+### Numerical Descriptive Results
+
+<Introduce your numerical descriptive results, and then produce them.  Afterwards, include a discussion of the results, pointing out how specific numbers in the results help you to answer the research question.>
+
+## Inferential Results
+
+<Inferential results here.  Try to explain all important parts of the printed output of your inferential routine.  You should discuss address all steps of the significance test process, but you don't have to number them explicitly and you don't have to address them in the standard order.  Just make sure you address them in a logical way.  In particular, make sure that you define the parameter(s) of interest and that you remember to perform a "Safety Check.", Since your test will also produce a confidence interval, make sure that you report and interpret the confidence interval for the reader, and explain to the reader how the confidence interval helps you address the Research Question.  If the P-value in your test is reported in scientific notation, you should re-state it in a way that does not use scientific notation (see class slides and website slides for guidance on this matter).  NOTE:  Many people choose to define the parameter(s) of interest in the Methods section and to address the "Safety Check"" in the final Discussion and Conclusion section, but all other discussion of inferential results should go in this section.>
+
+# Discussion and Conclusion
+
+<Draw a general conclusion here, if possible.  If you can't draw a conclusion, say why not. Many people choose to address the Safety Check in this section.  This section is also a good place to suggest new Research Questions suggested by the results of the current study.>
