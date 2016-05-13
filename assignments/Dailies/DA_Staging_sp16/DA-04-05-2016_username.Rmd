@@ -1,0 +1,131 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday, April 5 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+
+
+# Sampling 64 College Students
+
+
+In a population of college students, the mean fastest speed ever driven is 110 mph. The SD of the fastest speeds is 10 mph.
+
+Herbert will sample 64 college students at random and compute the sample mean x-bar.
+
+Let's find the approximate probability that x-bar will turn out to be less than 107 mph.
+
+We do this in steps.
+
+## Expected Value
+
+What is the expected value of x-bar?
+
+
+## Standard Deviation
+
+What is the standard deviation of x-bar:  is it 10, or is it 10/sqrt(64)?
+
+
+## Probability
+
+Since the sample size of 64 is pretty large,  the Central Limit Theorem says that x-bar is approximately normal, as a random variable.
+
+What's the correct way to compute the chance that x-bar will be less than 107 mph?
+
+Is it this:
+
+```{r}
+pnormGC(107,region="below",mean=110,sd=10)
+```
+
+or this?
+
+```{r}
+pnormGC(107,region="below",mean=110,sd=10/sqrt(64))
+```
+
+Explain your choice briefly.
+
+
+# Sampling 36 College Students
+
+In a population of high school students, the mean fastest speed ever driven is 106 mph. The SD of the fastest speeds is 12 mph.  The distribution of the all the speeds is a bit right-skewed.
+
+Herbert will sample 36 college students at random and compute the sample mean x-bar.
+
+We would like to find an approximation for the probability that x-bar will be between 104 and 108 mph.
+
+## First Step:  Find the EV of x-bar
+
+What's the expected value of x-bar for Herbert?
+
+
+## Second Step:  Find the SD of x-bar?
+
+What's the SD of x-bar?  Inseert into the code chunk below the code you need to compute it:
+
+```{r}
+
+```
+
+
+## Third Step:  Think about Shape
+
+
+x-bar is approximately a normal random variable.  Why?
+
+
+## Last Step:  Find the Probability
+
+Use the 68-95 Rule for Probability to find the chance that x-bar will be between 104 and 108 mph.
+
+
+# 68%-Confidence
+
+You take a sample of size 49 from a population with an unknown mean $\mu$.
+
+The mean x-bar of your sample is 50. The SD of your sample is 14.
+
+## Find standard error
+
+What is the standard error of x-bar?  Insert into the code chunk below the calculations that you need in order to get it:
+
+```{r}
+
+```
+
+
+## 68%-Confidence
+
+
+What numbers will correctly fill in the blanks in the following sentence?  "I am about 68%-confident that $\mu$ is somewhere between Blank and Blank."
+
+
+# 95%-Confidence
+
+You take a sample of size 49 from a population with an unknown mean $\mu$.
+
+The mean x-bar of your sample is 50. The SD of your sample is 14.
+
+## Find standard error
+
+What is the standard error of x-bar?  Insert into the code chunk below the calculations that you need in order to get it:
+
+```{r}
+
+```
+
+
+## 95%-Confidence
+
+
+What numbers will correctly fill in the blanks in the following sentence?  "I am about 95%-confident that $\mu$ is somewhere between Blank and Blank."
+
+

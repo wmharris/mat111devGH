@@ -1,0 +1,43 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "01/12/2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(tigerstats)
+```
+
+# Introduction
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+favstats(fastest~seat,data=m111survey)
+```
+
+You can also embed plots, for example:
+
+```{r}
+bwplot(fastest~seat,data=m111survey,
+       xlab="Seating Preference",
+       yalb="Fastest Speed Driven (mph)",
+       main="Speed and Seating at GC")
+```
+
+# Practice
+
+use R to add 2 and 2, by inserting the appropriate command inside the code chunk below.
+
+```{r}
+
+```
+
+
+# Dolphin Communication
+
+How many heads did you get?

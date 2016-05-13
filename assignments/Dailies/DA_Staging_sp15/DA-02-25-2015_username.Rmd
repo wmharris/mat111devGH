@@ -1,0 +1,60 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday February 25, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+
+# Survey Bias
+
+You want to gauge interest in a Sports Management major on campus.  You put survey forms in campus mail to all GC students who are listed as varsity athletes.  Your survey question is:
+
+*"Nation-wide, there is sky-rocketing demand for professionals with skills in business and public relations to work for professional sports teams.  In light of this fact, are you interested in pursuing a major in Sports Management?"*
+
+Let's try to identify the sources of bias in this survey.
+
+## Part a
+
+Is there any selection bias?  Why or why not?
+
+
+
+
+## Part b
+
+Is there any non-response bias?  Why or why not?
+
+
+
+## Part c
+
+Is there any respone bias?  Why or why not?
+
+
+
+# A Confoudng Variable
+
+Consider the following two variables, measured on adult males:
+
+* **bifocals**:  whether or not you wear bifocals
+* **prostate**:  whether or not you have prostate cancer
+
+An observational study shows that **bifocals** and **prostate** are related:  the men in the study who reported wearing bifocals were about five times more likely to have prostate cancer than were the men who did not wear bifocals.
+
+## Part a
+
+What third variable might be a confounding variable in this study?
+
+
+## Part b
+
+Explain in a brief sentence why it could be confounder.
+

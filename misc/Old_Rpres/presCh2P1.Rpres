@@ -1,0 +1,496 @@
+Describing Patterns in Data (Part 1)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+Describing Patterns in Data
+=============
+
+
+- Data Basics
+- Describing the Distribution of a Variable
+- Exploring Relationships Between Variables
+- Numerical Measures
+- Graphical Tools
+
+In Part 1:
+============
+id: Contents
+
+- [Types of Variables](#/VariableTypes)
+- [Research Questions](#/ResearchQuestions)
+- [Distribution of One Factor Variable](#/OneFactor)
+- [Relationship Between Two Factor Variables](#/TwoFactor)
+- [Distribution of One Numerical Variable](#/OneNumerical)
+    - Numerical Measures of Center and Spread
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r include=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+Types of Variables
+==============
+type:  section
+id:  VariableTypes
+
+[Back to Table of Contents](#/Contents)
+
+Looking at Data
+=============
+
+(1) Put the data into your Global Environment:
+```{r}
+data(m111survey)
+```
+
+(2) View it:
+```{r eval=F}
+View(m111survey)
+```
+
+(3) Learn more about it:
+```{r eval=FALSE}
+help(m111survey)
+?m111survey #same thing, less typing!
+```
+
+A Data Frame
+===============
+
+Here is part of `m111survey`:
+```{r echo=FALSE}
+head(m111survey[,c(1,2,4,8,11)])
+```
+In a data frame:
+
+- rows are *observations* (individuals)
+- columns are *variables*
+
+Variable Types
+===============
+
+- **Factor** (Categorical)
+    - values (*levels*) are not numbers:  "male", "female",...
+    - *ordinal factors.* levels come in an order:  "front", "middle", "back", ...
+- **Numerical** (Quantitative)
+    - *Double* (Continuous):  values are real numbers 4.37,2.58, ...
+    - *Integer* (Discrete):  values are whole numbers 1,4,2,2,...
+    
+The str() Function
+============
+type:  prompt
+
+```{r}
+str(m111survey)
+```
+
+Research Questions
+==================
+type:  section
+id:  ResearchQuestions
+
+[Back to Table of Contents](#/Contents)
+
+Descriptive Statistics
+================
+type:  prompt
+
+*Descriptive Statistcs* is the art of summarizing data and describing patterns in the data.
+
+Descriptive Tools
+==================
+
+
+- **Graphical Devices**
+    - barcharts
+    - histograms
+    - density plots
+    - boxplots
+    - and many more ...
+    
+***
+
+- **Numerical Measurements**
+    - mean and standard deviation
+    - median and interquartile range
+    - quantiles
+    - and many more ...
+
+Important Guiding Principle
+==============
+type:  prompt
+
+The choice of tools will depend on the type of variables involved in your *Research Question*.
+
+
+Some Research Questions
+=================
+
+- "Are a majority of students female?"
+    - variable:  **sex** (factor)
+- "Who is more likely to prefer to sit in the front:  a guy or a gal?"
+    - variables:  **sex** (factor) and **seat** (factor)
+- "Who drives faster:  students who prefer the front, the middle, or the back?"
+    - variables:  **seat** (factor) and and **fastest** (numerical)
+
+Distribution of One Factor Variable
+=================
+type:  section
+id:  OneFactor
+
+[Back to Table of Contents](#/Contents)
+
+One Factor Variable
+================
+
+**Research Question**:
+
+- "What percentage of students in the survey are female?"
+
+Variable involved is **sex** (factor).
+
+Numerical Tool:  Tables
+===============
+
+Tally the sexes (a table of counts):
+
+```{r}
+xtabs(~sex,data=m111survey)
+```
+
+Get percentages:
+
+```{r}
+rowPerc(xtabs(~sex,data=m111survey))
+```
+
+Graphical Tool:  Barchart
+====================
+
+```{r}
+barchartGC(~sex,data=m111survey,
+           type="percent",
+           main="Distribution of Sex")
+```
+
+Relationship Between Two Factor Variables
+=====================
+type:  section
+id:  TwoFactor
+
+[Back to Table of Contents](#/Contents)
+
+
+
+Two Factor Variables
+================
+
+**Research Question**:  "Who is more likely to sit in the front:  a guy or a gal?"
+
+- This question is about the *relationship* between two variables.
+- Variables involved are:
+    - **sex** (factor).  This is the *explanatory* variable.
+    - **seat** (factor).  This is the *response* variable.
+- The explanatory variable is the variable that:
+    - we think might help *cause* the response, or ...
+    - that we might intend to use to *predict* the response.
+- Often we don't use explanatory/response distinction
+
+
+Numerical Tool:  Two-Way Tables
+=====================
+
+Also called *cross table*, or *contingency table*.
+
+```{r}
+xtabs(~sex+seat,data=m111survey)
+```
+
+**But**:  counts don't answer Research Question.  (There are more gals than guys in the first place!)
+
+Row Percents
+===============
+
+To check for a relationship between two factor variables, see if  *conditional distributions* differ.  For the conditional distribution **seat** given various values of **sex**, compute row percents:
+
+```{r}
+sexseat <- xtabs(~sex+seat,data=m111survey)
+rowPerc(sexseat)
+```
+
+<small>Females are more likely to prefer the front (47.5%, vs. 25.81% for the guys).</small>
+
+Graphical Tool:  Barchart
+=======================
+
+```{r eval=FALSE}
+barchartGC(~sex+seat,data=m111survey,
+           type="percent",
+           main="Seating Preference by Sex")
+```
+
+Note the "formula-data" input:
+
+- **formula** is ~explanatory+response
+- **data** gives the data frame containing the variables
+
+Barchart Output
+===============
+
+```{r echo=FALSE}
+barchartGC(~sex+seat,data=m111survey,
+           type="percent",
+           main="Seating Preference by Sex")
+```
+
+***
+
+- Females tend to prefer the front more than guys do.
+- Guys tend to prefer the back more than gals do.
+
+Distribution of One Numerical Variable
+===================
+type:  section
+id:  OneNumerical
+
+(Numerical Tools)
+
+[Back to Table of Contents](#/Contents)
+
+
+One Numerical Variable
+==============
+
+**Research Question**:  "How fast do GC students drive, when they drive their fastest?"
+
+This question involves one variable:
+- **fastest** (numerical)
+
+Describing a Numerical Variable
+=================
+
+Describe the distribution's:
+
+- Center (numerical measurements)
+- Spread (numerical measurements)
+- Shape (graphical tools)
+
+Numerical Measures:  favstats()
+===================
+
+```{r eval=F}
+favstats(~fastest,data=m111survey)
+```
+
+```{r echo=FALSE}
+favstats(~fastest,data=m111survey)[1:8]
+```
+
+Numerical Measures:  favstats()
+===================
+
+```{r echo=FALSE}
+favstats(~fastest,data=m111survey)[1:8]
+```
+
+- **min**: smallest data value
+- **Q1**: first quartile
+- **median** median of the data
+- **Q3**:  third quartile
+- **max**: largest data value
+- **mean**:  mean of the data
+- **sd**:  standard deviation of the data
+- **n** sample size
+
+Describing the Center:  The Mean
+==============
+
+The mean of the sample data is:
+
+$$\bar{x}=\frac{\sum{x_i}}{n},$$
+
+where:
+
+* $\sum$ denotes summing
+* $x_i$ denotes the individual values to be summed
+* $n$ denotes the number of values in the list.
+
+Describing the Center:  The Mean
+==============
+
+A small example:
+
+```{r}
+FakeData <- c(2,4,7,9,10)
+mean(FakeData)
+```
+
+Using R as a calculator to compute the mean:
+
+```{r}
+(2+4+7+9+10)/5
+```
+
+Describing the Spread:  the SD
+================
+Standard deviation (SD) measures how far the typical data value is from the mean of all the data.
+
+$$s = \sqrt{(\sum{(x_i - \bar{x})^2})/(n-1)}.$$
+
+<small>
+* Find the mean $\bar{x}$ of the numbers.
+* Subtract the mean from each number $x_i$, then square these "deviations".
+* Add up the squared deviations.
+* Average them (almost!) by dividing the sum by how many there are, MINUS ONE.
+* Take the square root of this "almost-average."</small>
+
+Combining Mean and SD
+==================
+
+```{r echo=FALSE}
+favstats(~fastest,data=m111survey)[6:7]
+```
+
+"The typical GC student drives about 105.9 mph, give or take 20.8 mph or so."
+
+(**The SD is a "give-or-take" figure.**)
+
+Computing SD:  Small Example
+=================
+
+A small dataset:
+```{r}
+FakeData <- c(2,4,7,9,10)
+FakeData
+```
+
+First, get the mean of the data:
+
+```{r}
+mean(FakeData)
+```
+
+Computing the SD:  Deviations
+=============
+
+Subtract mean from each data value, to get the *deviations* from the mean:
+
+```{r echo=FALSE}
+deviations <- FakeData-mean(FakeData)
+data.frame(x=FakeData,deviations)
+```
+
+Squared Deviations
+=============
+
+We don't care about "above" or "below", we only care about how far away, so *square* the deviations:
+
+```{r echo=FALSE}
+deviations <- FakeData-mean(FakeData)
+squared.devs <- deviations^2
+data.frame(x=FakeData,deviations,squared.devs)
+```
+
+The square is never negative!
+
+"Almost Averaging"
+===============
+
+```{r}
+(19.36+5.76+0.36+6.76+12.96)/(5-1)
+```
+
+
+The result is called the *sample variance*.
+
+"Make Up" for Squaring
+================
+
+To (sort of) make up for squaring the deviations, we now take the *square root* of the variance:
+```{r}
+sqrt(11.3)
+```
+
+The result is the sample standard deviation!
+
+Describing the Center:  The Median
+================
+
+```{r}
+FakeData <- c(2,4,7,9,10)
+median(FakeData)
+```
+
+To find the median:
+
+1. sort the data from smallest to largest
+2. look in the "middle" of the list:
+    - if $n$ is odd, the median is the middle
+    - if $n$ is even, median is average of the two closest to the middle
+
+Quantiles
+====================
+
+Also called *percentiles*.
+
+```{r}
+with(m111survey,
+  quantile(fastest,
+    probs=c(0.2,0.5,0.8,0.9)))
+```
+
+* About 20% of the students drove slower than 90 mph
+* About 50% drove slower than 102 mph (median!)
+* About 80% drove slower than 120 mph
+* About 90% drove slower than 130 mph
+
+Quartiles
+=================
+
+```{r}
+with(m111survey,
+  quantile(fastest,
+    probs=c(0.25,0.50,0.75)))
+```
+
+* 25th percentile is the *First Quartile* Q1
+* 50th percentile is the median
+* 75th percentile is the *Third Quartile* Q3
+
+Describing the Spread:  IQR
+=======================
+
+The *interquartile range* is
+
+$$IQR=Q3-Q1.$$
+
+The middle 50% of the data lie between Q1 and Q3.
+
+Combining Median and IQR
+===================
+
+```{r echo=FALSE}
+favstats(~fastest,data=m111survey)[1:5]
+```
+
+* "The median fastest speed driven was 102 mph."
+* "The IQR range was $119.5-90.5=29$ mph."
+* "The middle half of the students drove between 90.5 and 119.5 mph."
+
+Next Topic
+========================
+
+Part 2 will begin with tools for describing the *shape* of the distribution of a numerical variable.

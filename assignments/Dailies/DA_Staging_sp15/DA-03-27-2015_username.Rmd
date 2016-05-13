@@ -1,0 +1,80 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday, March 25 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# 95%-Confidence
+
+You take a sample of size 49 from a population with an unknown mean $\mu$.
+
+The mean x-bar of your sample is 50. The SD of your sample is 14.
+
+## Find standard error
+
+What is the standard error of x-bar?  Insert into the code chunk below the calculations that you need in order to get it:
+
+```{r}
+
+```
+
+
+## 95%-Confidence
+
+
+What numbers will correctly fill in the blanks in the following sentence?  "I am about 95%-confident that $\mu$ is somewhere between Blank and Blank."
+
+
+
+
+# Sleeping
+
+The variable **sleep** in `m111survey` says how many hours of sleep each student got the previous night.
+
+Let $\mu$ be the mean number of hours of sleep that ALL GC students got that night.
+
+## Part a
+
+Let's use `ttestGC()` to get a 95% confidence interval for $\mu$.  You can do this by modifying the code used in a similar example from the slides:
+
+```{r}
+ttestGC(~fastest,data=m111survey)
+```
+
+
+## Part b
+
+Many doctors recommended 8 or more hours of sleep. Based on the data, would it be reasonable to believe that the population of GC students got, on average, the recommended amount that night? wHy or why not?
+
+
+## Part c
+
+Uusally we make 95%-confidence intervals.  If you wanted a 99% confidence interval for $\mu$, how would you get it?  Put the right code into this chunk:
+
+```{r}
+
+```
+
+
+# Check that Sample
+
+Be a good doobie, and check the sample in the previous practice problem:
+
+```{r}
+densityplot(~sleep,data=m111survey,
+            main="Sleep Last Night",
+            xlab="hours of sleep")
+```
+
+The sample size was 71, which is pretty big. If it had been only 25 and the graph looked like this, do you think it would still be OK to use ttestGC() to make a confidence interval for $\mu$?
+
+
+

@@ -1,0 +1,298 @@
+Tests of Significance (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [Relationship Between Tests and Confidence Intervals](#/testint)
+- [The Interval Advantage](#/intadvantage)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+
+Tests and Intervals
+===================
+type:  section
+id:  testint
+
+[Back to Contents](#/Contents)
+
+
+Confidence Interval vs. Test
+=====================
+
+Confidence intervals answer this question:
+
+  >Given the data, *within what range of values* might the parameter reasonably lie?
+
+Tests of significance answer this question:
+
+  >Given the data, is it reasonable to believe that the parameter *is a particular given value*?
+  
+Example
+===========
+
+Say we are testing:
+
+  >$H_0: \mu = 100$
+  
+  >$H_a: \mu \neq 100$
+  
+And we get these summary results:
+
+|Sample Mean $\bar{x}$|Sample SD $s$|Sample Size $n$|
+|:---:|:---:|:----:|
+|101|6|36|
+
+The Code
+=========
+
+For two-sided test and 95%-confidence interval:
+
+```{r eval=FALSE}
+ttestGC(mean=101,sd=6,n=36,
+        mu=100)
+```
+
+Interval and P-Value
+================
+
+```
+lower       upper          
+98.969892   103.030108      
+```
+
+* 100 (Null's belief about $\mu$) is inside the 95%-confidence interval
+
+```
+P-value:  	P = 0.3242 
+```
+
+Also:  $P > 0.05$.  We will not reject $H_0$.
+
+Different Example
+=================
+
+Say we are testing:
+
+  >$H_0: \mu = 100$
+  
+  >$H_a: \mu \neq 100$
+  
+And we get these summary results:
+
+|Sample Mean $\bar{x}$|Sample SD $s$|Sample Size $n$|
+|:---:|:---:|:----:|
+|102.5|6|36|
+
+The Code
+=========
+
+For two-sided test and 95%-confidence interval:
+
+```{r eval=FALSE}
+ttestGC(mean=102.5,sd=6,n=36,
+        mu=100)
+```
+
+Interval and P-Value
+================
+
+```
+lower         upper          
+100.469892    104.530108     
+```
+
+* 100 (Null's belief about $\mu$) is *outside* the 95%-confidence interval
+
+```
+P-value:    P = 0.01726 
+```
+
+Also:  $P < 0.05$.  We *will* reject $H_0$.
+
+Fact
+================
+
+Suppose:
+
+* You plan to make a 95%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than 0.05;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than 0.05.
+
+
+Another Fact
+================
+
+Suppose:
+
+* You plan to make a 90%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than 0.10;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than 0.10.
+    
+Test-Interval Relationship
+======================
+type:  prompt
+
+Suppose:
+
+* You plan to make a $100(1-\alpha)$%-confidence interval, and
+* the Null thinks $\mu$ is $\mu_0$.
+
+Then:
+
+* if $\mu_0$ is outside the interval, then:
+    * the $P$-value will be less than $\alpha$;
+* if $\mu_0$ is inside the interval, then:
+    * the $P$-value will be more than $\alpha$.
+
+  
+The Interval Advantage
+===================
+type:  section
+id:  intadvantage
+
+[Back to Contents](#/Contents)
+
+Interval Predicts Test Result
+==========================
+
+Suppose the confidence level "matches" the cut-off value:
+* (example) level is 95% and $\alpha=0.05$;
+* (example) level is 90%, $\alpha=0.10.$
+
+Then just from the confidence interval you can tell how the test will come out.
+
+Another Issue
+=================
+
+Suppose you are testing:
+
+  >$H_0: \mu_1-\mu_2 = 0$
+  
+  >$H_a:  \mu_1-\mu_2 \neq 0$
+  
+And you get results:
+
+|Group|$\bar{x}$|$s$|$n$|
+|:-:|:---:|:---:|:----:|
+|group one|100.1|6|36|
+|group two|100|6|36|
+
+Try Test
+==============
+
+```{r eval=FALSE}
+ttestGC(mean=c(100.1,100),
+        sd=c(6,6),
+        n=c(36,36),
+        mu=0)
+```
+
+Results
+============
+
+95%-confidence interval, and P-value:
+
+```
+lower         upper          
+-2.720560     2.920560
+
+P-value:  	P = 0.9438 
+```
+
+Slightly Different
+==============
+
+Now suppose you are still testing:
+
+  >$H_0: \mu_1-\mu_2 = 0$
+  
+  >$H_a:  \mu_1-\mu_2 \neq 0,$
+  
+but you take much larger samples, and you get results:
+
+|Group|$\bar{x}$|$s$|$n$|
+|:-:|:---:|:---:|:----:|
+|group one|100.1|6|36000|
+|group two|100|6|36000|
+
+Try Test
+==============
+
+```{r eval=FALSE}
+ttestGC(mean=c(100.1,100),
+        sd=c(6,6),
+        n=c(36000,36000),
+        mu=0)
+```
+
+Results
+============
+
+95%-confidence interval, and P-value:
+
+```
+lower       upper          
+0.012346    0.187654 
+
+P-value:    P = 0.02535
+```
+
+Woo-hoo!
+
+* Reject $H_0$!
+* Lots of evidence for a difference!
+
+But ...
+===============
+
+The confidence interval
+
+```
+lower       upper          
+0.012346    0.187654 
+```
+
+lets you know that the difference is probably very small:
+
+* maybe not important at all!
+
+Keep in Mind
+=============
+type:  prompt
+
+At very large sample sizes, you can acquire a lot of evidence for a very small difference.
+
+* Low $P$-values get you excited
+* Confidence intervals keep you focused on what's important

@@ -1,0 +1,641 @@
+Introduction
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In This Chapter
+===============
+id:  Contents
+
+* [R and the R Studio Environment](#/environ)
+* [Basic R](#/basic)
+* [Three R Functions](#/functions)
+* [Let's Play Cards!](#/cards)
+
+
+R and RStudio
+========================================================
+type:  section
+id:  environ
+
+```{r,include=FALSE}
+require(mosaic)
+require(tigerstats)
+trellis.par.set(theme.rpres())
+```
+
+
+- `R` is a statistical software program.
+- RStudio is an *integrated development environment* (IDE) that facilitates the use of `R`.
+- RStudio makes `R` easier and more fun to use!
+
+[Back to Table of Contents](#/Contents)
+
+
+Panels and Tabs:  Bottom Left Panel
+==================================
+
+The bottom left panel
+- is called the **Console**.
+- is the "brain" of `R`.
+
+Anything entered in the **Console** will be executed by `R`.  
+
+Give it a try!  Place your cursor in the **Console** panel, type the following, and then hit return.
+```{r, eval=FALSE}
+4+9
+```
+
+
+Panels and Tabs:  Top Right Panel
+================================
+
+The top right panel has two tabs:
+
+- **History** - stores all commands entered in the **Console**.
+
+Take a look at your **History** tab.  You should see `4+9`.
+
+- **Environment** - stores all objects (datasets, functions, etc.) that have been entered in the **Console**.
+
+There isn't anything in your **Environment** tab because we have not created any objects. 
+
+Panels and Tabs:  Top Right Panel
+=================================
+
+Let's create an expression object! Type the following:
+```{r,eval=FALSE}
+mysum <- 4+9 
+```
+
+- You have stored the sum `4+9` in the object named `mysum`.
+- There is nothing special about the name `mysum`.  You could have named it anything!
+- Look in the **Environment** tab.  You should see this object, along with it's value.
+- Go back to the **Console** and type the following to return the value stored in `mysum`.
+
+```{r,eval=FALSE}
+mysum
+```
+
+Panels and Tabs:  Bottom Right Panel
+====================================
+
+The bottom right panel has four tabs:
+- **Files** 
+    - lists available files
+    - allows you to upload new files
+- **Plots**
+    - displays plots that you create in the Console
+- **Packages** 
+    - allows you to install and load necessary packages
+- **Help**
+    - view help files
+    
+Panels and Tabs:  Bottom Right Panel
+====================================
+
+There are 3 important packages to load when you work in `R`
+- `tigerstats`
+- `mosaic`
+- `manipulate` 
+
+
+You can load them one of two ways:
+
+- Checking the appropriate box in the **Packages** tab.
+- Typing the following into your Console:
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+require(manipulate)
+```
+
+
+
+Panels and Tabs:  Top Left Panel
+================================
+
+The top left panel
+- is called the **Source**.
+- is where you will do most of your typing.
+- is where you will open, edit, and save files.
+
+Let's open an R Script file.  Select
+- *File*
+- *New File*
+- *R Script*
+
+Panels and Tabs:  Top Left Panel
+================================
+
+An R Script is a file to store code.  This allows you to 
+- easily modify and edit long lines of code
+- save your work
+- share your work with others
+
+Once a command is typed into an R script file, it should be run through the **Console**.
+
+- Select the entire command.  Then copy and paste into the **Console**.
+- With the cursor on the line you want to run, press the `Run` button at the top right of the **Source** window.
+
+
+Basic R
+=========
+type:  section
+id:  basic
+
+[Back to Table of Contents](#/Contents)
+
+R as Calculator
+=====================
+The most basic way to use `R` is as a calculator.  Type the following expressions into an RScript and run them through the **Console**.
+
+```{r,eval=FALSE}
+5+4 
+123-45
+23*3.7 
+84/7 
+```
+
+- use `+` for addition
+- use `-` for subtraction
+- use `*` for multiplication
+- use  `/` for division
+
+R as Calculator
+=========
+
+When using `R` as a calculator, use parentheses to preserve the order of operations.  The expression
+
+```{r}
+7+5*2
+```
+is different than
+```{r}
+(7+5)*2
+```
+
+R as Calculator
+=========
+
+`R` has some built in mathematical functions that should be familiar to you.  For example:
+
+```{r}
+sqrt(81)  #square root function
+```
+
+```{r}
+cos(pi)  #cosine of pi
+```
+
+Use the `#` sign to add a comment next to a line of code.  This helps you remember what a particular line of code does!
+
+Getting Help
+=========
+
+What if you couldn't remember what the square root function was?  You could access the `help` file on this function using either of the following methods.
+
+- Type the following into the **Console**
+```{r,eval=FALSE}
+help(sqrt)
+```
+
+OR
+
+- Type the first few letters of the function into the **Console** and press `Tab`.  Select the appropriate function from the list.  Press `F1` to open the help file in the **Help** tab.
+
+
+
+
+
+
+Important R Functions
+====================
+type:  section
+id:  functions
+
+
+There are several built in functions to become familiar with:
+
+- [Concatenate Function, `c()`](#/Concatenate)
+- [Replicate Function, `rep()`](#/Replicate)
+- [Sequence Function, `seq()`](#/Sequence)
+
+[Back to Table of Contents](#/Contents)
+
+
+Concatenate Function
+===================================
+type:  prompt
+id:  Concatenate
+
+To combine values into a list, type
+
+```{r, eval=FALSE}
+c(1, 3, 5)
+```
+
+It is useful to store a list in an object.  Name it whatever you like!
+
+```{r}
+mylist <- c(1, 3, 5) #creates the object
+mylist #calls the object
+```
+
+Concatenate Function
+===================================
+type:  prompt
+
+To combine words or letters into a list, type
+
+```{r}
+mywordlist <- c("A", "B", "Cat")
+```
+
+To see the list, type:
+```{r}
+mywordlist
+```
+
+Letters and words must be put in quotations.
+
+
+Replicate Function
+==================================
+type:  prompt
+id:  Replicate
+
+To create a list of numbers that are all the same, you can use the concatenate function.
+
+```{r,eval=FALSE}
+c(2, 2, 2, 2, 2)
+```
+
+It is easier to use the `rep` function:
+
+```{r}
+myreps <- rep(x=2,times=5)
+myreps
+```
+
+Replicate Function
+==================================
+type:  prompt
+
+```{r,eval=FALSE}
+rep(x=2,times=5)
+```
+
+
+The `rep` function requires two inputs:
+- `x` is the value that you want to replicate
+- `times` is the number of times you want to replicate `x`
+
+Replicate Function
+==================================
+type:  prompt
+
+You do not have to enter the names of the inputs
+
+```{r}
+rep(2,5)
+```
+
+as long as you enter them in the correct order.
+
+```{r}
+rep(5,2)
+```
+
+Replicate Function
+==================================
+type:  prompt
+
+You can also replicate letters or words.
+
+```{r}
+rep("apple", 3)
+```
+
+
+
+
+Sequence Function
+==============================
+type:  prompt
+id:  Sequence
+
+The `seq` function comes in handy for making seqences of values.  
+
+To create the sequence `1, 2, 3, 4, 5`, type
+```{r}
+seq(from=1,to=5,by=1)
+```
+
+Sequence Function
+==============================
+type:  prompt
+
+```{r, eval=FALSE}
+seq(from=1,to=5,by=1)
+```
+
+This functions requires three inputs:
+- `from` is the starting point of the sequence,
+- `to` is the ending point of the sequence,
+- `by` is the increment.
+
+Sequence Function
+==============================
+type:  prompt
+
+This function is useful for other increments.  
+
+```{r}
+seq(from=1,to=5,by=0.5)
+```
+
+```{r}
+seq(0,1,0.1)
+```
+
+Let's Play Cards
+===================
+type:  section
+id:  cards
+
+[Back to Table of Contents](#/Contents)
+
+The Game
+==============================
+
+- A volunteer draws 10 cards from our classroom deck of cards, *with replacement*.
+- The cards will be shuffled between each draw. 
+- The class wins a point for each red card drawn and the instructor wins a point for each black card drawn.
+
+*With replacement* means that the volunteer will 
+- draw a card
+- record the color
+- put it back in the deck before drawing another card. 
+
+
+
+The Game
+==============================
+
+Questions to consider before we play:
+
+- What is the probability that the volunteer will pull out a red card?
+
+- Of the 10 cards drawn, how many do you *expect* to be red?
+
+- Do we think that the volunteer will draw exactly the hypothesized number of red cards?
+
+Let's play!
+
+
+The Results
+=============================
+
+Questions to consider about our results:
+
+- Do these results seem consistent with how many we expected to be red? Or do they seem strange?
+
+- Do you still believe your hypothesized probability of drawing a red card? In other words, do you still believe that we are playing with a standard deck?
+
+We will investigate these questions by playing more games.  Let's simulate 1000 games in `R`.
+
+The Results
+=============================
+
+Let's start by making a deck of cards in `R`.  Since we only care about the color, we can do this by:
+
+```{r}
+mycards <- c(rep("Red",26),rep("Black",26))
+```
+
+Let's look at the deck:
+
+```{r eval=FALSE}
+mycards
+```
+
+You should see 26 Reds followed by 26 Blacks.
+
+The Results
+=============================
+
+Now, we will randomly draw 10 cards from our virtual deck.
+
+```{r,eval=FALSE}
+sample(mycards, size=10, replace=TRUE)
+```
+
+
+```{r,echo=FALSE}
+set.seed(1984)
+onehand <- sample(mycards, size=10, replace=TRUE)
+```
+
+The Results
+===================
+
+You can take a sample of ten cards and then count up the results:
+
+```{r eval=FALSE}
+table(sample(mycards,size=10,replace=T))
+```
+
+
+```{r echo=FALSE}
+set.seed(1963)
+table(sample(mycards,size=10,replace=T))
+```
+
+
+The Results
+=============================
+
+Let's play 3 games:
+
+```{r,eval=FALSE}
+do(3)*table(sample(mycards, 
+                   size=10, replace=TRUE))
+```
+
+
+```{r,echo=FALSE}
+set.seed(621498)
+mythreegames=do(3)*table(sample(mycards, size=10, replace=TRUE))
+mythreegames
+```
+
+- Game One:  7 black and 3 red cards
+- Game Two:  4 black and 6 red cards
+- Game Three:  2 black and 8 red cards
+
+The Results
+=============================
+
+```{r,echo=FALSE}
+set.seed(621498)
+mythreegames=do(3)*table(sample(mycards, size=10, replace=TRUE))
+mythreegames
+```
+
+Let's display these results in terms of how many games resulted in a given number of red cards.
+
+```{r,echo=FALSE}
+MyReds <- mythreegames$Red
+values <- 0:10
+missing <- numeric(0)
+for (i in values) {
+  if (length(mythreegames$Red[mythreegames$Red==i])==0) missing <- c(missing,i)
+}
+
+DesiredLevels <- c(sort(unique(mythreegames$Red)),missing)
+mythreegames$Red <- factor(mythreegames$Red,levels=DesiredLevels)
+mythreegames$Red <- ordered(mythreegames$Red,
+                       levels=c("0","1","2","3","4","5","6","7","8","9","10"))
+xtabs(~Red,data=mythreegames)
+```
+
+
+The Results
+=============================
+
+Now that we know how to read the results, let's simulate 1000 games.
+
+```{r,echo=FALSE}
+set.seed(1001)
+mygames=do(1000)*table(sample(mycards, size=10, replace=TRUE))
+MyReds <- mygames$Red
+values <- 0:10
+missing <- numeric(0)
+for (i in values) {
+  if (length(mygames$Red[mygames$Red==i])==0) missing <- c(missing,i)
+}
+
+DesiredLevels <- c(sort(unique(mygames$Red)),missing)
+mygames$Red <- factor(mygames$Red,levels=DesiredLevels)
+mygames$Red <- ordered(mygames$Red,
+                       levels=c("0","1","2","3","4","5","6","7","8","9","10"))
+xtabs(~Red,data=mygames)
+```
+
+For example,
+- Five red cards were drawn in 249 of the 1000 games.
+- Eight red cards were drawn in 42 of the 1000 games.
+- Nine red cards were drawn in 8 of the 1000 games.
+- Ten red cards were drawn in 0 of the 1000 games.
+
+The Results
+=============================
+
+Another way to think about these numbers is:
+
+- Five red cards were drawn in 25.9% of the games.
+```{r,eval=FALSE}
+(259/1000)*100
+```
+
+- Eight red cards were drawn in 4.2% of the games.
+- Nine red cards were drawn in 0.8% of the games
+- Ten red cards were drawn in 0% of the games.
+
+How *likely* is it that our volunteer drew their original hand, based on our simulations?   
+
+
+The Results
+=============================
+
+A graphical representation of these percents is useful.
+
+```{r,echo=FALSE}
+histogram(~Red,data=mygames,breaks=seq(-.5,10.5,by=1),xlab="Red")
+```
+
+The Results
+=============================
+
+- Horizontal axis - the number of red cards in a hand of 10 cards from a standard deck. 
+- Vertical axis - the percentage of times (out of the 1000 simulated games) that a particular number of red cards was drawn.
+
+```{r,echo=FALSE}
+histogram(~Red,data=mygames,breaks=seq(-.5,10.5,by=1),xlab="Red")
+```
+
+The Results
+=============================
+
+Let's shade a bar in the histogram to mark the number of red cards our volunteer drew in the class game.  
+
+For example, suppose our volunteer drew 9 red cards.
+
+The Results
+=============================
+
+This shaded region in the histogram represents the estimated chance of drawing 9 red cards from a standard deck.
+
+```{r,echo=FALSE}
+histogram(~MyReds,breaks=seq(-0.5,10.5,by=1),panel=function(x,...){
+  panel.histogram(x,...)
+  panel.rect(xleft=9-0.5,ybottom=0,xright=9+0.5,ytop=perctable(mygames$Red)[9+1],col="Red")
+})
+```
+
+
+
+
+
+The Results
+=============================
+
+The *likelihood* that our class game resulted in such a high number of red cards (or higher) if we were really drawing from a standard deck of playing cards is called a **p-value**. (This P-value is about 0.008)
+
+```{r,echo=FALSE}
+histogram(~MyReds,breaks=seq(-0.5,10.5,by=1),panel=function(x,...){
+  panel.histogram(x,...)
+  panel.rect(xleft=9-0.5,ybottom=0,xright=9+0.5,ytop=perctable(mygames$Red)[9+1],col="Red")
+    panel.rect(xleft=10-0.5,ybottom=0,xright=10+0.5,ytop=perctable(mygames$Red)[9+2],col="Red")
+})
+```
+
+
+Our Process
+=================================
+
+
+1. We wanted to test the hypothesis that we were playing with a standard deck.
+
+2. Data was gathered from a real-world experiment to test our hypothesis. 
+
+3. We asked, "How likely was it to draw the hand that we did *if* we drew from a standard deck?"
+"
+4. We simulated 1000 games using `R`, and counted the # of games that gave us at least the result we got in the experiment.
+
+5. We calculated a P-value, the probability of getting results as extreme as ours (or more so!) from a standard deck.
+
+The Conclusion
+=================================
+
+Finally, draw a conclusion.
+
+If we assume that our volunteer drew 10 cards from a standard deck of cards, there is about a 0.8% chance of drawing 9 red cards. 
+
+- What does this suggest about our originial hypothesis?  
+- Do you believe we were really playing with a standard deck?
+- How convinced are you?
+
+Statistics
+============
+
+**Goal:**   Translate data into knowledge and understanding of the world around us. Statistics is the art and science of learning from data!
+
+The card game we played above is a perfect example of the three aspects of statistics.
+
+- **Design** - asking the right questions and collecting useful data.
+- **Description** - summarizing and analyzing data.
+-  **Inference** - making decisions, generalizations, and turning data into new knowledge.

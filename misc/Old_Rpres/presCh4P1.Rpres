@@ -1,0 +1,353 @@
+Two Numerical Variables (Part 1)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+Outline:  Two Numerical Variables
+=============
+id:  Contents
+
+
+- [Statistical Relationships](#/StatRel) (Parts 1 & 2)
+- Cautions (Part 3)
+
+
+
+Load Packages
+================
+
+```{r,include=FALSE}
+require(mosaic)
+require(tigerstats)
+trellis.par.set(theme.rpres())
+```
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+
+
+Summarizing One Numerical Variable
+======================
+
+**Graphical**
+* Histogram
+* Density Plot
+* Box/Violin Plot
+
+***
+
+**Numerical**
+* Median/IQR
+* Quantiles
+* Mean/SD
+
+Datasets
+=======
+
+We will work primarily with 3 datasets in this Chapter.  Load them and take a look at them.
+
+```{r,eval=FALSE}
+data(m111survey)
+View(m111survey)
+```
+
+```{r,eval=FALSE}
+data(pennstate1)
+View(pennstate1)
+help(pennstate1)
+```
+
+```{r,eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+
+
+
+
+
+
+Introduction to Statistical Relationships
+==================
+type:  section
+id:  StatRel
+
+- [Scatterplots](#/Scatter)
+- Correlation 
+- Regression Equation 
+
+
+
+[Back to Contents](#/Contents)
+
+
+Statistical Relationships
+=========================
+There are 2 main types of relationships between 2 numerical variables.
+
+* **Deterministic** relationships allow you to *exactly* determine the value of one variable from the value of the other.
+
+* **Statistical** relationships allow you to *estimate* the typical value of one variable from the value of the other.  There is variation from the average pattern.
+
+Deterministic Relationships
+===========================
+
+Every temperature in $^o F$ has *exactly* one corresponding temperature in $^o C$. 
+
+$$ y=\dfrac{5}{9}(x-32) $$
+
+This is a **deterministic** relationship because there is no variation in the pattern.  
+
+*** 
+
+```{r,echo=FALSE}
+fahr=seq(0,100,0.1)
+celc=(5/9)*(fahr-32)
+xyplot(celc~fahr,xlab="Degrees Fahrenheit", ylab="Degrees Celcius")
+```
+
+
+Statistical Relationships
+=========================
+
+We will use three tools to study **statistical** relationships.
+
+* Scatterplots (Part 1)
+
+* Correlation (Part 2)
+
+* Regression Equation  (Part 2)
+
+
+Scatterplots
+==================
+type:  sub-section
+id:  Scatter
+
+[Back to Statistical Relationships](#/StatRel)
+
+Idea for Investigation
+================
+id:  prompt
+
+>**Research Question**:  At Penn State, how is a student's right handspan related to his/her height?
+
+* Question about the *relationship* between two variables.
+
+* Explanatory variable:  **RtSpan** (numerical)
+
+* Response variable:  **Height** (numerical)
+
+
+Overall Patterns
+===========================
+A **scatterplot** graphically displays the relationship between 2 numerical variables allowing us to visually identify
+
+* overall patterns,
+
+* directions, 
+
+* strength of association.
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", ylab="Height (in)", 
+       col="blue",pch=19,cex=1.5) 
+```
+
+Graphic:  Scatterplots
+============
+
+```{r,eval=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", 
+       col="blue",pch=19)
+```
+
+We are using **response~explanatory** as our input.
+
+The Result:  Scatterplot
+=============
+
+Each point $(x,y)$ represents one of the students in the survey.
+
+The $x$-coordinate is their right handspan.
+
+The $y$-coordinate is their height.
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", 
+       col="blue",pch=19,cex=1.5)
+```
+
+
+Graphic:  Parallel Scatterplot
+================
+
+> Since males tend to have larger hands **and** be taller than females, perhaps the relationship observed between right handspan and height is simply a result of a student's sex.
+
+We can investigate this using parallel scatterplots.  We will *condition* on the factor variable **sex**.
+
+```{r,eval=FALSE}
+xyplot(Height~RtSpan|Sex,data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", pch=19)
+```
+
+The Result:  Parallel Scatterplot
+===========
+
+The relationship observed in the original scatterplot seems to hold separately for both males and females.
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan|Sex,data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", pch=19,cex=1)
+```
+
+Graphic:  Overlayed Scatterplot
+================
+
+Keeping the points on the same plot and grouping **sex** by color makes the plot easier to interpret.
+
+To overlay a scatterplot, we make use of the `groups` argument.
+
+
+```{r,eval=FALSE}
+xyplot(Height~RtSpan, 
+       groups=Sex, data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", pch=19,
+       auto.key=TRUE)
+```
+
+The Result:  Overlayed Scatterplot
+========================
+```{r,echo=FALSE}
+xyplot(Height~RtSpan, 
+       groups=Sex, data=pennstate1,
+       xlab="Right Handspan (cm)", 
+       ylab="Height (in)", pch=19,cex=1.5,auto.key=TRUE)
+```
+
+Direction
+=========
+
+If the observed pattern between 2 numerical variables seems to follow a linear trend, we can describe the **direction** as one of the following:
+
+* positive linear association
+
+* negative linear association
+
+* no linear association
+
+Positive Linear Association
+=================
+
+High values of one variable tend to accompany high values of the other.
+
+Low values of one variable tend to accompany low values of the other.
+
+***
+
+```{r,echo=FALSE}
+meanX=mean(pennstate1$RtSpan,na.rm=TRUE)
+meanY=mean(pennstate1$Height,na.rm=TRUE)
+xyplot(Height~RtSpan,data=pennstate1,xlab="Right Handspan (cm)", ylab="Height (in)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            }) 
+```
+
+
+Negative Linear Association
+=================
+
+High values of one variable tend to accompany low values of the other.
+
+Low values of one variable tend to accompany high values of the other.
+
+***
+
+```{r,echo=FALSE}
+meanX=mean(m111survey$GPA,na.rm=TRUE)
+meanY=mean(m111survey$height,na.rm=TRUE)
+xyplot(height~GPA,data=m111survey,xlab="GPA", ylab="Height (in)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+```
+
+
+No Linear Association
+=================
+
+There is no apparent pattern between the two variables.
+
+***
+
+```{r,echo=FALSE}
+meanX=mean(pennstate1$Height,na.rm=TRUE)
+meanY=mean(pennstate1$HrsSleep,na.rm=TRUE)
+xyplot(HrsSleep~Height,data=pennstate1,xlab="Height (in)", ylab="Hours of Sleep", pch=19,cex=1.5,
+        panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+```
+
+Curvilinear Pattern
+================
+
+Data with nonlinear association certainly exist.  **Curvilinear** data follows the trend of a curve. 
+
+Let's look at an example of this.  Load and read about the **fuel** dataset.
+
+```{r, eval=FALSE}
+data(fuel)
+View(fuel)
+help(fuel)
+```
+
+Fuel Data
+========================
+The data would not be well described by a line.
+
+As speed increases up to about 60 kph, fuel efficiency decreases.
+
+As speed increases up from 60 kph, fuel efficiency increases.
+
+***
+
+```{r,echo=FALSE}
+xyplot(efficiency~speed,data=fuel,xlab="Speed (kilometers per hour)",ylab="Efficiency", pch=19,cex=1.5)
+```
+
+
+Next Topic
+========================
+
+Part 2 will begin with the second tool that we will use to study statistical relationships - **correlation**.

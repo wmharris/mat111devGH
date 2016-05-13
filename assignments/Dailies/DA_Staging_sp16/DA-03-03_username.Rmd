@@ -1,0 +1,52 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday February 25, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# Is it Simple Random sampling?
+
+You have a population of 1000 people, all lined up by order of their height.  You need a sample of size 10.
+
+You pick a number at random from 1 to 100.  (Say you get 17.)
+
+Then you pick people numbered:
+
+17, 117, 217, 317, ..., 917
+
+Is this procedure simple random sampling?  Why or why not?
+
+
+
+
+# Survey Bias
+
+You want to gauge interest in a Sports Management major on campus.  You put survey forms in campus mail to all GC students who are listed as varsity athletes.  Your survey question is:
+
+*"Nation-wide, there is sky-rocketing demand for professionals with skills in business and public relations to work for professional sports teams.  In light of this fact, are you interested in pursuing a major in Sports Management?"*
+
+Let's try to identify the sources of bias in this survey.
+
+## Part a
+
+Is there any selection bias?  Why or why not?
+
+
+
+
+## Part b
+
+Is there any non-response bias?  Why or why not?
+
+
+
+## Part c
+
+Is there any respone bias?  Why or why not?
+
+

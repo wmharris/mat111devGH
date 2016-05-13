@@ -1,0 +1,359 @@
+Two Numerical Variables (Part 3)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+
+
+Load Packages
+================
+
+```{r,include=FALSE}
+require(mosaic)
+require(tigerstats)
+trellis.par.set(theme.rpres())
+```
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+
+
+
+Cautions
+==================
+type:  section
+id:  Cautions
+
+- [Extrapolation](#/Extrapolation)
+- [Influential Observations](#/InfObs)
+- [Assocation versus Causation](#/AssocCaus)
+- [Simpson's Paradox](#/Simp)
+
+
+
+Extrapolation
+==================
+type:  sub-section
+id:  Extrapolation
+
+
+
+[Back to Cautions](#/Cautions)
+
+What is Extrapolation?
+==============
+
+
+**Extrapolation** is estimating the value of a response variable using it's relationship with an explanatory variable whose value is outside the original range of observed values. 
+
+Extrapolation:  An Example
+==============
+
+The regression line from the Penn State data relating height and right handspan is 
+
+$\hat{y}=41.96+1.239x$.
+
+The range of observed right handspans in this dataset is 12.5 cm to 26 cm.
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", ylab="Height (in)",
+       type=c("r","p"),pch=19,cex=1.5) 
+```
+
+
+Example continued
+================
+
+The tallest living male, Sultan Kosen, has a right handspan of 30.48 cm.  The Penn State regression line would predict his height to be 
+
+$$\hat{y}=41.96+(1.239)(30.48)=79.72 \mbox{ inches}.$$
+
+Sultan Kosen is really 8' 3"! (99 inches)
+
+Extrapolation can result in inaccurate predictions.
+
+
+
+
+
+Influential Observations
+==================
+type:  sub-section
+id:  InfObs
+
+[Back to Cautions](#/Cautions)
+
+Risks 
+===============
+
+Influential observations
+
+* have extreme $x$-values,
+
+* inflate or deflate correlation,
+
+* affect the slope of the regression line.
+
+Graphic:  Influential Observation
+======================
+
+```{r,echo=FALSE}
+set.seed(2006)
+n=60
+rho=-0.4
+varcovar <- cbind(c(1,rho),c(rho,1))
+rpoints <- MASS::mvrnorm(n=n,mu=c(0,0),Sigma=varcovar)
+x <- rpoints[,1]
+y <- rpoints[,2]
+
+##Plot regression line without influential point.
+ord.mod <- lm(y~x)
+plot(rpoints,pch=16,cex=1.5,
+     xlim=c(-6,6),
+     ylim=c(-6,6),
+     xlab="x",ylab="y")
+abline(0,0,lty=2,col="grey")
+lines(x=c(0,0),y=c(-6,6),lty=2,col="grey")
+abline(coef(ord.mod))
+```
+
+***
+
+```{r,echo=FALSE}
+set.seed(2006)
+n=60
+rho=-0.4
+varcovar <- cbind(c(1,rho),c(rho,1))
+rpoints <- MASS::mvrnorm(n=n,mu=c(0,0),Sigma=varcovar)
+x <- rpoints[,1]
+y <- rpoints[,2]
+##Plot regression line with influential point.
+plot(rpoints,pch=16,cex=1.5,
+     xlim=c(-6,6),
+     ylim=c(-6,6),
+     xlab="x",ylab="y")
+abline(0,0,lty=2,col="grey")
+lines(x=c(0,0),y=c(-6,6),lty=2,col="grey")
+#abline(coef(ord.mod))
+points(x=5,y=5,col="blue",pch=16,cex=3)
+new.data <- rbind(rpoints,c(5,5))
+x.new <- new.data[,1]
+y.new <- new.data[,2]
+new.mod <- lm(y.new~x.new)
+abline(coef(new.mod),lwd=2,col="blue")
+```
+
+Further Investigation
+==============================
+
+Investigate influential observations further with the following app:
+```{r,eval=FALSE}
+require(manipulate)
+Points2Watch()
+```
+
+Association versus Causation
+==================
+type:  sub-section
+id:  AssocCaus
+```{r}
+
+```
+
+[Back to Cautions](#/Cautions)
+
+
+An Example
+=========
+
+In **m111survey**, there is a negative association between one's height and GPA.
+
+Correlation does not imply causation!
+
+***
+
+```{r echo=FALSE}
+xyplot(fastest~GPA,data=m111survey,xlab="height (in)", ylab="GPA",pch=19,cex=1.5) 
+```
+
+```{r,echo=FALSE}
+cor(height~GPA,data=m111survey,use="na.or.complete")
+```
+
+Example continued
+============
+
+Confounding variables may be responsible, at least partially, for the observed association.
+
+**Sex** may be a possible confounder.
+
+***
+
+```{r,echo=FALSE}
+xyplot(GPA~height,groups=sex,data=m111survey,xlab="height (in)", ylab="GPA",pch=19,auto.key=TRUE,cex=1.5) 
+```
+
+Example continued
+=================
+
+* Mean guy height = 71.92
+* Mean guy GPA = 3.03
+
+
+
+* Mean gal height = 64.94
+* Mean gal GPA = 3.33
+
+On average, guys are taller than gals but have lower GPAs.  This helps to explain the negative association.
+
+
+***
+
+```{r,echo=FALSE}
+xyplot(GPA~height,groups=sex,data=m111survey,xlab="height (in)", ylab="GPA",pch=19,auto.key=TRUE,cex=1.5) 
+```
+
+Example continued
+================
+
+**Recall:** The correlation coefficient for the aggregate data is -0.1292
+
+The correlation coefficient for the guys is 0.2107.
+
+The correlation coefficient for the gals is 0.0216.
+
+This is an example of **Simpson's Paradox**.
+
+
+***
+
+```{r,echo=FALSE}
+xyplot(GPA~height|sex,data=m111survey,xlab="height (in)", ylab="GPA", pch=19,cex=1.5)
+```
+
+
+Simpson's Paradox
+==================
+type:  sub-section
+id:  Simp
+
+[Back to Cautions](#/Cautions)
+
+
+Recall
+======
+
+**Simpson's Paradox** occurs when the direction of the relationship is one way when you look at the aggregate data, but turns out the opposite way when the data is broken into subgroups based on a third variable.  
+
+**Recall how this was stated in Chapter 3**:  Simpson's Paradox occurs when a relationship between variables $X$ and $Y$ reverses its direction when the data are broken down by the values of a third variable $Z$.
+
+Example:  SAT 
+========
+
+Take a look at the **sat** dataset:
+
+```{r,eval=FALSE}
+data(sat)
+View(sat)
+help(sat)
+```
+
+>**Research Question**:  How is annual teacher salary related student performance on the SAT? 
+
+* Explanatory variable, $X$:  **salary** (numerical)
+
+* Response variable, $Y$:  **sat** (numerical)
+
+SAT Regression Analysis
+======================
+
+Correlation Coefficient
+
+```{r,echo=FALSE}
+cor(sat~salary,data=sat,use="na.or.complete")
+```
+
+States that pay teachers higher annual salaries have lower average SAT scores.
+
+Can this be true?
+
+***
+
+```{r,echo=FALSE}
+xyplot(sat~salary,data=sat,xlab="Annual Teacher Salary ($1000)", ylab=" Cumulative SAT Score",pch=19,cex=1.5)
+```
+
+A Third Variable
+================
+
+Use the following app to investigate what happens when you take into account a third variable, $Z$, **frac**:
+
+
+```{r,eval=FALSE}
+require(manipulate)
+DtrellScat(sat~salary|frac,data=sat)
+```
+
+The variable **frac** is the percentage of students in the state who take the SAT.
+
+
+Explaining the Paradox:  First Observation
+=================
+
+There is a *positive* association between **frac** and **salary**.
+
+States where education is a high priority pay their teachers higher salaries.
+
+In these states, a high proportion of students take the SAT.  Education is a high priority so many students *want* to go to college.
+
+***
+
+```{r,echo=FALSE}
+xyplot(salary~frac,data=sat,type=c("p","r"),
+       xlab="Percentage Taking SAT",
+       ylab="Annual Teacher Salary\n(in $1000s)",pch=19,cex=1.5)
+```
+
+Explaining the Paradox:  Second Observation
+=================
+
+There is a *negative* association between **frac** and **sat**.
+
+States with a high % taking the SAT have low SAT scores.  SAT takers make up a broad pool
+
+States with a low % taking the SAT have high SAT scores.  SAT takers make up an elite pool.
+
+***
+
+```{r,echo=FALSE}
+xyplot(sat~frac,data=sat,type=c("p","r"),
+       xlab="Percentage Taking SAT",
+       ylab="Mean SAT Score",pch=19,cex=1.5)
+```
+
+Explaining the Paradox:  Putting it Together
+=================
+
+Positive Association between **salary** and **frac** 
+
++
+
+Negative Association between **frac** and **sat**
+
+$=$
+
+Negative Association between **salary** and **sat**.
+
+>States where education is important pay teachers well, but also encourage **most** students to take the SAT.  This handicap results in high salaries accompanying low SAT scores.
+
+

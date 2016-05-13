@@ -1,0 +1,35 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Friday February 27, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# A Confoudng Variable
+
+Consider the following two variables, measured on adult males:
+
+* **bifocals**:  whether or not you wear bifocals
+* **prostate**:  whether or not you have prostate cancer
+
+An observational study shows that **bifocals** and **prostate** are related:  the men in the study who reported wearing bifocals were about five times more likely to have prostate cancer than were the men who did not wear bifocals.
+
+## Part a
+
+What third variable might be a confounding variable in this study?
+
+
+## Part b
+
+Explain in a brief sentence why it could be confounder.
+
+
+
+

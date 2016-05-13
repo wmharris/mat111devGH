@@ -1,0 +1,45 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Monday, April 20 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# The Gambler's Die
+
+How many simulations did you do?
+
+
+What percentage of the time did you get above 8.8?
+
+
+
+Do you think the data provide overwhelming evidence that the die was weighted?
+
+
+
+# Seating Preference
+
+Go back to your app:
+
+* Enter the Null Probabilities: 0.25, 0.5, 0.25
+* Enter the observed Counts: 27,32,12
+* Enter three good names for the values
+
+What is the value of the chi-square statistic?
+
+
+Perform some simulations. How many did you perform?
+
+
+What percentage of the time did you get at least as big as the actual chi-square statistic?
+
+
+Does the data provide strong evidence that people prefer one part of the classroom more than its number of seats would suggest?
+

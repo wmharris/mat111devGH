@@ -1,0 +1,62 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/23/2016"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(tigerstats)
+library(tigerTree)
+```
+
+## Predicting the Speed of a Verlander Pitch
+
+Let's make a regression tree to predict the speed of a Justin Verlander pitch using other variables in the `verlander` data frame.
+
+First of all, we'll remove an outlier (the one very slow pitch) and we'll remove **gamedate** from the data frame:
+
+```{r}
+ver2 <- subset(verlander, speed > 60)
+ver2$gamedate <- NULL
+```
+
+In the code chunk below, replace the `??` with the code needed to make a tree model to predict **speed** from the other variables in `ver2`:
+
+```{r}
+trSpeed <- tree(speed ~ ., data = ver2)
+plot(trSpeed); text(trSpeed)
+```
+
+Let's figure out what the tree is telling us.  The code below gives you the values if the factor variable **pitch_type**:
+
+```{r}
+levels(ver2$pitch_type)
+```
+
+In the tree they are coded by the first five lower-case letters of the alphabet.  If you want to see them all together, run this code:
+
+```{r}
+data.frame(code = letters[1:5], type = levels(ver2$pitch_type))
+```
+
+If Verlander throws a four-seam fastball (FF), what does the tree predict its speed will be?
+
+
+If Verlander throws a curve ball, what does the tree predict its speed will be?
+
+The code below give a summary of the tree:
+
+```{r}
+summary(trSpeed)
+```
+
+What is the residual mean square error?
+
+
+What is the root mean square error (RMSE)?  **Hint:** Just take `sqrt()` of the previous answer!
+
+
+
+
+

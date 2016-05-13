@@ -1,0 +1,778 @@
+Tests of Significance (Pt. 4)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 4:
+============
+id: Contents
+
+- [Tests for One Proportion $p$](#/oneprop)
+- ["Exact" Tests for One Proportion](#/exactprop)
+- [Tests for the Difference of Two Proportions, $p_1-p_2$](#/twoprops)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+```{r echo=FALSE}
+
+#overwrite pnormGC() and pbinomGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pnormGC <- function(bound,region="below",mean=0,sd=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  if (grepl("^be[lf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+
+  if (grepl("^a[bf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^bet|^in",region,perl=TRUE))  {
+    area <- pnorm(bound[2],mean=mean,sd=sd)-pnorm(bound[1],mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^out",region,perl=TRUE))  {
+    area <- pnorm(bound[1],mean=mean,sd=sd)+pnorm(bound[2],mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,lwd=2.5,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dnorm,mean=mean,sd=sd)
+    UnderShade(low=bound[2],high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pnormGC
+
+pbinomGC  <- function(bound,region="below",size=100,prob=0.5,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  below <- grepl("^be[lf]",region,perl=TRUE)
+  above <- grepl("^a[bf]",region,perl=TRUE)
+  between <- grepl("^bet|^in",region,perl=TRUE)
+  outside <- grepl("^out",region,perl=TRUE)
+  if (length(bound)==1 & !(below | above)) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(between | outside)) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  sd <- sqrt(size*prob*(1-prob))
+  
+  if (below)  {
+    area <- pbinom(bound,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals <= bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound),upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+
+  if (above)  {
+    area <- pbinom(bound,size=size,prob=prob,lower.tail=FALSE)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals > bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound)+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (between)  {
+    area <- pbinom(bound[2],size=size,prob=prob)-pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse((bound[1] <= nvals & nvals <= bound[2]),"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1]),floor(bound[2]),upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (outside)  {
+    area <- pbinom(bound[2],size=size,prob=prob,lower.tail=FALSE)+pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(bound[1] <= nvals & nvals <= bound[2],NA,"lightblue")
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1])-1,floor(bound[2])+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pbinomGC
+```
+
+One Proportion
+===================
+type:  section
+id:  oneprop
+
+[Back to Contents](#/Contents)
+
+Research Question
+================
+
+  >Are a majority of Georgetown College Students female?
+  
+We'll investigate this question inferentially with the `m111survey` data.
+
+Parameter and Hypotheses
+=======================
+
+Let
+
+  >$p =$ proportion of all GC students who are female
+  
+Our hypotheses are:
+
+  >$H_0: p=0.50$
+  
+  >$H_a:  p > 0.50$ (one-sided, for variety!)
+  
+Note:  0.50 is $p_0$, the Null's belief about $p$.
+  
+The Code
+==============
+
+```{r eval=FALSE}
+proptestGC(~sex,data=m111survey,
+      success="female",p=0.50,
+      alternative="greater",
+      graph=TRUE)
+```
+
+Note:  We set the argument `p` to $p_0$, the Null's belief about $p$.
+
+
+Descriptive Results
+===============
+
+```
+female  n estimated.prop
+     40 71         0.5634
+
+```
+* 40 successes $\geq 10$
+* 31 failures $\geq 10$
+* enough to trust the results of `proptestGC()`
+
+Hopefully this was also a simple random sample.
+
+So, we are safe to proceed.
+
+Estimator and SE
+=================
+
+```
+Estimate of p:   0.5634 
+SE(p.hat):	 0.05886 
+```
+
+* Null expects $\hat{p}$ to be about 0.50
+* We actually got $\hat{p} = 0.5634$
+* This is 0.0634 more than what Null expected
+* Not much more than one SE above what Null expected
+* Our results don't seem so surprising, if $H_0$ is correct!
+
+Test Statistic
+===============
+
+```
+Test Statistic:  	z = 0.9571 
+```
+
+$$z \approx \frac{\hat{p}-p_0}{SE(\hat{p})}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+* "$z$-score style" (yet again!)
+* Tell you how many SEs $\hat{p}$ is above or below what $H_0$ expected
+* Well, *about* how many ("Continuity correction")
+
+P-Value
+=============
+
+```
+P-value:		P = 0.1692 
+```
+* $z$ is a random variable
+* $z \approx norm(0,1)$
+
+$P$-value is:
+
+$$P(z \geq 0.9571 \vert H_0 \text{ is true})$$
+
+Graph of P-Value
+==================
+
+```{r echo=FALSE, fig.width=25,fig,height=15}
+pnormGC(bound=0.95715,region="above",mean=0,sd=1,graph=TRUE)
+```
+
+Interpretation
+==================
+
+  >If 50% of all GC students are female, then there is about a 16.92% chance of getting a test statistic at least as far from 0 as the one we actually got.
+  
+Our results are not so unlikely, if the Null is correct!
+
+Decision and Conclusion
+===========
+
+Since $P > 0.05$, we do not reject $H_0$.
+
+This data did not provide strong evidence that a majority of Georgetown College students are female.
+
+The Normal Approximation
+=======================
+
+* Let $X =$ count of successes.
+* Then if $H_0$ is true, then $X \sim binom(n,p_0)$
+* When $n$ is "big enough", $X \approx$ normal
+* So $\hat{p}=X/n$ is also $\approx$ normal
+
+
+So then
+
+$$z \approx \frac{\hat{p}-p_0}{SE(\hat{p})}$$
+
+is $\approx norm(0,1)$.  We get a $P$-value from this.
+
+Continuity Correction
+========================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+    upper <- 47
+    lower <- 39
+    bound <- 39
+    nvals <- lower:upper
+    Shading <- ifelse(nvals > bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=71,prob=0.5),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main="Normal Curve Approximation\nto Binomial Distribution",
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=71+1),nvals+0.5,dbinom(nvals,size=71,prob=0.5),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(39,39.5,40,41,42,43,44,45,46,47)
+    axis(1,at=places,labels=as.character(places),cex.axis=2.5)
+    curve(dnorm(x,mean=71/2,sd=sqrt(71*1/4)),from=38.5,to=47.5,axes=FALSE,add=TRUE)
+  
+  
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+```
+
+Continuity Correction
+=======================
+
+To "catch" all of the rectangle centered at 40, `proptestGC()` says there were 39.5 successes.
+
+Then it uses
+
+$$39.5/71$$
+
+instead of
+
+$$40/71$$
+
+for $\hat{p}$.
+
+Without Continuity Correction
+===========================
+Test statistic would be:
+
+
+$$z=\frac{40/71-0.5}{SE(\hat{p})}=1.0768$$
+
+$P$-value would be:
+
+$$P(z \geq 1.0768 \vert H_0 \text{ is true})=0.1408$$
+
+With Continuity Correction
+==============================
+
+Test statistic is:
+
+
+$$z=\frac{39.5/71-0.5}{SE(\hat{p})}=0.9571$$
+
+$P$-value would be:
+
+$$P(z \geq 0.9571 \vert H_0 \text{ is true})=0.1692$$
+
+The Difference
+===================
+
+* Without correction, $P$-value $\approx 14.08\%$
+* With correction, $P$-value $\approx 16.92\%$
+* The difference is nearly 3%!
+
+The correction is important at smaller sample sizes.
+
+(For very large $n$, it does not make much difference.)
+
+Exact Tests for One Proportion
+===================
+type:  section
+id:  exactprop
+
+[Back to Contents](#/Contents)
+
+
+Better Idea
+==============
+
+* Let $X =$ count of successes.
+* If $H_0$ is true, then $X \sim binom(n,p_0)$, *exactly*!
+
+
+So why not base the $P$-value directly on the $binom(n,p_0)$ distribution?
+
+
+Same Research Question
+==============
+
+>*Are a majority of Georgetown College students female?*
+
+Parameter and Hypotheses
+========================
+
+Let
+
+  >$p =$ proportion of all GC students who are female
+  
+Our hypotheses are:
+
+  >$H_0: p=0.50$
+  
+  >$H_a:  p > 0.50$
+  
+The Code
+=============
+
+```{r eval=FALSE}
+binomtestGC(~sex,data=m111survey,
+        success="female",
+        p=0.5,alternative="greater")
+```
+
+Some Results
+==============
+
+* $\hat{p}=40/71=0.5634$
+* $SE(\hat{p})=0.0589$
+* If Null is correct, number of successes $X \sim binom(71,0.5)$
+* No test statistic given!
+* (But you can think of the 40 successes as the test statistic)
+* $P$-value is $P(X \geq 40 \vert p=0.5)$
+
+Graph of P-Value
+===================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+pbinomGC(bound=39,region="above",size=71,prob=0.5,graph=TRUE)
+```
+
+Rest of the Analysis
+=====================
+
+* $P = 0.1712$
+* If only 50% of all GC students are female, then there is about a 17.12% chance of getting 40 or more females in a sample of 71, as we did in this study.
+* Our results are not so unlikely, if $H_0$ is true.
+* Since $P > 0.05$, we do not reject $H_0$.
+* This study did not provide strong evidence that a majority of GC students are female.
+
+
+Another Example
+==================
+
+A random sample of 2500 registered voters shows that 1325 of them favor the Affordable Care Act.
+
+  >*Do a majority of all registered voters in the U.S. favor the Act?*
+  
+Parameter and Hypotheses
+=================
+
+Let
+
+  >$p =$ proportion of all registered voters in the U.S. who favor the Act
+  
+Our hypotheses are:
+
+  >$H_0: p=0.50$
+  
+  >$H_a:  p \neq 0.50$ (two-sided)
+  
+The Code
+===============
+
+We have summary data.
+
+* argument `x` is set to the number of successes
+* argument `n` is set to the sample size
+
+```{r eval=FALSE}
+binomtestGC(x=1325,n=2500,p=0.50)
+```
+
+The Results
+===============
+
+* We had 1325 voters approve of the Act (this is like a test statistic).
+* $\hat{p}=1325/2500=0.53$
+* $SE(\hat{p}) \approx 0.01$
+* Our results are about 3 SE's above what $H_0$ expected.
+* $P = 0.0029$
+* Since $P < 0.05$, we reject $H_0$.
+* We have strong evidence that a majority of registered voters in the U.S. favor the Act.
+
+Tests for Two Proportions
+===================
+type:  section
+id:  twoprops
+
+[Back to Contents](#/Contents)
+
+Capital Punishment:  GSS 2002
+=============================
+
+```{r}
+xtabs(~cappun,data=gss02)
+```
+
+899 out of 1308 (68.7%) approved of the death penalty.
+
+Capital Punishment:  GSS 2012
+==============================
+
+```{r}
+xtabs(~cappun,data=gss2012)
+```
+
+1183 out of 1824 (64.8%) approved.
+
+Research Question
+=================
+
+  >*In the U.S. population, did support for capital punishment decline between 2002 and 2012?*
+  
+**Notice**:  This is a question about the relationship between two factor variables:
+
+* Explanatory variable is the **year under study** (2002,2012).
+* Response variable is **opinion about capital punishment** (favor, oppose).
+* Both variables have two values,
+* so we are interested in $p_1-p_2$.
+  
+Parameters and Hypotheses
+======================
+
+Let
+
+  >$p_1$ = the proportion of all U.S. adults in 2002 who support capital punishment
+
+  >$p_2$ = the proportion of all U.S. adults in 2012 who support capital punishment
+
+Then our hypotheses are:
+
+  >$H_0$:  $p_1 - p_2 = 0$
+
+  >$H_a$:  $p_1 - p_2 \neq 0$
+  
+The Code
+===============
+
+We have summary data:
+
+|Year|$x$|$n$|
+|:---:|:----:|:----:|
+|year 2002|899|1308|
+|year 2012|1183|1824|
+
+
+```{r eval=FALSE}
+proptestGC(x=c(899,1183),
+           n=c(1308,1824),
+           p=0)
+```
+
+Estimator and SE
+===================
+
+```
+Estimate of p1-p2:   0.03873 
+SE(p1.hat - p2.hat):	 0.01701
+```
+* $H_0$ expected $\hat{p}_1-\hat{p}_2$ to be about 0
+* We actually got $\hat{p}_1-\hat{p}_2 = 0.03873$
+* This is a bit more than two SEs above what $H_0$ expected
+
+Confidence Interval
+=====================
+
+95%-confidence interval for $p_1-p_2$ is
+
+```
+lower       upper          
+0.005399    0.072069
+```
+
+Observe that 0 (Null's belief about  $p_1-p_2$) is below this interval.
+
+Test Statistic
+==================
+
+```
+Test Statistic:    z = 2.277
+```
+
+$$z=\frac{\hat{p}_1-\hat{p}_2}{SE(\hat{p}_1-\hat{p}_2)}=\frac{\textbf{Observed Difference}}{\textbf{Standard Error}}$$
+
+
+* "$z$-score style" (yet again!)
+* Tell you how many SEs $\hat{p}_1-\hat{p}_2$ is above or below what $H_0$ expected
+
+P-value
+========================
+
+* As a random variable $\hat{p}_1-\hat{p}_2 \approx$ normal
+* If $H_0$ is right, then $EV(\hat{p}_1-\hat{p}_2)=0$
+* Therefore:
+
+$$z=\frac{\hat{p}_1-\hat{p}_2}{SE(\hat{p}_1-\hat{p}_2)} \approx \frac{\hat{p}_1-\hat{p}_2-0}{SD(\hat{p}_1-\hat{p}_2)} \approx norm(0,1)$$
+
+We use this approximation for the P-Value.
+
+P-Value
+=============
+
+```
+P-value:  P = 0.0228
+```
+
+
+  >If support for the death penalty remained constant from 2002 to 2012, then there is only about a 2.28% chance of getting a test statistic at least as far from 0 as the one we actually got.
+  
+Decision and Conclusion
+=========================
+
+* Since $P < 0.05$, we will reject $H_0$.
+* The GSS data provided strong evidence that support for the death penalty declined a bit between 2002 and 2012.
+
+Love at First Sight
+===================
+
+  >At Georgetown College, who is more likely to believe in love at first sight:  a female or a male?
+
+Descriptive Work (From Sample)
+==================
+
+```{r}
+SexLove <- xtabs(~sex+love_first,
+      data=m111survey)
+SexLove
+rowPerc(SexLove)
+```
+
+  
+Inferential Work
+======================
+
+Let
+
+  >$p_1$ = the proportion of all GC females who believe in love at first sight
+
+  >$p_2$ = the proportion of all GC males who believe in love at first sight
+
+The our hypotheses are:
+
+  >$H_0$:  $p_1 - p_2 = 0$
+
+  >$H_a$:  $p_1 - p_2 \neq 0$
+  
+The Code
+==============
+
+```{r eval=F}
+proptestGC(~sex+love_first,data=m111survey,
+        success="yes",p=0)
+```
+
+Note same old formula for studying relationship between two factor variables:
+
+$$\sim Explanatory + Response$$
+
+Descriptive Results
+========================
+
+```
+##        yes  n estimated.prop
+## female  18 40         0.4500
+## male     8 31         0.2581
+```
+
+Notice:
+
+* fewer than 10 successes for the males.
+* `proptestGC()` delivers a warning
+
+What to Do?
+===============
+
+We are dealing with two factor variables, so could use:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+love_first,data=m111survey,
+        simulate.p.value="random",
+        B=3000,graph=TRUE)
+```
+
+* this gives us a test of significance
+* but (sadly) no confidence interval for $p_1-p_2$
+
+Group Order in proptestGC()
+========================
+
+If you want to be sure that a certain group comes first, then use the argument `first`:
+
+For example:
+
+```{r eval=FALSE}
+proptestGC(~sex+love_first,data=m111survey,
+        first="male",
+        success="yes",p=0,
+        simulate.p.value="random",B=3000,
+        graph=TRUE)
+```
+
+Want Less Output?
+==================
+
+Just set `verbose` to `FALSE`:
+
+```{r eval=FALSE}
+proptestGC(~sex+love_first,data=m111survey,
+        first="male",
+        success="yes",p=0,
+        simulate.p.value="random",B=3000,
+        verbose=FALSE)
+```
+

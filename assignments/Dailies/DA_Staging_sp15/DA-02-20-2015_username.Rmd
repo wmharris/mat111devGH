@@ -1,0 +1,26 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday February 20, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+
+# Is it Simple Random sampling?
+
+You have a population of 1000 people, all lined up by order of their height.  You need a sample of size 10.
+
+You pick a number at random from 1 to 100.  (Say you get 17.)
+
+Then you pick people numbered:
+
+17, 117, 217, 317, ..., 917
+
+Is this procedure simple random sampling?  Why or why not?

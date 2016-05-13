@@ -1,0 +1,86 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/29/2016"
+output: 
+  pdf_document: 
+    fig_caption: yes
+    fig_width: 5
+---
+
+```{r, include=FALSE}
+library(tigerstats)
+library(knitr)  # for the kable function
+```
+
+# Useful Tips for R Markdown
+
+## Wage vs. Sex, Facetted by Educatiion
+
+Run the code chunk below:  it creates a new data frame that is the same as `CPS85`, but without the outlier, the person who made $44.5 per hour.
+
+```{r}
+CPS2 <- subset(CPS85, wage < 44)
+```
+
+Next, highlight `CPS2` in the code chunk below, and head to the Lattice Box-Whisker Plot Addin.  Try to reproduce the plot for Question 8 on the test.  Facet-ting can be a useful tool for "correcting" for a possible confounding variable.
+
+```{r eval = FALSE}
+CPS2
+```
+
+## A Caption for Your Graph
+
+The code chunk below has a chunk option that provides a caption for any grpah that is produced within it.  Insert the code from the previous chunk into the chunk below.  Also, modify the `fig.cap` chunk option to produce a reasonable caption.
+
+```{r echo = FALSE, fig.cap = "Hi There!"}
+
+```
+
+To see the caption, you would knit this document into a pdf!  (But make sure that you set the output options to use figure captions!!)
+
+## Tighter Tables
+
+There was a typo in the first bit of code for Question 9, so I asked to skip the part of the code that involved brackets.  But it's a good thing to know about.  Try this first:
+
+```{r}
+favstats(wage ~ sex, data = CPS2)
+```
+
+Suppose you are writing a report and that only some parts of the above able are relevant to the point you plan to make.  You can limit the table to just the relevant columns by using brackets with the names of the desired columns in `c()`, as follows:
+
+```{r}
+favstats(wage ~ sex, data = CPS2)[c("sex","median","mean","n")]
+```
+
+## Breaking Down a Numerical Variables by Two Factor Variables
+
+In Question 9 you learned that you could use `favstats()` break people into groups based on **sex** and **sector** and then compare their wages, as follows:
+
+```{r}
+favstats(wage ~ sex + sector, data = CPS2)
+```
+
+You can also restrict to particular columns, for example:
+
+```{r}
+favstats(wage ~ sex + sector, data = CPS2)[c("sex.sector","median","mean","n")]
+```
+
+In the code chunk below, insert the code neede to produce a table that breaks the wages down by sex and sector and shows only the mean of each group and the number of people in each group:
+
+```{r}
+
+```
+
+
+
+## Pretty Tables with knitr's kable Function
+
+In a data analysis report you would like your tables to look good and to have good captions.  Here's how to do it with the `kable()` function from the `knitr` package:
+
+```{r echo = FALSE}
+wageSexSector <- favstats(wage ~ sex + sector,
+                          data = CPS2)[c("sex.sector","median","mean","n")]
+
+kable(wageSexSector, caption = "Summary of wages broken down by sex and sextor of employment.  The 'n' gives group sizes.  Note that in each sector men make more than women on average---sometimes much more!")

@@ -1,0 +1,274 @@
+Two Factor Variables (Pt. 1)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+Two Factor Variables
+=============
+
+- Detecting and Describing Relationships between Two Factor Variables
+- The Inferential Aspect of a Research Question
+- The Chi-Square Test for Relationship
+- Simpson's Paradox
+
+In Part 1:
+============
+id: Contents
+
+- [Conditional Distributions](#/Cond)
+- [Using Conditional Distributions to Detect Relationships](#/Detect)
+- [Describing Relationships](#/Describe)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+Conditional Distributions
+=================
+type:  section
+id:  Cond
+
+[Back to Contents](#/Contents)
+
+m111survey
+=================
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+Research Question
+======================
+
+>*What is the relationship between sex and how one feels about one's weight?*
+
+Two Aspects
+===================
+
+* **Descriptive Aspect**:  Is there a relationship in the sample data?
+* **Inferential Aspect**  Does the relationship in the sample (if any) provide strong evidence for a similar relationship in the population from which the sample was drawn?
+
+We will focus first on the descriptive aspect.
+
+Two-Way Table
+=================
+
+```{r eval=FALSE}
+SexWt <- xtabs(~sex+weight_feel,
+               data=m111survey)
+SexWt
+```
+
+```{r echo=FALSE}
+SexWt <- xtabs(~sex+weight_feel,
+               data=m111survey)
+SexWt2 <- SexWt
+colnames(SexWt2) <- c("under","ok","over")
+SexWt2
+```
+
+* Two dimensions (rows, columns)
+* 2 rows x 3 cols = 6 cells
+
+Row and Column Totals
+==================
+
+```{r echo=F}
+t2 <- cbind(SexWt2,rowSums(SexWt2))
+t3 <- rbind(t2,colSums(t2))
+rownames(t3) <- c(rownames(SexWt2),"Total")
+colnames(t3) <- c(colnames(SexWt2),"Total")
+t3
+```
+
+The margins describe each factor variable individually.
+
+ A Marginal Distribution
+========================
+
+Tally for **sex**:
+```{r echo=F}
+xtabs(~sex,data=m111survey)
+```
+
+Marginal Distribution of **sex** (percents):
+```{r echo=FALSE}
+Sex2 <- rowPerc(xtabs(~sex,data=m111survey))
+names(Sex2) <- c("female","male","")
+Sex2[1:2]
+```
+
+ A Marginal Distribution
+========================
+
+Tally for **weight_feel**:
+```{r echo=F}
+Wt2 <- xtabs(~weight_feel,data=m111survey)
+names(Wt2) <- c("under","ok","over")
+Wt2
+```
+
+Marginal Distribution of **weight_feel** (percents):
+```{r echo=FALSE}
+Wt3 <- rowPerc(xtabs(~weight_feel,data=m111survey))
+names(Wt3) <- c("under","ok","over","")
+Wt3[1:3]
+```
+
+Marginal Distributions
+=================
+type:  alert
+
+>*The marginal distributions don't tell you anything about how the two variables are related!*
+
+Conditional Distributions
+===================
+
+```{r eval=FALSE}
+rowPerc(SexWt)
+```
+
+
+```{r echo=FALSE}
+SexWtrp <- rowPerc(SexWt2)
+SexWtrp
+```
+Each row of this table gives a *conditional* distribution.
+
+Conditional Distributions
+===================
+
+The *conditional* distribution of **weight_feel**, given that **sex** is "female".
+
+```{r echo=FALSE}
+SexWtrp[1,1:3]
+```
+
+The *conditional* distribution of **weight_feel**, given that **sex** is "male".
+```{r echo=FALSE}
+SexWtrp[2,1:3]
+```
+
+
+
+Detecting Relationships
+=================
+type:  section
+id:  Detect
+
+[Back to Contents](#/Contents)
+
+
+Principle For Detection
+===========================
+type:  prompt
+
+>If the conditional distributions are different, then the two variables are related.
+
+* compare row percents down a single column
+* if they differ, the variables are related
+
+
+Comparison
+===================
+
+```{r echo=FALSE}
+rowPerc(SexWt2)
+```
+
+
+Look down the "overweight" column:
+```{r echo=FALSE}
+temp <- matrix(SexWtrp[,3],ncol=1)
+rownames(temp) <- c("femal","male")
+colnames(temp) <- "over"
+temp
+```
+
+70% of the females think they are overweight, but only 29% of the males think they are overweight.
+
+Describing Relationships
+======================
+type:  section
+id:  Describe
+
+[Back to Contents](#/Contents)
+
+=================
+Generate the two-way table and the row percents:
+```{r eval=F}
+SexWt <- xtabs(~sex+weight_feel,
+          data=m111survey)
+SexWt
+rowPerc(SexWt)
+```
+
+
+```{r echo=F}
+SexWt2
+rowPerc(SexWt2)
+```
+
+=====================
+When you choose a column:
+
+* Focus on a column with a big difference in %'s
+* Preferably where percents are based on large counts
+
+```{r echo=F}
+SexWt2
+rowPerc(SexWt2)
+```
+
+A Good Description
+====================
+
+>"The females in the sample are more likely than the males to think that they are overweight (70% of females think they are overweight, as compared to only 29% of the males)."
+
+<small></small>
+
+(Always back up your answer with specific, relevant features of the data!)
+
+A Mistaken Description
+==================
+type:  alert
+incremental:  true
+
+
+```{r echo=F}
+rowPerc(SexWt2)
+```
+
+>"The females in the sample are more likely to think that they are overweight (70% of females think they are overwieght, only 2.5% think they are underweight)."
+
+[Comparing row percents across a row involves only one conditonal distribution!]
+
+Another Mistake
+==============
+type:  alert
+incremental: true
+
+```{r echo=FALSE}
+PlotSprout <- rbind(c(70,30),c(140,60))
+rownames(PlotSprout) <- c("Plot.A","Plot.B")
+colnames(PlotSprout) <- c("sprouted","not.sprouted")
+PlotSprout
+rowPerc(PlotSprout)
+```
+
+>"Type of plot and sprouting are related:  in both types of plot, a majority of the seeds (70%) sprouted."
+
+[The conditonal distributions are identical, so the variables are not related at all.]
+
+
+

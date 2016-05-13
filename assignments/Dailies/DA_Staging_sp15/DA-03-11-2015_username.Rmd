@@ -1,0 +1,95 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday, March 11 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+
+# More Coin-Flipping
+
+When you flip the fair coin 400 times.
+
+## Part A
+
+Use the 68-95 Rule to answer the following two questions:
+
+About what is the chance that you will get fewer than 190 heads?
+
+
+About what is the chance that you will get more than 220 heads?
+
+
+## Part B
+
+Next, use `pbinomGC()` to compute the "exact" probabilities:
+
+Chance of fewer than 190 heads:
+
+```{r}
+pbinomGC(189,size=400,prob=0.5,
+         region="below",graph=TRUE)
+```
+
+Next, the chance of more than 220 heads:
+
+```{r}
+pbinomGC(220,size=400,prob=0.5,
+         region="above",graph=TRUE)
+```
+
+Compare these the "exact" values with the approximations from the 68-95 Rule.  Not bad, eh?
+
+
+# Bats
+
+A population of bats has wingspans that are normally distributed, with a mean μ of 25 centimeters and a standard deviation of 5 centimeters.
+
+Let X= the wingspan of a randomly-captured bat. Find each of the following probabilities, using `pnormGC()`.  Insert the code chunks!
+
+
+## Part A:  P(X<27)
+
+
+
+    
+## Part B:  P(X>29)
+
+
+
+
+## Part C:  P(20<X<30)
+
+
+
+# Bat Percentiles
+
+Back to the population of bats whose wingspans average 25 centimeters, with a standard deviation of 5 cm.  Use `qnorm()` or `qnormGC()`to answer the following two questions.  Insert code chunks as needed.
+
+
+
+## Part A
+
+Harry the Bat has a wingspan that is right at the 35th percentile for all the bats. What is Harry's wingspan?
+
+
+
+
+## Part B
+
+Dolores the Bat has a wingspan that is longer than all but 25% of the bats. What is her wingspan?
+
+
+
+
+
+
+
+

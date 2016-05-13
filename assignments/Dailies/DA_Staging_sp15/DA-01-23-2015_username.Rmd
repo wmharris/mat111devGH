@@ -1,0 +1,76 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "January 23, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+
+# Verlander Pitching
+
+We are looking at the data frame `verlander` in the `tigerstats` package.
+
+We would like to see whether the speed of a Justin Verlander pitch depends on the type of pitch he is throwing.
+
+## Practice Part a
+
+We know that the two variables involved in our Research Question are **speed** and **pitch_type**.
+
+What kind of variable is the explanatory variable **pitch_type**:  factor or numerical?
+
+
+
+What kind of variable is the response variable **speed**:  factor or numerical?
+
+
+## Practice Part b
+
+Which of the following types of graph could we use to look at the pitching speeds:  bar-charts or density plots?  Why?
+
+
+## Practice Part c
+
+Here is a code chunk containing code from the slides to make density plots to compare the fastest speeds driven by guys and the fastest speeds driven by gals in the `m1111survey` data:
+
+```{r eval=FALSE}
+densityplot(~fastest|sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Fastest Speed (mph)",
+       layout=c(1,2))
+```
+
+In the chunk below, write the code you need in order to make density plots to compare the speeds for the various types of pitches that Justin Verlander throws.  (**Tip:**  copy and paste the code from the previous chunk into the chunk below.  Then modify it to fit the Verlander situation.  **Big Hint:  Find out HOW MANY types of ptiches Verlander throws, so you can changwe the `layout` arugment correctly.)
+
+```{r}
+
+```
+
+
+## Practice Part d
+
+Study the same Research Question numerically, now.
+
+Should you use `xtabs()` to make a two-way table, or should you use `favstats()`?  Why?
+
+
+
+## Practice Part e
+
+Use `favstats()` to break the speeds down by the type of pitch thrown.  (**Tip**:  look back in the slides to find the code used to break down the fastest speed driven by sex.  Copy this code into the chunk below, then make the needed changes.)
+
+```{r}
+
+```
+
+
+## Practice Part f
+
+Which types of pitches are the fastest?  Which types are the slowest?
+

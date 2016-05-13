@@ -1,0 +1,665 @@
+Design of Studies (Pt. 1)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 1:
+============
+id: Contents
+
+- [Observational Studies](#/observation)
+- [Causation](#/causation)
+- [Confounding Variables](#/confounding)
+- [The Idea of an Experiment](#/experiment)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE,message=FALSE}
+require(diagram)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Observational Studies
+===================
+type:  section
+id:  observation
+
+[Back to Contents](#/Contents)
+
+
+favstats(sentence~major,
+    data=Relationship Questions
+=========================
+
+Really interesting questions in science are about *relationships* between variables:
+
+* Usually one variable $X$ is considered *explanatory*
+* The other variable $Y$ is considered a *response*
+
+The explanatory variable might
+
+* help explain
+* help predict
+* maybe even *cause*
+
+the response variable.  
+
+Relationship Question
+=====================
+
+  >*Does smoking cause lung cancer?*
+  
+* Explanatory $X$ is **smoke** (Yes, No)
+* Response variable $Y$ is **lung cancer** (Yes,No)
+
+Relationship Questions
+=========================
+
+Learn about the `attitudes` data frame:
+
+```{r eval=FALSE}
+data(attitudes)
+View(attitudes)
+help(attitudes)
+```
+
+Relationship Questions
+===========================
+
+  >*Who gives the longest sentences on average:  math/science majors, humanities majors, social science majors, or pre-professional majors?*
+  
+* Explanatory variable $X$ = **major**
+* Response variable $Y$ = **sentence**
+
+Quick Look   (Numerical)
+==============
+
+```{r eval=FALSE}
+favstats(sentence~major,data=attitudes)
+```
+
+
+```{recho=FALSE}
+favstats(sentence~major,data=attitudes)[c(".group","mean","median")]
+```
+
+Quick Look (Graph)
+===================
+
+```{r majorsent, fig.height=15,fig.width=25,echo=F}
+bwplot(sentence~major,data=attitudes,
+       main="Major and Sentence",
+       xlab="Major",
+       ylab="Recommended Sentence",
+       panel = function(box.ratio,...) {
+                  panel.violin(..., col = "bisque",from=2,to=50)
+                  panel.bwplot(...,box.ratio=0.1)
+                })
+```
+
+Observational Study
+=======================
+type:  prompt
+
+
+Definition:
+
+  >In an *observational study* researchers simply observe or question the subjects.  In particular, they measure the values of the explanatory variable $X$ and measure the values of the response variable $Y$, for each subject.
+
+
+
+Causation
+=================
+type:  section
+id:  causation
+
+[Back to Contents](#/Contents)
+
+Causation Questions
+====================
+
+One of the most common reasons to study the relationship between two variables is to see if one of them *causes* the other.
+
+
+Speeding Causes Tickets
+===================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Speed",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Ticket\n(Yes,No)",cex=7)
+factor <- 0.20
+dir <- resp-exp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+```
+(The arrow says:  "Speeding causes tickets")
+
+A Cause Can Be Partial!
+====================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp1 <- c(0.2,0.2)
+exp2 <- c(0.2,0.8)
+resp <- c(0.8,0.5)
+textround(mid=exp1,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Speed",cex=7)
+textround(mid=exp2,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Cop Sees\n(Yes,No)",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Ticket\n(Yes,No)",cex=7)
+factor <- 0.20
+dir <- resp-exp1
+mid <- (exp1+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+dir <- resp-exp2
+mid <- (exp2+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+```
+
+A Cause Can Be Indirect!
+========================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp1 <- c(0.2,0.2)
+exp2 <- c(0.5,0.9)
+resp <- c(0.8,0.2)
+textround(mid=exp1,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Accelerator\nPressure",cex=7)
+textround(mid=exp2,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Speed",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Ticket\n(Yes,No)",cex=7)
+factor <- 0.20
+dir <- exp2-exp1
+mid <- (exp1+exp2)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+dir <- resp-exp2
+mid <- (exp2+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+```
+
+Accelerator pressure is still a causal factor in getting a ticket!
+
+Rough Idea of Causation
+======================
+
+Roughly we say that $X$ *causes* $Y$ if, there exist two different values $x_1$ and $x_2$ of $X$ so that whenever two people A and B are like in **every** way except that
+
+* A's value of $X$ is $x_1$, and
+* B's value of $X$ is $x_2$
+
+then:
+
+the distribution of $Y$ for A is different from the distribution of of $Y$ for B.
+
+Example
+=============
+
+For example, we say that speed *causes* tickets because we believe that:
+
+  >if two people are alike in every way except that one drives faster than the other, then the one who drives faster has a greater chance of getting a ticket.
+
+Causation Implies Association ...
+======================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Speed",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Ticket\n(Yes,No)",cex=7)
+factor <- 0.20
+dir <- resp-exp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start+c(0,0.05),to=end+c(0,0.05),lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+lines(x=c(start[1],end[1]),y=c(start[2]-0.05,end[2]-0.05),lwd=8,lty=2)
+legend("topright",lty=1:2,lwd=7,legend=c("causation","association"),cex=5)
+```
+
+... But Not Vice Versa!
+===================
+
+```{r echo=FALSE}
+set.seed(12345)
+data <- MASS::mvrnorm(n=200,mu=c(20000,1000),Sigma=matrix(c(5000^2,600^2,600^2,100^2),nrow=2))
+x <- data[,1]
+y <- data[,2]
+xyplot(y~x,xlab="Number of Dogs",ylab="# of Fire Hydrants",
+       main="Dogs and Hydrants\nin U.S. Towns",pch=19)
+```
+
+Clearly an Association ...
+=======================
+
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="# Dogs",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="# Hydrants",cex=7)
+factor <- 0.20
+dir <- resp-exp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+lines(x=c(start[1],end[1]),y=c(start[2],end[2]),lwd=8,lty=2)
+```
+
+
+... Due to a Common Cause!
+===================================
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="# People",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="# Dogs",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="# Hydrants",cex=7)
+curvedarrow(from=conf+c(0,0), to=resp+c(0,0), lwd = 8, lty = 1, lcol = "black", 
+            arr.col = "black", arr.pos = 0.7, curve = -0.1, dr = 0.1, 
+            endhead = TRUE, segment = c(0.35,0.9),
+            arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1)
+lines(x=c(exp[1]+0.2,resp[1]-0.2),y=c(exp[2],resp[2]),lty=2,lwd=8)
+factor <- 0.3
+dir <- conf-exp
+mid <- (exp+conf)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+curvedarrow(from=end, to=start, lwd = 8, lty = 1, lcol = "black", 
+            arr.col = "black", arr.pos = 0.7, curve = 0.1, dr = 0.1, 
+            endhead = TRUE, segment = c(0.1,1),
+            arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1)
+```
+
+
+Confounding Variables
+==============
+type:  section
+id:  confounding
+
+[Back to Contents](#/Contents)
+
+An Observed Association
+======================
+
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+factor <- 0.20
+dir <- resp-exp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+lines(x=c(start[1],end[1]),y=c(start[2],end[2]),lty=2,lwd=8)
+```
+
+How might we explain this association?
+
+Does X Cause Y?
+====================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+factor <- 0.20
+dir <- resp-exp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+text(x=0.5,y=0.6,labels="?",cex=7)
+```
+
+Does Y Cause X?
+====================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+exp <- c(0.2,0.5)
+resp <- c(0.8,0.5)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+factor <- 0.20
+dir <- exp-resp
+mid <- (exp+resp)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+straightarrow(from=start,to=end,lwd=8,
+              arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1,
+              arr.pos=1)
+text(x=0.5,y=0.6,labels="?",cex=7)
+```
+
+Or is there a Third Variable?
+=================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="Z = Conf",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+```
+
+$Z$ is different from $X$ and from $Y$
+
+Associated With Explanatory
+=================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="Z = Conf",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+factor <- 0.20
+dir <- conf-exp
+mid <- (exp+conf)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+lines(x=c(start[1],end[1]),y=c(start[2],end[2]),lty=2,lwd=8)
+```
+
+$Z$ is associated with $X$ (but is NOT caused by $X$).
+
+Helps to Cause the Response
+=================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="Z = Conf",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+curvedarrow(from=conf+c(0,0), to=resp+c(0,0), lwd = 8, lty = 1, lcol = "black", 
+            arr.col = "black", arr.pos = 0.7, curve = -0.1, dr = 0.1, 
+            endhead = TRUE, segment = c(0.35,0.9),
+            arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1)
+```
+
+$Z$ is also a cause of the response variable,
+
+Confounding Variable
+=================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="Z = Conf",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="X = Exp",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Y = Resp",cex=7)
+curvedarrow(from=conf+c(0,0), to=resp+c(0,0), lwd = 8, lty = 1, lcol = "black", 
+            arr.col = "black", arr.pos = 0.7, curve = -0.1, dr = 0.1, 
+            endhead = TRUE, segment = c(0.35,0.9),
+            arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1)
+lines(x=c(exp[1]+0.2,resp[1]-0.2),y=c(exp[2],resp[2]),lty=2,lwd=8)
+factor <- 0.20
+dir <- conf-exp
+mid <- (exp+conf)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+lines(x=c(start[1],end[1]),y=c(start[2],end[2]),lty=2,lwd=8)
+```
+
+$Z$ accounts for some (or all?) of the $X$-$Y$ association.
+
+Confounding Variable
+========================
+type:  prompt
+
+**Definition**:  In a study of the relationship between an explanatory variable $X$ and a response variable $Y$, the variable $Z$ is called a *confounding* variable if:
+
+* $Z$ is a third variable
+* $Z$ is associated with $X$ but is not caused by it
+* $Z$ helps to cause $Y$
+
+  >**Confounding variables are often present in observational studies!**
+
+Example
+===============
+
+  >An observational study finds that brightly-colored cars are more likely to receive tickets than cars of more drab colors are.
+  
+Does this mean that the color of a car is a causal factor in whether or not its driver will get a ticket?
+
+A Possible Confounder
+=========================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+openplotmat(xlim=c(-0.1,1.1))
+conf <- c(0.5,0.9)
+exp <- c(0.2,0.1)
+resp <- c(0.8,0.1)
+textround(mid=conf,col="black",lab="Driving\nHabits",box.col="springgreen3",
+            radx=0.01,rady=0.15,cex=7)
+textround(mid=exp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Car\nColor",cex=7)
+textround(mid=resp,col="black",box.col="lightblue",
+            radx=0.01,rady=0.15,lab="Ticket\n(Yes,No)",cex=7)
+curvedarrow(from=conf+c(0,0), to=resp+c(0,0), lwd = 8, lty = 1, lcol = "black", 
+            arr.col = "black", arr.pos = 0.7, curve = -0.1, dr = 0.1, 
+            endhead = TRUE, segment = c(0.35,0.9),
+            arr.type="triangle",arr.length=2,arr.width=1,arr.adj=1)
+lines(x=c(exp[1]+0.2,resp[1]-0.2),y=c(exp[2],resp[2]),lty=2,lwd=8)
+factor <- 0.20
+dir <- conf-exp
+mid <- (exp+conf)/2
+start <- mid-factor*dir
+end <- mid+factor*dir
+lines(x=c(start[1],end[1]),y=c(start[2],end[2]),lty=2,lwd=8)
+```
+
+A Possible Confounder
+=======================
+
+In words:
+
+  >"The variable **driving habits** is a possible confounder.  People who drive fast are more likely than others to prefer sports cars, which are often brightly colored.  Their fast driving also causes them to get lots of tickets."
+
+
+Experiments
+================
+type:  section
+id:  experiment
+
+[Back to Contents](#/Contents)
+
+
+Definition of an Experiment
+==================
+type:  prompt
+
+Definition:  
+
+  >In an *experiment*, researchers manipulate something and observe the effects of the manipulation on a response variable.
+
+Most commonly, the manipulation consists in *assigning* the values of an explanatory variable $X$ to the subjects.
+
+Experiment Terminology
+==================
+type:  prompt
+
+  >The *experimental units*, or *subjects*, are the individuals who particpate in the experiment.
+  
+(They need not be people.)
+
+  >The *treatments* are the different values of the explanatory variable that researchers assign to subjects.
+  
+  >Subjects are divided into *treatment groups*.  Members of the same treatment group all have the same treatment (value of $X$).
+  
+Attitudes Question
+==============
+
+Crime: You are on a jury for a manslaughter case in Lewistown, PA. The defendant has been found guilty, and in Pennsylvania it is part of the job of the jury to recommend a sentence to the judge. The facts of the case are as follows. The defendant, Tyrone Marcus Watson, a 35-year old native of Lewistown, was driving under the influence of alchohol on the evening of Tuesday July 17, 2001. At approximately 11:00 PM Watson drove through a red light, striking a pedestrian, Betsy Brockenheimer, a 20-year old resident of Lewistown. Brockenheimer was taken unconscious to the hospital and died of her injuries about one hour later. Watson did not flee the scene, nor did he resist arrest.
+
+
+Question (Continued)
+======================
+
+The prior police record for Mr. Watson is as follows: two minor traffic violations, and one previous arrest, five years ago, for DUI. No one was hurt in that incident.
+
+Watson has now been convicted of DUI and manslaughter. The minimum jail term for this combination of offenses is two years; the maximum term is fifty years. In the blank below, write a number from 2 to 50 as your recommended length of sentence for Tyrone Marcus Watson.
+
+Different Versions!
+=====================
+
+On all survey forms the question was the same except for names of the defendant and the victim.
+
+**Defendant Name** | **Victim Name**
+-------------------------- | ----------------------
+Tyrone Marcus Waton | Betsy Brockenheimer
+Tyrone Marcus Watson | Latisha Dawes
+William Shane Winchester | Betsy Brockenheimer
+William Shane Winchester | Latisha Dawes
+
+The four possible forms were distributed randomly to the subjects.
+
+Some Research Questions
+=========================
+
+  >Does the suggested race of the defendant affect the length of sentence recommended?
+  
+* Explanatory $X$ = **defrace**
+* Response variable $Y$ = **sentence**
+
+  >Does the suggested race of the victim affect the length of sentence recommended?
+  
+* Explanatory $X$ = **vicrace**
+* Response variable $Y$ = **sentence**
+
+Experiments
+==============
+
+For each Research Question:
+
+* researchers gave the survey form to the subjects,
+* so researchers assigned the value of $X$ to subjects.
+
+So both Questions were studied by means of an experiment.
+
+
+
+Think About This
+====================
+incremental:  true
+
+Consider this research Question:
+
+  >Does one's sex affect one's risk of developing colon cancer?
+  
+Could this Research question be studied by an experiment?
+
+**No!**  Explanatory variable is **sex**, and we cannot assign people their sex.
+
+Think About This
+====================
+incremental:  true
+
+Consider this research Question:
+
+  >Does taking aspirin help prevent heart disease?
+  
+Could this Research question be studied by an experiment?
+
+**Yes**.  Explanatory variable is **whether or not one takes aspirin**.  We can assign the values of this variable to subjects:
+
+* Select some subjects to take asprin every day
+* The other subjects must not use aspirin
+
+The Experimental Ideal
+======================
+
+In an experiment, we try to assign values of $X$ so that:
+
+  >*the treatment groups are as similar as possible with respect to every variable (except $X$) that might affect $Y$*.
+  
+Then any differences in $Y$ between the groups can be ascribed to $X$, and not to some confounding factor!
+

@@ -1,0 +1,200 @@
+Two Factor Variables (Pt. 3)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 3:
+============
+id: Contents
+
+- [Simpson's Paradox](#/simpson)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+Simpson's Paradox
+=================
+type:  section
+id:  simpson
+
+[Back to Contents](#/Contents)
+
+The Death Penalty Data
+===================
+
+```{r eval=FALSE}
+data(deathpen)
+View(deathpen)
+help(deathpen)
+```
+
+For more information:
+
+  >[Michael J. Radelet: "Racial Characteristics and the Imposition of the Death Penalty", *American Sociological Review*, 46 (1981).](http://goo.gl/ECLVa)
+
+Research Question:
+
+  >*Are black defendants more likely than white defendants to receive the death penalty?*
+  
+Tables of Results
+==================
+
+```{r}
+DefD <- xtabs(~defrace+death,data=deathpen)
+DefD
+rowPerc(DefD)
+```
+Hmm --- whites a bit more likely to get death!
+
+Lurking Variable
+==============
+
+There is a third variable:  race of the victim:
+
+```{r}
+str(deathpen)
+```
+
+If we take it into account, it may alter our interpretation of the results.
+
+Subsetting
+============
+
+Let's break the data down by the values of the lurking variable **vicrace**:
+
+```{r}
+deathpenWV <- subset(deathpen,
+              vicrace=="white")
+deathpenBV <- subset(deathpen,
+              vicrace=="black")
+```
+
+When Victim is White
+===================
+left:  40%
+
+Two-way table:
+```{r}
+DefDWV <- xtabs(
+  ~defrace+death,
+  data=deathpenWV)
+DefDWV
+```
+
+***
+
+Then row percents:
+
+```{r}
+rowPerc(DefDWV)
+```
+
+Black defendants are MORE likely to get death penalty!
+
+When Victim is Black
+===================
+left:  40%
+
+Two-way table:
+```{r}
+DefDWB <- xtabs(
+  ~defrace+death,
+  data=deathpenBV)
+DefDWB
+```
+
+***
+
+Then row percents:
+
+```{r}
+rowPerc(DefDWB)
+```
+
+Black defendants are MORE likely to get death penalty here, too!
+
+Bizarre!
+===============
+incremental:  true
+
+* When the victim is white, the black defendant is MORE likely to get the death penalty.
+* When the victim is black, the black defendant is MORE likely to get the death penalty.
+* But in the combined data, the black defendant is LESS likely to get the death penalty.
+
+Simpson's Paradox
+=================
+type:  prompt
+
+  >*Simpson's Paradox* occurs when a relationship between variables $X$ and $Y$ reverses its direction when the data are broken down by the values of a third variable $Z$.
+  
+How Can It Happen?
+=================
+
+* Simpson's Paradox is mathematically possible.
+* But can we explain in a satisfying way why it occurs, when it occurs?
+
+Stategy to Explain It
+====================
+
+* study how $X$ relates to $Z$
+* study how *Z* relates to $Y$
+* try to synthesize the results of these two studies
+
+Defendant Race and Victim Race
+==============
+left:  45%
+
+Two-way table:
+```{r}
+DefVic <- xtabs(
+  ~defrace+vicrace,
+  data=deathpen)
+DefVic
+```
+
+***
+
+Then row percents:
+
+```{r}
+rowPerc(DefVic)
+```
+
+People tend to kill people of their own race.
+
+
+Victim Race and Outcome
+==============
+left:  45%
+
+Two-way table:
+```{r}
+VicDeath <- xtabs(
+  ~vicrace+death,
+  data=deathpen)
+VicDeath
+```
+
+***
+
+Then row percents:
+
+```{r}
+rowPerc(VicDeath)
+```
+
+The (mostly white) juries got really angry when a white person was killed!
+
+Synthesis
+=================
+
+  >Regardless of the race of the victim, white defendants are less likely to get the death penalty, but they "hamstring" themselves by killing mostly white victims --- which is what got juries really mad, back in the day!

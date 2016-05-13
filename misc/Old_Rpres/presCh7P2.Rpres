@@ -1,0 +1,637 @@
+Basic Probability (Part 2)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+
+
+In Part 2:
+============
+id: Contents
+
+- [Expectation](#/expectation)
+- [Binomial Random Variable](#/binomial)
+
+
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+```{r echo=FALSE}
+
+#overwrite pnormGC() and pbinomGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pnormGC <- function(bound,region="below",mean=0,sd=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  if (grepl("^be[lf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+
+  if (grepl("^a[bf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^bet|^in",region,perl=TRUE))  {
+    area <- pnorm(bound[2],mean=mean,sd=sd)-pnorm(bound[1],mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^out",region,perl=TRUE))  {
+    area <- pnorm(bound[1],mean=mean,sd=sd)+pnorm(bound[2],mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,lwd=2.5,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dnorm,mean=mean,sd=sd)
+    UnderShade(low=bound[2],high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pnormGC
+
+pbinomGC  <- function(bound,region="below",size=100,prob=0.5,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  below <- grepl("^be[lf]",region,perl=TRUE)
+  above <- grepl("^a[bf]",region,perl=TRUE)
+  between <- grepl("^bet|^in",region,perl=TRUE)
+  outside <- grepl("^out",region,perl=TRUE)
+  if (length(bound)==1 & !(below | above)) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(between | outside)) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  sd <- sqrt(size*prob*(1-prob))
+  
+  if (below)  {
+    area <- pbinom(bound,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals <= bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound),upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+
+  if (above)  {
+    area <- pbinom(bound,size=size,prob=prob,lower.tail=FALSE)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals > bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound)+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (between)  {
+    area <- pbinom(bound[2],size=size,prob=prob)-pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse((bound[1] <= nvals & nvals <= bound[2]),"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1]),floor(bound[2]),upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (outside)  {
+    area <- pbinom(bound[2],size=size,prob=prob,lower.tail=FALSE)+pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(bound[1] <= nvals & nvals <= bound[2],NA,"lightblue")
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1])-1,floor(bound[2])+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pbinomGC
+```
+
+Expectation
+===========
+type:  section
+id:  expectation
+
+[Back to Contents](#/Contents)
+
+Expected Value
+==============
+
+> The **expected value** of $X$ is the value of $X$ that we would expect to see if we repeated the experiment many times.
+
+Expected value is a *weighted* average.  
+
+$$EV(X)=\sum x\cdot P(X=x)$$
+
+* Multiply every value in the range of $X$ by it's corresponding probability.
+
+* Sum these products.
+
+Expected Value:  An Example
+===========================
+
+**Example:**  $X=$ number of heads in two tosses of a fair coin.
+
+The most likely value of $X$ is 1.
+
+What value do we *expect* $X$ to be?
+
+*** 
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(2,.5),kind="histogram",type="percent", xlab="Number of Heads",col="lightcyan")
+```
+
+Example (cont'd)
+===============
+
+* Range of $X = \{0,1,2\}$.
+
+* $P(X=0)=0.25$, $P(X=1)=0.50$, $P(X=2)=0.25$
+
+$$EV(X)=0(0.25) + 1(0.50) + 2(0.25)=1$$
+
+```{r}
+x<-c(0,1,2)
+prob.x<-c(0.25,0.50,0.25)
+EV.X<-sum(x*prob.x)
+EV.X
+```
+
+
+Standard Deviation
+=================
+
+> The **standard deviation** of $X$ is a measure of how much $X$ is expected to differ from $EV(X)$.
+
+$$SD(X)=\sqrt{\sum(x-E(X))^2\cdot P(X=x)}$$
+
+* Find the difference between every value in the range of $X$ and $EV(X)$.
+
+* Square the differences.
+
+* Multiply the squares by the corresponding probability.
+
+* Sum the products.  Take the square root.
+
+Standard Deviation:  An Example
+================================
+
+**Example:** $X=$ number of heads in two tosses of a fair coin.
+
+* Range of $X=\{0,1,2\}$.
+
+* $P(X=0)=0.25$, $P(X=1)=0.50$, $P(X=2)=0.25$
+
+* $EV(X)=1$
+
+$$SD(X)=\sqrt{(0-1)^2(0.25)+(1-1)^2(0.5)+(2-1)^2(0.25)}\approx 0.707$$
+
+Example (cont'd)
+===============
+
+```{r}
+x<-c(0,1,2)
+prob.x<-c(0.25,0.50,0.25)
+EV.X<-sum(x*prob.x)
+SD.X<-sqrt(sum((x-EV.X)^2*prob.x))
+SD.X
+```
+
+
+
+Evaluating a Game
+============================
+
+Expected value and standard deviation work together to describe how a random variable is *likely* to turn out.
+
+**Example:**  Suppose you make a \$100 bet.  You have two options:  Bet 1 and Bet 2. 
+
+* Let $X=$ net gain from making Bet 1.
+
+* Let $Y=$ net gain from making Bet 2.
+
+Evaluating a Game (cont'd)
+========================
+
+PDF for Bet 1
+
+ $x$      | \$5,000 | \$1,000 |   \$0
+----------| ------- | ------  |  ------
+ $P(X=x)$ |  0.001  | 0.005   |  0.994
+ 
+```{r}
+x<-c(5000,1000,0)
+prob.x<-c(0.001,0.005,0.994)
+EV.X<-sum(x*prob.x)
+EV.X
+```
+
+ 
+ ***  
+ 
+PDF for Bet 2
+
+ $y$      | \$20   | \$10   |   \$4
+----------| ------ | ------ |  ------
+ $P(Y=y)$ |  0.30  | 0.20   |  0.50
+ 
+```{r}
+y<-c(20,10,4)
+prob.y<-c(0.3,0.2,0.5)
+EV.Y<-sum(y*prob.y)
+EV.Y
+```
+
+Evaluating a Game (cont'd)
+=========================
+
+Both bets have the same expected net gain. 
+
+Standard Deviation for Bet 1:
+```{r}
+x<-c(5000,1000,0)
+prob.x<-c(0.001,0.005,0.994)
+EV.X<-sum(x*prob.x)
+SD.X<-sqrt(sum((x-EV.X)^2*prob.x))
+SD.X
+```
+
+The expected net gain for Bet 1 is \$10 give or take \$172.90.
+
+Evaluating a Game (cont'd)
+=========================
+Standard Deviation for Bet 2:
+
+```{r}
+y<-c(20,10,4)
+prob.y<-c(0.3,0.2,0.5)
+EV.Y<-sum(y*prob.y)
+SD.Y<-sqrt(sum((y-EV.Y)^2*prob.y))
+SD.Y
+```
+
+The expected net gain for Bet 2 is \$10 give or take \$6.93.
+
+Which bet would you make?
+
+
+
+
+
+Binomial Random Variable
+========================
+type:  section
+id:  binomial
+
+[Back to Contents](#/Contents)
+
+
+Special Type of Discrete Random Variable
+=======================================
+
+> A **binomial random variable** counts how often an event occurs in a given number of tries.
+
+* The specified number of tries, $n$, is referred to as the $size$.
+
+* Each try results in a *success* or a *failure*.
+
+* Each try has the same probability of success, $p$.
+
+* The outcome of one try does not affect the outcome of another.  The tries are **independent** of each other.  
+
+Binomial Random Variable: Example 1
+=====================================
+
+**Example:**  $X=$ number of heads in two tosses of a fair coin.
+
+* $n=2$
+
+* *success* = Heads, *failure* = Tails
+
+* Probability of a *success* = $p=0.5$.  
+
+* The first toss is *independent* of the second toss.
+
+Binomial Random Variable:  Example 2
+====================================
+
+**Example:** $Y=$ number of tails in 10 tosses of a fair coin.
+
+* $n=10$
+
+* *success* = Tails, *failure* = Heads
+
+* Probability of a *success* = $p=0.5$.  
+
+* Tosses are *independent*.
+
+Binomial Random Variable:  Non-Example 
+====================================
+
+**Example:**  $Z$= number of children who will get the flu this winter in a kindergarten class with 20 children.
+
+* $n=20$
+
+* *success*=Flu, *failure* = No Flu
+
+* Probability of a *success* is unknown and variable.
+
+* Children are **not** *independent*.
+
+Less Than or Equal To
+==========================================
+
+$Y=$ number of heads in 10 tosses of a fair coin
+
+Calculating probabilities for $Y$ is easy.
+
+To find $P(Y\leq 3)$:
+
+```{r,eval=FALSE}
+pbinomGC(3,region="below",size=10,
+         prob=0.5,graph=TRUE)
+```
+
+Less Than or Equal To
+=======================================
+```{r,echo=FALSE}
+pbinomGC(3,region="below",size=10,
+         prob=0.5,graph=TRUE)
+```
+
+***
+
+$$P(Y\leq 3)=0.1719$$
+
+Less Than 
+===========================================
+
+
+To find $P(Y< 3)$:
+
+
+```{r,eval=FALSE}
+pbinomGC(2,region="below",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+
+Less Than
+=======================================
+
+```{r,echo=FALSE}
+pbinomGC(2,region="below",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+***
+
+
+$$P(Y< 3)=0.05469$$
+
+Binomial Probabilities (Greater Than)
+===========================================
+
+
+
+To find $P(Y>3)$:
+
+```{r,eval=FALSE}
+pbinomGC(3,region="above",size=10,
+         prob=0.5,graph=TRUE)
+```
+
+
+Binomial Probabilities (Greater Than)
+===========================================
+
+```{r,echo=FALSE}
+pbinomGC(3,region="above",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+***
+
+
+$$P(Y>3)=0.8281$$
+
+
+Greater Than or Equal To
+===========================================
+
+
+To find $P(Y\geq 3)$:
+
+```{r,eval=FALSE}
+pbinomGC(2,region="above",size=10,
+         prob=0.5,graph=TRUE)
+```
+
+Greater Than or Equal To
+===========================================
+
+```{r,echo=FALSE}
+pbinomGC(2,region="above",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+***
+
+
+$$P(Y\geq 3)=0.9453$$
+
+
+
+Between
+=======
+
+To find $P(2\leq Y \leq 4)$:
+
+```{r,eval=FALSE}
+pbinomGC(c(2,4),region="between",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+
+Between
+=======
+
+```{r,echo=FALSE}
+pbinomGC(c(2,4),region="between",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+***
+
+
+$$P(2\leq Y \leq 4)=0.3662$$
+
+Equal To
+========
+
+To find $P(Y = 4)$:
+
+```{r,eval=FALSE}
+pbinomGC(c(4,4),region="between",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+Equal To
+=======
+
+```{r,echo=FALSE}
+pbinomGC(c(4,4),region="between",
+         size=10,prob=0.5,graph=TRUE)
+```
+
+***
+
+
+$$P(Y=4)=0.2051$$
+
+Binomial Random Variable:  EV and SD
+=====================================
+
+For a binomial random variable $X$, 
+
+* the **expected value** is $EV(X)=np$
+
+* the **standard deviation** if $SD(X)=\sqrt{np(1-p)}$
+
+EV and SD
+=====================
+
+For $Y=$ the number of heads in 10 tosses of a fair coin:
+
+* $n=10$
+
+* $p=0.5$
+
+* $EV(Y)=10(0.5)=5$
+
+* $SD(Y)=\sqrt{10(0.5)(1-0.5)}\approx 1.581$
+
+```{r}
+sqrt(10*0.5*(1-0.5))
+```
+
+Next Topic
+========================
+
+Part 3 will discuss continuous random variables.

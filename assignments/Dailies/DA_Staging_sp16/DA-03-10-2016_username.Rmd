@@ -1,0 +1,41 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Thursday March 10, 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+## Attitudes:  Race and Sentence
+
+We are interested in the following Research Question:
+
+Who recommends higher sentences, on average:
+
+* subjects given a form where the defendant's suggested race is Black?
+* or subjects given a form where the defendant's suggested race is White?
+
+
+## Part a
+
+Is the data for our Research Question based on an experiment or on an observational study?
+
+
+
+## Part b
+
+We could have asked each subject the same question twice:
+
+* once for Tyrone Marcus Watson
+* once for William Shane Winchester
+
+Then we would have had a repeated measures design.
+
+Why did we not do this?
+
+
+

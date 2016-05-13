@@ -1,0 +1,592 @@
+Probability in Sampling (Pt. 3)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 3:
+============
+id: Contents
+
+- [The Central Limit Theorem](#/clt)
+- [Probability With Estimators](#/probest)
+- [The 68-95 Rule for Probability](#/prob6895)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+```{r echo=FALSE}
+
+#overwrite pnormGC() and pbinomGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pnormGC <- function(bound,region="below",mean=0,sd=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  if (grepl("^be[lf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+
+  if (grepl("^a[bf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^bet|^in",region,perl=TRUE))  {
+    area <- pnorm(bound[2],mean=mean,sd=sd)-pnorm(bound[1],mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^out",region,perl=TRUE))  {
+    area <- pnorm(bound[1],mean=mean,sd=sd)+pnorm(bound[2],mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dnorm,mean=mean,sd=sd)
+    UnderShade(low=bound[2],high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pnormGC
+```
+
+
+The Central Limit Theorem
+===================
+type:  section
+id:  clt
+
+[Back to Contents](#/Contents)
+
+Center and Shape
+==================
+
+The estimators for the Basic Five Parameters are all random variables, so they all have a center (EV) and a spread (SD).
+
+|  Estimator | Center | Spread |
+|:--------:|:----------:|:-----------:|
+|$\bar{x}$|$\mu$|$\frac{\sigma}{\sqrt{n}}$|
+|$\bar{x}_1-\bar{x}_2$|$\mu_1-\mu_2$|$\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$|
+|$\hat{p}$|$p$|$\sqrt{\frac{p(1-p)}{n}}$|
+|$\hat{p}_1-\hat{p}_2$|$p_1-p_2$|$\sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$|
+|$\bar{d}$|$\mu_d$|$\frac{\sigma_d}{\sqrt{n}}$|
+
+
+We Aplogize Profusely
+=============================
+type:  alert
+
+There are *three* SDs.  You have to keep them straight:
+
+1. $\sigma$ is the SD of a numerical population
+    * says how much a typical population value differs from the population mean $\mu$
+2. $s$ is the SD of a numerical sample
+    * says how much a typical sample value differs from the mean $\bar{x}$ of the sample
+    * can be used to estimate $\sigma$
+3. $SD(\bar{x})$ is the SD of the $\bar{x}$ *as a random variable*
+    * says how much $\bar{x}$ is liable to differ from $EV(\bar{x})$, in repeated sampling
+
+Shape
+===========
+
+But what is the *shape* of an estimator?
+
+Estimating One Mean
+===============
+
+To investigate the shape of the distribution of $\bar{x}$, try:
+
+```{r eval=FALSE}
+require(manipulate)
+MeanSampler(~income,data=imagpop)
+```
+
+Suggestions:
+
+* first try with $n=1$.   Watch the density curve build up.
+* then with $n=2$
+* then with higher $n$, maybe $n=11$
+* try with another numerical variable in `imagpop`, maybe **height**
+
+Estimating One Proportion
+================
+
+To investigate the shape of the distribution of $\hat{p}$, try:
+
+```{r eval=FALSE}
+require(manipulate)
+PropSampler(~cappun,data=imagpop)
+```
+
+Suggestions:
+
+* first try with $n=10$.   Watch the density curve build up.
+* then with $n=30$
+* then with higher $n$, maybe $n=100$
+* try with another two-value factor variable in `imagpop`, maybe **math**
+
+Estimating Difference of Two Means
+===============
+
+To investigate the shape of the distribution of $\bar{x}_1-\bar{x}_2$, try:
+
+```{r eval=FALSE}
+require(manipulate)
+SampDist2Means(imagpop)
+```
+
+Suggestions:
+
+* first set `numver` to **income**, `facvar` to **sex**. Try for various sample sizes.
+* then  set `numver` to **height**, `facvar` to **sex**. Try for various sample sizes.
+
+The Pattern
+==============
+
+As sample sizes increase, shape of the distribution of the estimator looks more and more bell-shaped.
+
+
+**No matter what the underlying population looks like!!**
+
+(But the more skewed the population is, the bigger the sample size must be before the estimator starts looking bell-shaped.)
+
+Central Limit Theorem
+==========================
+type:  prompt
+
+No matter how the population is distributed, as sample size $n$ increases, the distribution of $\bar{x}$ gets closer and closer to:
+
+$$norm(\mu,\frac{\sigma}{\sqrt{n}}).$$
+
+Another Way  to Put It
+=======================
+
+No matter how the population is distributed, as sample size $n$ increases, the distribution of
+
+$$Z=\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}$$
+
+gets closer and closer to:
+
+$$norm(0,1),$$
+
+the *standard normal* distribution.
+
+
+This Carries Over ...
+========================
+
+... to the other four of the Basic Five estimators!
+
+As long as sample sizes are "big enough", their shape will be approximately normal!
+
+How Big is "Big Enough"?
+==========================
+
+Rules of Thumb:
+
+|  Estimator | Big Enough |
+|:--------:|:----------:|
+|$\bar{x}$|$n \ge 30$|
+|$\bar{x}_1-\bar{x}_2$|$n_1 \ge 30,n_2 \ge 30$|
+|$\hat{p}$|$np \ge 10,n(1-p) \ge 10$|
+|$\hat{p}_1-\hat{p}_2$| all of $n_1p_1,n_1(1-p_1),n_2p_2,n_2(1-p_2) \ge 10$|
+|$\bar{d}$|$n \ge 30$|
+
+Probability With Estimators
+=================================
+type:  section
+id:  probest
+
+[Back to Contents](#/Contents)
+
+Imagine ...
+================
+
+... that you are a powerful being (a Greek god/goddess, maybe).
+
+* You know everything about the present
+* so you have complete information on all populations
+* so you can instantly find any population parameter you like
+* but you do NOT know the future
+
+Imagine ...
+================
+
+You see a poor mortal, a statistician, about to take a simple random sample of size $n$ from a population.
+
+The following is all true:
+
+* You know population mean $\mu$,
+* you know population SD $\sigma$,
+* and you know that $\bar{x} \approx norm(\mu,\sigma/\sqrt{n}).$
+* You don't know what $\bar{x}$ will be,
+* but you can compute probabilities for it to lie in various ranges.
+
+Example 1
+==============
+
+  > A statistician is about to take a SRS of size $n=25$ from `imagpop` and compute $\bar{x}$, the sample mean of the heights of the 25 selected individuals.
+  
+  >*What is the probability that the sample mean will exceed 68.3 inches?*
+  
+In other words, what is:
+
+$$P(\bar{x} > 68.3)?$$
+
+Example 1 Solution
+======================
+
+First of all, we use our god-like powers (and R!) to find:
+
+* mean $\mu$ and
+* standard deviation $\sigma$
+
+of the heights in the population:
+
+```{r}
+favstats(~height,data=imagpop)[c("mean","sd")]
+```
+
+Example 1 Solution
+======================
+
+So we know that:
+
+*  $EV(\bar{x}) = 67.53$, and
+*  $SD(\bar{x}) = 3.907/\sqrt{25}=0.7814$.
+
+We know the center and the spread of $\bar{x}$!
+
+Example 1 Solution
+====================
+
+How about the shape of $\bar{x}$?  Sample was size $n=25$, a bit less than the "cut-off" of 30 where CLT kicks in.
+
+But if heights in `imagpop` are approximately normal, we don't need a big $n$ to assure us that $\bar{x}$ will be approximately normal.  So, use god-like powers to make density plot of population:
+
+```{r imagpoopheightdensity1,eval=FALSE}
+densityplot(~height,data=imagpop,
+            xlab="Height (inches)",
+            main="Imagpop Heights",
+            plot.points=FALSE)
+```
+
+
+Example 1 Solution
+======================
+
+```{r imagpoopheightdensity2,echo=FALSE,fig.width=25,fig.height=15}
+densityplot(~height,data=imagpop,
+            xlab="Height (inches)",
+            main="Imagpop Heights",
+            plot.points=FALSE)
+```
+
+Population looks fairly bell-shaped!
+
+Example 1 Solution
+============================
+
+So even though $n=25 < 30$, we still figure that
+
+$$\bar{x} \approx norm(67.53,0.7814).$$
+
+So for $P(\bar{x} > 68.3)$, go for:
+
+```{r eval=FALSE}
+pnormGC(bound=68.3,region="above",
+        mean=67.53,sd=0.7814,
+        graph=TRUE)
+```
+
+
+Example 1 Solution
+========================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+opar <- par
+par(cex.axis=2,cex.main=2,cex.lab=2)
+pnormGC(bound=68.3,region="above",
+        mean=67.53,sd=0.7814,
+        graph=TRUE)
+invisible(par(opar))
+```
+
+
+Example 1 Solution
+===========================
+
+
+So $P(\bar{x} > 68.3) \approx 16.22\%$
+
+
+Example 2
+===================
+
+  >A statistician plans to take a SRS of 30 males from the population of all males in `imagpop`, and an independent SRS of 40 females from the population of all women in `imagpop`.  She will then compute $\bar{x}_1-\bar{x}_2$, the sample mean height of the males minus the sample mean height of the females.
+  
+  >*Approximately what is the chance that the difference of sample means will be between 4 and 6 inches?*
+
+Example 2 Solution
+==========================
+
+This time the samples sizes are:
+
+* $n_1=30$, and
+* $n_2=40$.
+
+Both sample sizes are $\ge 30$, so Central Limit Theorem says $\bar{x}_1-\bar{x}_2$ is approximately normal.
+
+Example 2 Solution
+==========================
+
+Next, compute EV and SD of $\bar{x}_1-\bar{x}_2$.  For this we will need means and standard deviations of of the heights for:
+
+* all males in `imagpop`, and
+* all females in `imagpop`.
+
+Hence we ask for:
+
+```{r}
+favstats(height~sex,
+  data=imagpop)[c(".group","mean","sd")]
+```
+
+Example 2 Solution
+==========================
+
+So the EV of $\bar{x}_1-\bar{x}_2$ is
+
+$$70.03-65=5.03$$
+
+inches, and $SD(\bar{x}_1-\bar{x}_2) = \sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}},$
+
+```{r}
+sqrt(3.013^2/30+2.962^2/40)
+```
+
+Example 2 Solution
+============================
+
+So:
+
+$$\bar{x}_1-\bar{x}_2 \approx  norm(5.03,0.722).$$
+
+Now we can get the desired probability:
+
+```{r}
+pnormGC(c(4,6),region="between",
+        mean=5.03,sd=0.722)
+```
+
+
+Example 2 Solution
+===========================
+
+So there is about a 83.36% chance that $\bar{x}_1-\bar{x}_2$ will turn out to be between 4 and 6 inches.
+
+In other words:
+
+  >There is about a 83.36% chance that the mean for the sample guys will be between 4 and 6 inches higher than the mean for the sample gals.
+
+Read!
+=============
+
+Consult the Course Notes for several more examples!
+
+The 68-95 Rule for Probability
+================================
+type:  section
+id:  prob6895
+
+[Back to Contents](#/Contents)
+
+68-95 Rule:  Review
+==========================
+
+If the distribution of a numerical variable is roughly bell-shaped, then
+
+* about 68% of the values are within one SD of the mean
+* about 95% are within 2 SDs of the mean
+* about 99.7% are within 3 SDs of the mean
+
+(This was sometimes called the *Empirical Rule*.)
+
+68-95 Rule for Probability
+==========================
+type: prompt
+
+If the probability distribution of a random  variable $X$ is approximately normal, then
+
+* there is about a 68% chance that $X$ will turn out to be within one SD of its EV
+* there is about a 95% chance that $X$ will turn out to be within two SDs of its EV
+* there is about a 99.7% chance that $X$ will turn out to be within three SDs of its EV
+
+
+Application
+====================
+
+You are about to take a simple random sample from a population.
+
+* The mean $\mu$ is 50.
+* The standard deviation $\sigma$ of the population is 6.
+* The size of your sample will be $n=36$.
+
+Approximately what is
+
+$$P(\bar{x} > 53)?$$
+
+Solution
+=================
+
+* $EV(\bar{x})=\mu=50$
+* $SD(\bar{x})=\sigma/\sqrt{n}=6/\sqrt{36}=1$
+* $n=36 \ge 30$, so by CLT $\bar{x} \approx norm(50,1)$
+
+Empirical Rule for Probability
+=========================
+
+```{r, echo=FALSE,fig.width=20,fig.height=10}
+QuickEmpRuleGraphs <- function(mean=0,sd=1,xlab="x",range=1,shade="between") {
+
+  curve(dnorm(x,mean=mean,sd=sd),from=mean-4*sd,to=mean+4*sd,xlab=xlab,ylab="density",
+       main=paste("Empirical Rule:\nmean =",mean,", SD =",sd),axes=FALSE)
+ DesiredLabels <- rep("",9)
+ DesiredLabels[5] <- as.character(mean)
+ DesiredLabels[5-range] <- as.character(mean-sd*range)
+ DesiredLabels[5+range] <- as.character(mean+sd*range)
+ axis(side=1,at=mean+sd*seq(-4,4,by=1),labels=DesiredLabels)
+ 
+ if (shade=="between")  {
+   x.coords <- seq(from=mean-sd*range,to=mean+sd*range,
+                   length.out=500)
+   y.coords <- dnorm(x.coords,mean=mean,sd=sd)
+   x.coords <- c(mean-sd*range,x.coords,mean+sd*range)
+   y.coords <- c(0,y.coords,0)
+   polygon(x.coords,y.coords,col="lightblue")
+   percs <- c("~68%","~95%","~99.7%")
+   text(x=mean,y=0.45/(sqrt(2*pi)*sd),labels=percs[range],cex=4)
+ } else {
+   x.coords.left <- c(mean-4*sd,
+                      seq(from=mean-4*sd,to=mean-sd*range,length.out=300),
+                      mean-sd*range)
+   x.coords.right <- c(mean+sd*range,
+                       seq(from=mean+sd*range,to=mean+4*sd,length.out=300),
+                       mean+4*sd)
+   y.coords.left <- c(0,dnorm(seq(from=mean-4*sd,to=mean-sd*range,length.out=300),mean=mean,sd=sd),0)
+   y.coords.right <- c(0,
+                       dnorm(seq(from=mean+sd*range,to=mean+4*sd,length.out=300),mean=mean,sd=sd),
+                       0)
+   polygon(x.coords.left,y.coords.left,col="lightblue")
+   polygon(x.coords.right,y.coords.right,col="lightblue")
+   x.txt <- mean-sd*c(2.3,3,3.55)
+   y.txt <- c(0.4,0.25,0.15)/(sqrt(2*pi)*sd)
+   percs <- c("~16%","~2.5%","~0.15%")
+   text(x.txt[range],y.txt[range],percs[range],cex=4)
+   x.txt.right <- mean+sd*c(2.3,3,3.55)
+   text(x.txt.right[range],y.txt[range],percs[range],cex=4)
+                            
+ }
+
+}  #end EmpRuleGC
+opar <- par()
+par(cex.axis=2.5,cex.main=2.5,cex.lab=2.5,mar=c(5.1,5.1,5.1,4.1))
+QuickEmpRuleGraphs(mean=50,sd=1,xlab="Sample Mean",range=3,shade="between")
+par(opar)
+```
+
+Think Outside
+=================
+
+```{r echo=FALSE,fig.height=10,fig.width=20}
+opar <- par()
+par(cex.text=3,cex.main=2.5,cex.lab=2.5,mar=c(5.1,5.1,5.1,4.1))
+QuickEmpRuleGraphs(mean=50,sd=1,xlab="Sample Mean",range=3,shade="outside")
+par(opar)
+```
+
+Solution
+=======================
+
+So,
+
+$$P(\bar{x} > 53) \approx 0.15\%.$$
+
+
+Use the Right SD!
+======================
+type:  alert
+
+Use the SD for the random variable you are working with, NOT the SD of the population.
+
+$$SD(\bar{x})=\frac{\sigma}{\sqrt{n}}=\frac{6}{\sqrt{36}}=1,$$
+
+$$SD(\bar{x}) \neq \sigma=6$$

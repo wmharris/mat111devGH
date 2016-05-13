@@ -1,0 +1,16 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday, April 15 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+## Zodiac Signs
+
+Based on the studies we just did, would you conclude that the data provide strong evidence that Cancers and Leos are less likely than people of other signs to believe in the Big Bang Theory? Why or why not?

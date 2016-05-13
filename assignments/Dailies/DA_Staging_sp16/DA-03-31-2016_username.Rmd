@@ -1,0 +1,102 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Thursday, March 31 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+# One Mean
+
+Same population of guys as in the slides:
+
+* $\mu =72$
+* $\sigma =3$
+
+This time you pick n=25 guys at random and compute the sample mean x-bar of their heights.
+
+
+## Part a
+
+What do you expect the sample mean to be? 
+
+
+## Part b
+
+Give or take about how much?  If you need to use a "calculator", write the necessary computations in the code chunk below:
+
+```{r}
+
+```
+
+# One Proportion
+
+
+
+Suppose that 45% of all registered voters in KY favor Alison Lundergren Grimes in the Senate race.
+
+Suppose you take a random sample of 635 registered voters.
+
+## Part a
+
+About what percentage of the students in your sample will favor Alison? 
+
+## Part b
+
+Give or take about how much?  You will need to use R as a calculator.  Put your computations in the code chunk below:
+
+```{r}
+
+```
+
+Turn your answer into a percentage:  other people may find a percentage easier to understand!
+
+
+# Sampling 64 College Students
+
+
+In a population of college students, the mean fastest speed ever driven is 110 mph. The SD of the fastest speeds is 10 mph.
+
+Herbert will sample 64 college students at random and compute the sample mean x-bar.
+
+Let's find the approximate probability that x-bar will turn out to be less than 107 mph.
+
+We do this in steps.
+
+## Expected Value
+
+What is the expected value of x-bar?
+
+
+## Standard Deviation
+
+What is the standard deviation of x-bar:  is it 10, or is it 10/sqrt(64)?
+
+
+## Probability
+
+Since the sample size of 64 is pretty large,  the Central Limit Theorem says that x-bar is approximately normal, as a random variable.
+
+What's the correct way to compute the chance that x-bar will be less than 107 mph?
+
+Is it this:
+
+```{r}
+pnormGC(107,region="below",mean=110,sd=10)
+```
+
+or this?
+
+```{r}
+pnormGC(107,region="below",mean=110,sd=10/sqrt(64))
+```
+
+Explain your choice briefly.
+
+
+
+

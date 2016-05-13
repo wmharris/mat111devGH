@@ -1,0 +1,432 @@
+Confidence Intervals (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [The t-Statistic](#/tstatistic)
+- [t-Curves](#/tcurves)
+- [Finding Multipliers](#/multipliers)
+- [The Importance of Safety Checks](#/safety)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+```{r echo=FALSE}
+
+#overwrite ptGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+ptGC <- function(bound,region="between",df=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,2.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+                                                                 region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+                                                                     region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+  
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+  
+  if (region=="below")  {
+    area <- pt(bound,df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound,0,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="above")  {
+    area <- 1-pt(bound,df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound,0,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="between")  {
+    area <- pt(bound[2],df=df)-pt(bound[1],df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="outside")  {
+    area <- pt(bound[1],df=df)+pt(bound[2],df=df,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dt,df=df)
+    UnderShade(low=bound[2],high=upper,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,2.1))
+  
+  return(area)
+  
+}#end of ptGC
+```
+
+The t-Statistic
+=================
+type:  section
+id:  tstatistic
+
+[Back to Contents](#/Contents)
+
+68-95 Rule for Estimation
+======================
+
+We say that we are about 95% confident that
+  
+$$\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x}),$$
+
+**because** before the sample was taken
+
+$$P(\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x})) \approx 0.95.$$
+
+Some Logic
+===============
+
+$$\bar{x}-2SE(\bar{x}) < \mu < \bar{x}+2SE(\bar{x})$$
+
+means the same as:
+
+  >$\mu$ is within 2 SE's of $\bar{x}$,
+  
+which means the same as
+
+  >$\bar{x}$ is within two SE's of $\mu$.
+  
+Logic (Continued)
+====================
+
+But this means the same thing as:
+
+$$-2 < \frac{\bar{x}-\mu}{SE(\bar{x})} < 2.$$
+
+
+t-statistic
+================
+type:  prompt
+
+For short, let's define the *t-statistic* as:
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}.$$
+
+* This is the "t" in `ttestGC()`.
+* $t$ says how many SEs $\bar{x}$ is above/below the population mean $\mu$.
+* So $t$ has "$z$-score style"!
+
+Logic (Concluded)
+==================
+
+
+Then all along we were saying that before the sample is taken:
+
+$$P(-2 < t < 2) \approx 0.95.$$
+
+How good is this approximation?  Can we do better?
+
+A Random Variable
+=================
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}, \\
+SE(\bar{x})=\frac{s}{\sqrt{n}}.$$
+
+So $t$ depends on:
+
+* $\bar{x}$ and $s$, which depend on ...
+* the sample, which depends on ...
+* ... **chance!**
+
+So $t$ is a random variable!
+
+
+
+The t-Curves
+=================
+type:  section
+id:  tcurves
+
+[Back to Contents](#/Contents)
+
+Statistical Theory Says:
+==================
+
+If
+
+* you take a random sample from a population and
+* the population in perfectly normal and
+* your sample is of size $n$
+
+then
+
+* probabilities for $t$ are given by a *t-density curve* with $n-1$ *degrees of freedom*.
+
+What are t-Curves?
+====================
+
+* There is a $t$-curve for each degree of freedom $df = 1,2,3,\ldots$
+* They are symmetric and centered around 0
+* They have fatter tails than the standard normal curve does
+* But the bigger the degree of freedom is, the more the $t$-curve resembles the standard normal curve
+
+```{r eval=FALSE}
+require(manipulate)
+tExplore()
+```
+
+ptGC()
+=============
+
+To find probabilities for $t$-random variables, use `ptGC()`.
+
+**Example:**  Say that you are going to take a SRS of size $n=40$ from a population.  What is
+
+$$P(-2 < t <2)?$$
+
+```{r eval=FALSE}
+ptGC(c(-2,2),region="between",
+     df=39,graph=TRUE)
+```
+
+
+==============
+
+```{r echo=FALSE,fig.width=25,fig.height=10}
+ptGC(c(-2,2),region="between",
+     df=39,graph=TRUE)
+```
+At size $n=40$, rough 95% intervals are not so bad!
+
+
+ptGC()
+=============
+
+**Example:**  Say that you are going to take a SRS of size $n=4$ from a population.  What is
+
+$$P(-2 < t <2)?$$
+
+```{r eval=FALSE}
+ptGC(c(-2,2),region="between",
+     df=3,graph=TRUE)
+```
+
+==============
+
+```{r echo=FALSE,fig.width=25,fig.height=10}
+ptGC(c(-2,2),region="between",
+     df=3,graph=TRUE)
+```
+
+At size $n=4$, rough 95% intervals are not reliable!
+
+
+
+Finding Multipliers
+=================
+type:  section
+id:  multipliers
+
+[Back to Contents](#/Contents)
+
+Multipliers
+==============
+
+Our rough 95%-confidence intervals for are of the form:
+
+$$\bar{x} \pm 2SE(\bar{x})$$
+
+or more generally:
+
+$$\textbf{estimator} \pm 2SE(\textbf{estimator})$$
+
+The 2 is a *multiplier*.  It makes the interval a rough 95%-confidence interval.
+
+Multipliers
+===============
+
+We used 1 as a multiplier to make rough 68%-confidence intervals:
+
+$$\bar{x} \pm SE(\bar{x})$$
+
+We used 3 as a multiplier to make rough 99.7%-confidence intervals:
+
+$$\bar{x} \pm 3SE(\bar{x})$$
+
+Multipliers
+============
+
+* `ttestGC()` also uses multipliers to make its confidence intervals.
+* If the population is exactly normal, then they yield exactly the advertised level of confidence!
+
+  >*How does R find the multipliers?*
+
+Example
+==========
+
+Say that:
+
+* you have taken a random sample of size $n=16$ from a population;
+* you know the population is normally distributed,
+* you don't know $\mu$ or $\sigma$;
+* you want to make a 95%-confidence interval for $\mu$.
+
+Example
+======================
+
+Your interval will look like:
+
+$$\bar{x} \pm t^*SE(\bar{x}),$$
+
+where $t^*$ is the multiplier for a 95%-confidence interval for $\mu$, at sample size $n=16$.
+
+We want
+
+$$P(-t^* < t < t^*) = 0.95.$$
+
+==================
+
+```{r echo=FALSE,fig.width=25,fig.height=10}
+ptGC(c(-2.13145,2.13145),region="between",
+     df=15,graph=TRUE)
+```
+Looks like $t^*$ should be about 2.13145.
+
+What R Computes
+==================
+
+So at sample size $n=16$, R computes a 95%-confidence interval using the formula:
+
+$$\bar{x} \pm 2.13145 \times SE(\bar{x}).$$
+
+The multiplier depends on:
+
+* the sample size $n$
+* the desired level of confidence
+
+Reminder
+=============
+type:  alert
+
+If the population is not exactly normal
+
+* then R's formula for confidence intervals is not exactly correct!
+* (but as sample size $n$ increases, it is closer and closer to correct)
+
+
+The Importance of Safety Checks
+=====================
+type:  section
+id:  safety
+
+[Back to Contents](#/Contents)
+
+Truth in Advertising
+=====================
+
+Suppose you make intervals at a certain level of confidence, say 95%.
+
+* For your method to be reliable, your intervals should contain $\mu$ 95% of the time, in repeated sampling.
+* If the population is normal and you took a random sample, this will happen!
+* (No matter what the sample size is!)
+
+
+What if ...
+================
+
+... the population is not normal?
+
+Then your intervals are only approximately 95%-confidence intervals.
+
+* At very large sample sizes, this is not a problem (CLT).
+* But at smaller sample sizes, you must have some reason to believe that the population is not "too far" from normal.
+
+See for Yourself
+===============
+
+```{r eval=FALSE}
+require(shiny)
+runApp(system.file("CIMean",
+            package="tigerstats"))
+```
+
+or:
+
+[http://homer.shinyapps.io/CIMean](http://homer.shinyapps.io/CIMean)
+
+or:
+
+[http://rstudio.georgetowncollege.edu:3838/CIMean](http://rstudio.georgetowncollege.edu:3838/CIMean)
+
+
+Safety Check for One Mean
+==================
+
+* At smaller sample sizes ($n < 30$, say), make a histogram or boxplot of the sample.
+* If you see much skewness, be worried.
+* If you see outliers, be worried.
+* The smaller the sample size, the more the skewness/outliers should worry you.
+
+Important
+=============
+type:  alert
+
+The other part of the safety check is:
+
+  >*Did we take a random sample from the population?*
+  
+If our sample was not random, no amount of clever proability theory will help us make reliable confidence intervals.

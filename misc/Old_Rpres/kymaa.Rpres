@@ -1,0 +1,580 @@
+Elementary Statistics With R
+========================================================
+author: Rebekah Robinson and Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+
+
+Our Topics:
+============
+id: Contents
+
+- [Pet Peeves](#/gripes)
+- [The R Language](#/rlanguage)
+- [mosaic and tigerstats](#/mosaic)
+- [R Studio](#/rstudio)
+- [Course Management](#manage)
+- [Reproducible Research](#repres)
+- [Instructional Apps](#apps)
+- [Questions](#questions)
+
+```{r include=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(themerpres())
+```
+
+```{r echo=FALSE}
+#overwrite ptGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+ptGC <- function(bound,region="between",df=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,2.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+                                                                 region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+                                                                     region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+  
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+  
+  if (region=="below")  {
+    area <- pt(bound,df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound,0,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="above")  {
+    area <- 1-pt(bound,df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound,0,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="between")  {
+    area <- pt(bound[2],df=df)-pt(bound[1],df=df)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (region=="outside")  {
+    area <- pt(bound[1],df=df)+pt(bound[2],df=df,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(4,bound+1)
+    lower <- min(-4,bound-1)
+    curve(dt(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=50,ylim=c(0,1.1*dt(0,df=df)),
+          main=paste("t-curve, df = ",df,"\n Shaded Area = ",round(area,4)),
+          cex.main=3,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dt,df=df)
+    UnderShade(low=bound[2],high=upper,func=dt,df=df)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,2.1))
+  
+  return(area)
+  
+}#end of ptGC
+```
+
+Course Website
+==================
+incremental:  true
+
+[http://statistics.georgetowncollege.edu](http://statistics.georgetowncollege.edu)
+
+* Browse while we talk ...
+* ... it will feel just like class!
+
+
+Pet Peeves
+==============
+type:  section
+id:  gripes
+
+[Back to Contents](#/Contents)
+
+Software Access
+=================
+
+* Students learn on package, can't take it with them
+* Campus-wide access to commercial package costs big \$ \$
+
+
+Your Teaching vs. Your Software
+========================
+
+* You teach confidence intervals before you teach tests ...
+    * ... but computer gives CI and test results
+* Simulation-oriented teaching cumbersome with many packages
+* etc.
+
+Last-Minute Syndrome
+========================
+
+* Years after intro course, write data analysis report
+* Data comes in shortly before project deadline
+* Work with unfamiliar package
+    * or (worse yet) with Excel!
+* Cut/paste *ad nauseum*
+* If error in data entry is found, then:
+    * re-run all routines!
+    * cut/paste again!
+
+
+
+The R Language
+==============
+type:  section
+id:  rlanguage
+
+[Back to Contents](#/Contents)
+
+R Basics
+==============
+
+* Ihaka and Gentleman, 1994-1997
+* "A language not unlike S"
+* GNU since December 1997
+* Stable for production use since 2000
+* Extended with thousands of contributed packages:
+    * 5323 on CRAN
+    * 1629 on Bioconductor
+    * many more on Github, etc.
+* 12th most popular computer language in the world
+
+mosaic and tigerstats
+==============
+type:  section
+id:  mosaic
+
+[Back to Contents](#/Contents)
+
+The Mosaic Project
+==================
+
+  >[http://mosaic-web.org](http://mosaic-web.org)
+  
+* Nicholas Horton (Amherst College)
+* Daniel Kaplan (Macalaster College)
+* Randall Pruim (Calvin College)
+
+Developed package `mosaic`.
+
+GC's package is tigerstats
+===================
+
+Both are available from CRAN:
+
+```{r eval=FALSE}
+install.packages(c("mosaic","tigerstats"))
+```
+
+
+mosaic/tigerstats approach
+=====================
+
+Gentle down the coding!
+
+
+* minimize number of functions to know
+* provide uniform user interface for those functions
+* don't force students to write their own functions
+* pay little attention to types of R objects
+* avoid teaching flow-control structures
+
+tigerstats approach
+=======================
+
+
+* Customize output to GC course objectives
+* Alternative help sources for functions:
+    * our own course notes
+    * blog-post tutorials
+* Simulation through manipulate/Shiny apps
+
+
+Deprecate tigerstats after intro course!
+
+
+Data Frame
+================
+
+Here are:
+
+* four variables, and
+* the first five observations
+
+in `m111survey`, a data frame based on a survey of 71 students at Georgetown College:
+
+```{r echo=FALSE}
+head(m111survey[,c(4,8,9,11)],n=5)
+```
+
+Uniform Formula Interface
+============================
+
+
+Function template:
+
+$$procedure(SomeFormula,data=Mydata,\ldots)$$
+
+Formulas
+==============
+
+One Variable:  $\sim variable$
+
+Numerical Variable and Factor Variable:
+
+$$numerical \sim factor$$
+
+Two Factor Variables:
+
+$$\sim explanatory + response$$
+
+Two Numerical Variables
+
+$$response \sim explanatory$$
+
+
+mosaic's Simplified Code
+=========
+
+  >*Who drives faster, when they drive their fastest:   guys or gals?*
+  
+```{r eval=FALSE}
+favstats(fastest~sex,data=m111survey)
+```
+
+Here is most of the output:  
+```{r echo=FALSE}
+favstats(fastest~sex,data=m111survey)[1:8]
+```
+
+
+
+
+tigerstats' Simplified Code
+===================
+
+  >*Do guys and gals differ in their seating preferences?*
+  
+```{r eval=FALSE}
+barchartGC(~sex+seat,data=m111survey,
+           type="percent")
+```
+
+=============
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+barchartGC(~sex+seat,data=m111survey,
+           type="percent")
+```
+
+
+tigerstats' customized Output
+====================
+
+Early treatment of correlation/regression:
+
+  >*What's the relationship between GPA and fastest speed ever driven?*
+
+```{r eval=FALSE}
+lmGC(fastest~GPA,data=m111survey,
+    graph=TRUE)
+```
+
+Output to Console
+==================
+
+```
+  		Simple Linear Regression
+
+Correlation coefficient r =  -0.1406 
+
+Equation of Regression Line:
+
+	 fastest = 124.6956 + -5.8111 * GPA 
+
+Residual Standard Error:	s   = 20.8833 
+R^2 (unadjusted):		R^2 = 0.0198
+```
+
+Scatterplot
+====================
+
+```{r echo=FALSE, fig.width=25,fig.height=15}
+xyplot(fastest~GPA,data=m111survey,
+    type=c("p","r"),pch=19)
+```
+
+
+
+
+
+R Studio
+==============
+type:  section
+id:  rstudio
+
+[Back to Contents](#/Contents)
+
+
+R Studio Basics
+==============
+
+* Integrated development environment
+* Facilitates the use of R
+* Well-organized location to do work with R
+* 4 Panes
+  * Source
+  * Console
+  * Files/Plots/Packages/Help
+  * Environment/History
+  
+  
+Four Panes
+===========
+
+<u/>**Console Pane**</u>
+
+* Functions exactly as the console in R.
+
+<u/>**Source Pane**</u>
+
+* Create, edit, and run source code files
+  * R Script
+  * R Markdown
+  * R Presentation
+  * R Sweave
+  
+* Center of *reproducible research*
+
+
+Four Panes
+====================================
+
+<u/>**Files/Plots/Packages/Help Pane**</u>
+
+* View 
+  * files
+  * figures 
+  * current packages
+  * help files
+* Install new packages
+* Access help files
+
+Four Panes
+==========
+
+<u/>**Environment/History Pane**</u>
+
+* Workspace
+  * Shows all objects
+  * Allows quick viewing of data
+* Commands
+  * Records all commands run through the Console
+  * Previous commands can be sent to *Source* or *Console*
+
+Course Management
+=================
+type:  section
+id:  manage
+
+[Back to Content](#/Contents)
+
+R Studio Server
+=================
+
+* Browser based interface 
+* Accessible from *any* computer in *any* location
+* Easy sharing of files
+
+https://rstudio.georgetowncollege.edu
+
+Course Materials
+=================
+
+Through a **common source directory** on our R Studio server, instructors can update and students can access:
+
+* Syllabus
+* Course Notes
+* R Presentations
+* Assignments
+
+Homework can be submitted and returned electronically.
+
+* *submit* folder
+* *returned* folder
+
+
+
+Reproducible Research
+==============
+type:  section
+id:  repres
+
+[Back to Contents](#/Contents)
+
+Reproducible Research Basics
+==========
+
+Presentation of research should include:
+
+* Data
+* Source code
+* Analysis
+
+Benefits:
+
+* Research is reproducible by independent parties.
+* Changes are made easily.
+* Work habits are improved.
+
+
+Dynamic Documents in Elementary Statistics
+==================
+
+The *knitr* package supports *LateX*, *HTML*, *Markdown*.
+
+Instructors are able to produce:
+
+* Homework Assignments
+* Lecture Slides
+* Quizzes/Exams
+
+Students learn to produce R Markdown documents for:
+
+* Homework
+* Data Analysis Project
+
+
+tigerstats Apps
+==============
+type:  section
+id:  apps
+
+[Back to Contents](#/Contents)
+
+
+Manipulate Apps
+==============
+
+The `manipulate` package enables interactive capabilities to R plots.
+
+* Run through RStudio.
+* Example:
+
+```{r,eval=FALSE}
+CIMean(~height,data=imagpop)
+```
+
+
+
+Shiny Apps
+=========
+
+The `shiny` package:
+
+* Enables interactive web applications.
+* More flexible user interface
+* Allows more detailed explanation of activity
+
+Shiny Access:  Web
+============
+
+From web-based servers (no R required):
+
+* RStudio hosts (in testing phase):
+    * http://homer.shinyapps.io/ShallowReg
+* College server:
+    * http://rstudio.georgetowncollege.edu/ShallowReg
+    
+Shiny Access:  Local
+=================
+    
+Several local options for R users, including:
+
+* Run from Github repository:
+
+```{r eval=FALSE}
+require(shiny)
+runGitHub("FindRegLine","homerhanumat")
+```
+
+* Run from `tigerstats`:
+
+```{r eval=FALSE}
+require(shiny)
+runApp(system.file("FindRegLine",
+        package="tigerstats"))
+```
+
+
+
+======================
+
+<iframe src="http://rstudio.georgetowncollege.edu:3838/ShallowReg/" style="border: black; width: 1500px; height: 700px"></iframe>
+
+
+
+Questions
+==========
+type: section
+id:  questions
+
+
+
+
+
+
+
+
+
+
+
+
+
+

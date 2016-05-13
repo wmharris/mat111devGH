@@ -1,0 +1,79 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday, April 28 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+library(readr) # for reading csv files
+library(readxl) # for reading excel files
+```
+
+
+# Miguel Cabrera
+
+In the 2014 Major League season, Detroit Tiger Miguel Cabrera had a batting average of .313 on 611 at-bats. Can we conclude from this data that in 2014 his chance of getting a hit was more than 30%?
+
+Define $p$ to be the probability that Cabrera gets a hit when he is at bat.
+
+* $H_0: p=0.3$
+* $H_a: p \neq 0.3$
+
+Perform the two sided test with binomtestGC(), using the summary data:
+
+What should you enter for n, the number of trials?
+
+What should you enter for x, the number of successes?
+
+What should you enter for p?
+
+Can you conclude that Cabrera's chance was better than 30%?
+
+
+
+# Reading in CSV Files
+
+In the code chunk below, paste the code needed to read in the `tornado` data:
+
+```{r}
+
+```
+
+Then make a density plot of the tornado damages:
+
+```{r}
+densityplot(~ damage, data = tornado, from = 0,
+            xlab = "mean damage (millions of $$)")
+```
+
+
+# Reading an Excel File
+
+Below is a URL for an Excel workbook.  Copy the it onto your Clipboard:
+
+https://dl.dropboxusercontent.com/u/30396928/datasets.xlsx
+
+Now use the Import Dataset Utility to read in the data set `chugtime`.  Note that the workbook has two sheets.  You have to choose the correct sheet, and skip any useless lines.
+
+Before you exit the utiltity, copy the code needed to read in the data into the chunk below:
+
+```{r}
+
+```
+
+Now make yourself a nice scatterplot to examine the relationship between a frat boy's weight and the time it takes for him to chug 12 ounces of a certain beverage:
+
+```{r}
+xyplot(ChugTime ~ Weight,
+	data = chugtime,
+	type = c("p","r"),
+	pch = 20,
+	xlab = "weight (pounds)",
+	ylab = "time to chug (seconds)")
+```
+
+
+
+

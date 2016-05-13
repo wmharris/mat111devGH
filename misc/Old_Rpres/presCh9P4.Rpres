@@ -1,0 +1,129 @@
+Confidence Intervals (Pt 4)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 4:
+============
+id: Contents
+
+- [Warnings](#/warnings)
+- [Incorrect Interpretations](#/misinterpret)
+
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Warnings
+============
+type:  section
+id:  warnings
+
+[Back to Contents](#/Contents)
+
+Width of Confidence Intervals
+============================
+
+The width of confidence intervals are affected by:
+
+* sample size
+* confidence level
+
+Check it out:
+
+```{r eval=FALSE}
+require(manipulate)
+CIMean(~height,data=imagpop)
+```
+
+Conclusions
+===========
+
+In general, 
+
+
+* larger sample sizes produce more narrow confidence intervals.
+
+* higher levels of confidence produce wider intervals.
+
+Sampling Bias
+=============
+type:  alert
+
+* Confidence intervals are based on samples, so are subject to any type of bias that can occur in the sampling process.
+
+* Confidence intervals based on a poorly drawn sample are poor inferential tools.
+
+Example
+=======
+
+  >A telephone survey using land line phone numbers was used to poll people on their intended vote for an upcoming election.  Researchers intend to use a confidence interval to report the proportion of the population that plan to vote for the Republican candidate.
+
+Can we find any problems with the design of this study?
+
+Problems
+=====================
+This study is subject to **selection bias** because a large part of the population will have been excluded from this survey. 
+
+People who own only cell phones will be under-represented.  These people also tend to be:
+  * young
+  * liberal, etc.
+  
+Hence the sample probably overestimates the proportion of Republicans in the population.
+
+  >**Making a confidence interval for $p$ does nothing to correct this bias!!**
+
+
+
+Incorrect Interpretations
+============
+type:  section
+id:  misinterpret
+
+[Back to Contents](#/Contents)
+
+Example
+===============
+
+Research Question
+> What is the average height for folks from the `imagpop` population?
+
+For a sample of size 50, the 95% confidence interval is
+
+$$66.3 \text{ to } 68.3 \text{ inches}.$$
+
+Correct Interpretations
+==============================
+
+* We are 95% confidence that the average height of the population lies somewhere in the interval (66.3, 68.3).
+
+* The interval (66.3, 68.3)  gives a range of believable values for the average height of the population.
+
+* If we were to repeatedly take samples of size 50 and construct 95% confidence intervals for each sample, about 95% of those intervals would contain the true mean height of the population and about 5% would not.
+
+
+
+Incorrect Interpretations
+=======================
+type:  alert
+
+* There is a 95% chance that the true population mean height lies somewhere in the interval (66.3, 68.3).
+
+* The probability of the average population height being between 66.3 and 68.3 inches is 0.95.
+
+* About 95% of the folks in the population have an average height between 66.3 and 68.3 inches.
+
+* The interval (66.3, 68.3) gives a range of plausible values for the average height of the folks in the sample.

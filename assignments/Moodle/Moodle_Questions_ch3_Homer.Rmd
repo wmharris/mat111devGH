@@ -1,0 +1,149 @@
+---
+title: "Moodle Questions"
+author: "Homer White"
+date: "Monday, June 16, 2014"
+output: word_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+# Seating and the Liberal Arts at UC-Davis
+
+
+The `ucdavis1` data frame gives information on a random sample of students from the University of California at Davis.  One variable, **Seat**, records where the student preferred to sit in a classroom (Front, Middle or Back), and another variable, **class**, says whether or not the student was planning to major in one of the liberal arts disciplines.
+
+We are interested in the following Research Question:
+
+  >*Do liberat arts students and non-liberal arts students differ in their seating preferences, and if so, how?*
+  
+To answer this question, we produce a two-way table using the following R-code:
+
+
+```{r}
+classSeat <- xtabs(~class+Seat,data=ucdavis1)
+classSeat
+```
+
+Then we get a table of row percents:
+
+```{r}
+rowPerc(classSeat)
+```
+
+We decide to get a table of column percents as well:
+
+```{r}
+colPerc(classSeat)
+```
+
+
+Each of the following percentages occurs as either a row or column percentage in one of the percentage tables above.  Match each percentage with its correct verbal description.
+
+* 36%  The percentage of all the liberal arts students who prefer to sit in the Front.
+* 78.05%  This is the percentage, out of all students who prefer the Front, that are non-liberal arts students.
+* 23,29%  Out of all non-liberal arts student,s this is the percentage who prefer the Back.
+* 13.98%  Of all Middle-sitters, this percentage are liberal arts students.
+
+# Seating and the Liberal Arts at UC-Davis:  Describing the Relationship in the Sample
+
+
+The `ucdavis1` data frame gives information on a random sample of students from the University of California at Davis.  One variable, **Seat**, records where the student preferred to sit in a classroom (Front, Middle or Back), and another variable, **class**, says whether or not the student was planning to major in one of the liberal arts disciplines.
+
+We are interested in the following Research Question:
+
+  >*Do liberat arts students and non-liberal arts students differ in their seating preferences, and if so, how?*
+  
+To answer this question, we produce a two-way table using the following R-code:
+
+
+```{r}
+classSeat <- xtabs(~class+Seat,data=ucdavis1)
+classSeat
+```
+
+Then we get a table of row percents:
+
+```{r}
+rowPerc(classSeat)
+```
+
+Which of the following is the best way to describe the relationship (if any) that we see in the sample between seating preference and whether or not one is a liberal arts student?
+
+* There is almost no relationship in this sample:  52% of liberal arts students prefer the Middle, and almost the same percentage (54.79%) of non-liberal arts students prefer the middle.
+* Liberal arts students are more likely to prefer the front (36% vs. only 21.92% of non-liberal arts students), and less likely to prefer the back (12% as compared to 23.29% for on-liberal arts students).
+* There is a relationship between whether or not one is a liberal arts student and where one prefers to sit:  a majority of both types of student preferred the Middle.
+* **Seat** and **class** are related:  most liberal arts students preferred the middle (52%), whereas only a few of them (12%) preferred the front).
+
+# Creating a Two-way Table
+
+The `attitudes` data frame contains information on 267 Georgetown College students who were surveyed in the Fall of the year 2001.  The variable **sex** records the sex of each student (male or female) and the variable **major** records the type of subject in which the student intended to major (humanities, math/science, social sciences, or a pre-professional discipline).
+
+We are interested in the following Research Question:
+
+  >*Is there any relationship between the sex of a student and the type of major he or she intends to pursue?*
+  
+To begin studying this question we would like to make a two-way table for **sex** and **major**, using the function `xtabs()`.  Run the appropriate R-code on your computer, and find the number of men in the sample who intended to major in the humanities.
+
+# Creating a Table of Row Percentages
+
+The `attitudes` data frame contains information on 267 Georgetown College students who were surveyed in the Fall of the year 2001.  The variable **sex** records the sex of each student (male or female) and the variable **major** records the type of subject in which the student intended to major (humanities, math/science, social sciences, or a pre-professional discipline).
+
+We are interested in the following Research Question:
+
+  >*Is there any relationship between the sex of a student and the type of major he or she intends to pursue?*
+  
+In order to study the Research Question, we might make a table of row percentages.  Which of the bits of R-code below would create the following table of row percents?  (More than one answer is possible.)
+
+```{r echo=FALSE}
+sexmajor <- xtabs(~sex+major,data=attitudes)
+rowPerc(sexmajor)
+```
+
+Option A:
+
+```{r eval=FALSE}
+sexmajor <- xtabs(~sex+major,data=attitudes)
+rowPerc(sexmajor)
+```
+
+Option B:
+```{r eval=FALSE}
+george <- xtabs(~sex+major,data=attitudes)
+rowPerc(george)
+```
+
+
+Option C:
+
+```{r eval=FALSE}
+sexmajor <- xtabs(~major+sex,data=attitudes)
+rowPerc(sexmajor)
+```
+
+Option D:
+
+```{r eval=FALSE}
+sexmajor <- xtabs(~sex,data=attitudes)
+rowPerc(sexmajor)
+```
+
+
+Option E:
+
+```{r eval=FALSE}
+sexmajor <- xtabs(~major,data=attitudes)
+rowPerc(sexmajor)
+```
+
+Option F:
+
+```{r eval=FALSE}
+rowPerc(xtabs(~sex+major,data=attitudes))
+```
+
+

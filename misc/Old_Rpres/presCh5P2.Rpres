@@ -1,0 +1,205 @@
+Sampling (Pt. 2)
+========================================================
+author: Rebekah Robinson and Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [Bias in Sampling Methods](#/bias)
+- [Selection Bias](#/selection)
+- [Nonresponse Bias](#nonresponse)
+- [Response Bias](#/response)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+Bias in Sampling Methods
+===================
+type:  section
+id:  bias
+
+
+[Back to Contents](#/Contents)
+
+
+Bias
+===============
+type:  prompt
+
+  >We say that a sampling method is *biased* if it exhibits a systematic tendency to result in samples that do not reflect the population, in some important respect.
+
+
+Three Steps to the Data
+=======================
+
+1. Select subjects to invite into your sample
+2. Get them to accept your invitation
+3. Obtain their responses to your questions
+
+At each step, bias can creep in.
+
+
+Selection Bias
+===================
+type:  section
+id:  selection
+
+(Problems with your invitation scheme)
+
+[Back to Contents](#/Contents)
+
+Definition
+===============
+type:  prompt
+
+  >We say that a sampling method exhibits *selection bias* if its mechanism for selecting the sample has a systematic tendency to over-represent or under-represent a particular subset of the population.
+  
+Example
+===========
+
+You conduct a survey to learn the opinions of U.S. adults on capital punishment.  You construct an online poll on the [Huffington Post](http://www.huffingtonpost.com), asking visitors to the site to respond to several questions about the death penalty.
+
+Sources of Selection Bias
+=================
+
+1. The Huffington Post is a bit left-leaning, politically.
+    * Visitors to the site tend to be more liberal than average
+    * Hence your method under-represents conservatives (who tend to favor the death penalty more than liberals)
+2. The poll is conducted only online.
+   * Your method completely excludes on-Internet users.
+   * Might this be important? (Do Internet users and non-users differ in ways related to opinion on capital punishment?)
+   
+Convenience Sampling
+===============
+
+This is the practice of selecting subjects who are easy to find/include in the sample.
+
+**Example**:  You want to estimate the average height of Georgetown College students.  You are taking the KHS class on Basketball Coaching, so you decide to measure the heights of your fellow students in that class.
+   
+As a Rule ...
+===============
+type:  alert
+
+* Non-random sampling methods are usually subject to selection bias.
+* The amount of this bias is often difficult or impossible to determine.
+* Taking a bigger sample does not help:  it only repeats the bias on a larger scale.
+
+Nonresponse Bias
+===================
+type:  section
+id:  nonresponse
+
+(Problems getting subjects to accept invitation)
+
+[Back to Contents](#/Contents)
+
+Definition
+===============
+type:  prompt
+
+  >We say that a sampling method exhibits *nonresponse bias* if there is a systematic tendency for the people who elect to take part in the survey to differ from the population in some important way.
+  
+Example
+===========
+
+You conduct a survey to learn the opinions of U.S. adults on capital punishment.  You construct an online poll on the [Huffington Post](http://www.huffingtonpost.com), asking visitors to the site to respond to several questions about the death penalty.
+
+Sources of Nonresponse Bias
+=================
+
+It takes some time/effort to fill out a questionnaire (even an online one).  People who go out of their way to do so may have stronger opinions on the issue than those who do not choose to take part.
+
+Your sample may thus over-represent those who have strong opinions (one way or another) about the death penalty.
+
+Examples
+===========
+
+1. Mail surveys are especially subject to nonresponse bias.  The *nonresponse rate* (% who do not respond) is often around 90%.  If non-responders have very different attitudes than responders, then your poll will give very misleading results.
+2. Phone polls, too, perhaps.  (Do people with call-blocking differ from those without it, as far as views on the survey questions are concerned?)
+
+There is much study of nonresponse bias in phone polls, e.g.:
+
+[Shaiko et. al., PRE-ELECTION POLITICAL POLLING AND THE NON-RESPONSE BIAS ISSUE](http://ijpor.oxfordjournals.org/content/3/1/86.abstract)
+
+Response Bias
+===================
+type:  section
+id:  response
+
+(Problems in collection of responses)
+
+[Back to Contents](#/Contents)
+
+Definition
+===============
+type:  prompt
+
+  >We say that a sampling method exhibits *response bias* if the way the questions are asked or framed tends to influence the subjects' responses in a particular way.
+  
+There are many types of response bias.
+
+Deliberate Response Bias
+============
+
+  >*Deliberate Response Bias* occurs if a survey questions are deliberately worded in a biased manner so as to elicit a certain desired response from the subject.
+ 
+**Example**:  "Should the City Council prohibit carrying concealed weapons in public places, even though the Second Amendment expressly guarantees the right of every citizen to bear arms?"
+ 
+Desire to Please
+==================
+
+  >**Desire of Respondents to Please**.  People may respond differently depending on how they are being asked:  face-to-face, over the telephone, on paper, on the internet.
+  
+A person may tend to be more honest when answering questions on paper or over the internet.  When speaking directly to the researcher, the respondent may be tempted to give the answer he/she thinks the interviewer wants.
+
+**Example**:  You conduct door-to-door interviews, identifying yourself as a college student and asking the subject if he/she supports increased public funding for higher education.
+
+Bias from Question Complexity
+=====================
+
+Keep your questions simple.
+  
+**Example:**  "Has it happened to you that over a long period of time, when you neither practiced abstinence, nor used birth control, you did not conceive?"
+
+(From a survey on family planing conducted by the British Royal Commission on Population.  Discussed in [Choi and Pak, "A Catalog of Biases in Questionnaires"](http://www.cdc.gov/pcd/issues/2005/jan/04_0050.htm)).
+
+Order Bias (options)
+=================
+
+The order in which response options are presented can affect the response.
+
+**Example**:  In the polling booth on Election Day, the candidate whose name appears first gets an advantage.
+
+This topic is extensively studied.  See the [U. of Virginia Center for Politics](http://www.centerforpolitics.org/newslet_909cb.html).
+
+Order Bias (questions)
+=====================
+
+If one question requires respondents to think about something that they may not have otherwise considered, then the order in which questions are presented can change the results.
+
+**Example**:  Suppose you ask these two questions, in this order:
+
+* "Do you own a smartphone?"
+* "How many hours a day do you spend on the Internet?"
+
+The answer to the second question may be higher being asked second than if it were asked first.  (Why?)
+
+Another Example
+================
+
+For a long time, polls commissioned by Fox News showed public support for the Affordable Care Act as much lower than most other polls.
+
+The reason:  the type of questions Fox subjects were asked *before* they were asked the questions about Obamacare!
+
+For an analysis, see Nate Silver's blog [FiveThirtyEight](http://www.fivethirtyeight.com/2009/10/question-order-may-bias-fox-news-health.html).

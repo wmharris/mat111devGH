@@ -1,0 +1,56 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/18/2016"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(tigerstats)
+library(tigerTree)
+```
+
+## Predicting the Species of an Iris
+
+```{r eval = FALSE}
+data(iris)
+View(iris)
+help(iris)
+```
+
+Use the code chunk below to make a tree model to predict **Species** from the other four variables in the `iris` data:
+
+```{r}
+tr.iris <- tree(Species ~ ., data = iris)
+```
+
+Now make a plot fo the model:
+
+```{r}
+plot(tr.iris); text(tr.iris)
+```
+
+Use the code chunk below to get a summary of your tree model:
+
+```{r}
+summary(tr.iris)
+```
+
+How many temrinal nodes does your tree have?
+
+
+What's the mis-classification rate?
+
+
+In the code chunk below, highlight the name `iris` and then head to the Cloud Plot Addin.  Make a cloud plot of the three varables that were actually used to constrcut the tree, and then group by **Species**.  Fix your plot up  nicely, and press Done to get the code for the plot in the chunk below.
+
+```{r}
+iris
+```
+
+Think about how/whether the tree model makes sense in term of the cloud plot you made.
+
+
+
+
+

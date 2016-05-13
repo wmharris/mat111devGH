@@ -1,0 +1,64 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Friday, April 24 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# M&M's
+
+## Part a
+
+Put your actual color-counts in the code below.  This will create a list of your counts.
+
+```{r}
+observedColors <- c(blue=10,orange=10,green=10,
+                    yellow=10,red=10,brown=10)
+```
+
+## Part b
+
+Next, create a list of the proportions of colors made at the factory back in 2008 (as claimed on the website).  You can do this just by running this code:
+
+```{r}
+nullProbs <- c(0.24,0.20,0.16,0.14,0.13,0.13)
+```
+
+## Part c
+
+OK, now let's test to see if it's reasonable to believe that your bag is like a random sample from M&M's at the factory.  Modify the code below, and then run it.
+
+```{r}
+chisqtestGC(obs,p=rep(1/6,6))
+```
+
+## Part d
+
+What was the observed value of the chi-square statistic?
+
+
+## Part e
+
+If the bag is like a random sample from the M&M's in the factory, about what would you expect the chi-square statistic to be?
+
+
+
+
+##  Part f
+
+
+If the bag is like a random sample from the M&M's in the factory, about what is the chance of getting a chi-square statistic at least as big as the one you actually got?
+
+
+## Part g
+
+Based on the data, is it reasonable to believe that your bag is like a random sample of candies from the factory?
+
+
+

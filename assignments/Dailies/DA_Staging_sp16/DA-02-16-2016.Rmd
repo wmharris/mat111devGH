@@ -1,0 +1,33 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/16/2016"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(tigerstats)
+```
+
+
+
+# Confounding Factors
+
+We want to make a graph that helps us understand the relationship between **sat** and **ratio**, correcting for the confouding factor **frac**.
+
+We would like to be able to trat **frac** as a factor variable, as well as a numerical variable.  Do we need to create a factor variable based on **frac**.  Make sure that you run this code:
+
+```{r}
+sat$fracGroup <- cut(sat$frac, 
+                     breaks = 3, 
+                     labels = c("low","middle","high"))
+```
+
+OK, now we can make our graph.  Notice that `sat` is in the code chunk below.  Highlight it, and then head to the Lattice Scatter Plot Addin, and make your graph.
+
+
+```{r}
+sat
+```
+
+After you correct for **frac** does it still seem that mean SAT scores in a state are unrelated to the student-teacher ratio in the state?

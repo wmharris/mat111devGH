@@ -1,0 +1,229 @@
+Basic Probability (Part 1)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 1:
+============
+id: Contents
+
+- [Introduction](#/introduction)
+- [Probability](#/probability)
+- [Random Variables](#/randvar)
+
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Introduction
+===========
+type:  section
+id:  introduction
+
+[Back to Contents](#/Contents)
+
+Goals
+=====
+
+* Describe populations and samples using probability language.
+
+* Compute probabilities.
+
+
+Probability
+===================
+type:  section
+id:  probability
+
+
+[Back to Contents](#/Contents)
+
+Interpretations 
+=============================
+
+Probability is a way to quantify the *likelihood* that an event occurs.  The probability of an event is a number between 0 and 1.
+
+- [Subjective Probability](#/subjective)
+- [Theoretical Probability](#/theoretical)
+- [Long-Run Frequency Probability](#/longrun)
+
+Subjective Probability
+====================
+type: subsection
+id:  subjective
+
+> If the probability of an event is based on a personal belief that the event will occur, it is called a **subjective probability**.
+
+**Example**:  A surgeon performing her very first surgery tells her patient that she feels the probability that the surgery will be successful is 0.99.
+
+Theoretical Probability
+====================
+type: subsection
+id:  theoretical
+
+> If the probability of an event is based on reasoning or calculation, it is called a **theoretical probability**.
+
+**Example**:  If a fair coin is tossed, the *theoretical probability* that it will land heads is 1/2.
+
+Calculating Theoretical Probabilities
+=======================================
+
+> The **sample space** of an experiment is the set of all possible outcomes.
+
+> An **event** is some collection of these outcomes.
+
+If all outcomes of an experiment have the same likelihood of occurring, then the probability of an event is
+
+$$P(event)=\dfrac{\mbox{# outcomes in the event}}{\mbox{# outcomes in the sample space}}.$$
+
+Two Tosses of a Fair Coin
+================
+
+**Example:**  A *fair* coin is tossed **twice**.
+
+* Sample Space of Experiment = \{HH, HT, TH, TT\}
+
+* Probability of tossing 2 heads = $P(HH)=\frac{1}{4}=0.25$.
+
+* Probability of tossing 1 head = $P(HT, TH)=\frac{2}{4}=0.5$.
+
+* Probability of tossing 0 heads = $P(TT)=\frac{1}{4}=0.25$.
+
+Long-Run Frequency Probability
+====================
+type: subsection
+id:  longrun
+
+> If the probability of an event comes from knowing the proportion of times the event occurs when the experiment is performed many times, it is called a **long-run frequency probability**.
+
+**Example:**  A coin that is tossed 1000 times lands heads up 502 times.  The *long-run frequency* is $\frac{502}{1000}=0.502$.
+
+Approximation 
+===========================
+
+The *long-run frequency* provides a good **approximation** to the *theoretical probability* when the experiment is performed many times.  
+
+Random Variables
+================
+type:  section
+id:  randvar
+
+
+[Back to Contents](#/Contents)
+
+What is a Random Variable?
+=======================
+
+> A **random variable** is a variable whose value is the outcome of an experiment. 
+
+Before an experiment, a random variable
+  * is full of potential.  
+  * can take on any value in its range.
+  * may be more likely to take on some values than others.
+  * is denoted with uppercase letters $X, Y$, or $Z$.
+
+After an experiment, a random variable
+  * is known.
+  * is denoted using lowercase letters $x,y$, or $z$.
+  
+Discrete Random Variables
+========================
+
+> A **discrete random variable** is a random variable whose possible values are whole numbers.
+
+**Example:**  A fair coin is tossed twice.  One possible random variable associated with this experiment is 
+
+$$X= \mbox{ number of heads tossed.}$$
+
+* Sample Space of Experiment = \{HH, HT, TH, TT\}.
+
+* Range of Random Variable = \{0, 1, 2\}.
+
+Example (cont'd)
+===============
+
+Some values for $X$ are more likely than others.
+
+* $P(X=0) = P(TT) = \frac{1}{4} = 0.25$.
+
+* $P(X=1) = P(HT, TH) = \frac{2}{4} = 0.5$.
+
+* $P(X=2) = P(HH) = \frac{1}{4} = 0.25$.
+
+Probability Distribution Function 
+==================================
+
+> The **probability distribution function (pdf)**, $P(X=x)$, for a discrete random variable $X$ is a function that assigns probabilities to all of the values in the range of $X$.
+
+
+
+Example PDF:  Two Coin Toss 
+==================================
+
+The **pdf** can be viewed as a table...
+
+ $x$      |    0    |    1   |    2
+----------| ------- | ------ |  ------
+ $P(X=x)$ |   0.25  |  0.50  |  0.25
+ 
+***
+ 
+... or a histogram.
+
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(2,.5),kind="histogram",type="percent", xlab="Number of Heads",col="lightcyan")
+```
+
+
+Probabilities with the PDF
+==================================
+
+ $x$      |    0    | **1**     |    2
+----------| ------- | --------  |  ------
+ $P(X=x)$ |   0.25  | **0.50**  |  0.25
+ 
+ $$P(X=1)=0.5$$
+ 
+***
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(2,0.5),kind="histogram",type="percent", groups=x>0&x<2, xlab="Number of Heads")
+```
+
+Probabilities with the PDF (cont'd)
+=============================================
+
+
+
+ $x$      |    0    | **1**     |   **2**
+----------| ------- | --------  |  ------
+ $P(X=x)$ |   0.25  | **0.50**  |  **0.25**
+ 
+
+  $$P(X\geq 1)=0.75$$
+***
+
+```{r,echo=FALSE}
+plotDist('binom',params=list(2,0.5),kind="histogram",type="percent", groups=x>0, xlab="Number of Heads")
+```
+
+Next Topic
+========================
+
+Part 2 will discuss **expectation**, **standard deviation**, and a special discrete random variable.
+
+

@@ -1,0 +1,59 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Friday, March 13 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# One Mean
+
+Same population of guys as in the slides:
+
+* $\mu =72$
+* $\sigma =3$
+
+This time you pick n=25 guys at random and compute the sample mean x-bar of their heights.
+
+
+## Part a
+
+What do you expect the sample mean to be? 
+
+
+## Part b
+
+Give or take about how much?  If you need to use a "calculator", write the necessary computations in the code chunk below:
+
+```{r}
+
+```
+
+# One Proportion
+
+
+
+Suppose that 45% of all registered voters in KY favor Alison Lundergren Grimes in the Senate race.
+
+Suppose you take a random sample of 635 registered voters.
+
+## Part a
+
+About what percentage of the students in your sample will favor Alison? 
+
+## Part b
+
+Give or take about how much?  You will need to use R as a calculator.  Put your computations in the code chunk below:
+
+```{r}
+
+```
+
+Turn your answer into a percentage:  othee people may find a percentage easier to understand!
+
+

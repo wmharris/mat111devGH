@@ -1,0 +1,173 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Monday, March 9 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Counting the Females in a Random Sample
+
+
+* You sample 71 people at random from a large population.
+* You record the sex of each person (male/female).
+* 55% of the population is female
+
+Let X = the total number of females in the sample.
+
+Is X binomial? If so, what is n and what is p?
+
+
+# Buzz at 70%
+
+If Buzz can get it right only 70% of the time when Doris helps, then what is the chance that he gets it right 15 or more times out of 16 tries?
+
+Use `pbinomGC()` to find out.  Write your code into the following chunk:
+
+```{r}
+
+```
+
+
+# Coin Flipping
+
+You flip a far coin 100 times.  Let X= the number of heads you get.
+
+## Part A
+
+Use `pbinomGC()` to find the chance that X is 45 or less.
+
+
+```{r}
+
+```
+
+## Part B
+
+What is the chance that X is less than 47 heads?
+
+```{r}
+
+```
+
+## Part C
+
+What is the chance that X is between 40 and 60 heads?
+
+```{r}
+
+```
+
+
+## Part D
+
+What is the chance that X is exactly 50 heads?  (Hint:  being exactly 50 is the same as being "between" 50 and 50.)
+
+```{r}
+
+```
+
+
+# Free-Throw Shooting
+
+You are a 70% free-throw shooter.  You stand at the line and take 20 shots.
+
+The number of shots you make is a binomial random variable.  What is the n, the number of trials?
+
+
+What is p, the chance of success on each trial?
+
+
+How many shots do you expect to make?
+
+
+Compute the SD, the give-or-take figure, using R as a calculator.  Use the code-chunk below.  Run the code to see what you get.
+
+```{r}
+
+```
+
+# More Coin-Flipping
+
+When you flip the fair coin 400 times.
+
+## Part A
+
+Use the 68-95 Rule to answer the following two questions:
+
+About what is the chance that you will get fewer than 190 heads?
+
+
+About what is the chance that you will get more than 220 heads?
+
+
+## Part B
+
+Next, use `pbinomGC()` to compute the "exact" probabilities:
+
+Chance of fewer than 190 heads:
+
+```{r}
+pbinomGC(189,size=400,prob=0.5,
+         region="below",graph=TRUE)
+```
+
+Next, the chance of more than 220 heads:
+
+```{r}
+pbinomGC(220,size=400,prob=0.5,
+         region="above",graph=TRUE)
+```
+
+Compare these the "exact" values with the approximations from the 68-95 Rule.  Not bad, eh?
+
+
+# Bats
+
+A population of bats has wingspans that are normally distributed, with a mean μ of 25 centimeters and a standard deviation of 5 centimeters.
+
+Let X= the wingspan of a randomly-captured bat. Find each of the following probabilities, using `pnormGC()`.  Insert the code chunks!
+
+
+## Part A:  P(X<27)
+
+
+
+    
+## Part B:  P(X>29)
+
+
+
+
+## Part C:  P(20<X<30)
+
+
+
+# Bat Percentiles
+
+Back to the population of bats whose wingspans average 25 centimeters, with a standard deviation of 5 cm.  Use `qnorm()` to answer the following two questions.  Insert code chunks as needed.
+
+## Part A
+
+Harry the Bat has a wingspan that is right at the 35th percentile for all the bats. What is Harry's wingspan?
+
+
+
+
+## Part B
+
+Dolores the Bat has a wingspan that is longer than all but 25% of the bats. What is her wingspan?
+
+
+
+
+
+
+
+

@@ -1,0 +1,279 @@
+Goodness of Fit (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [Is the Data a Random Sample?](#/random)
+- [Is the Fit "Too Good to be True"?](#/toogood)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+```{r echo=FALSE}
+
+#overwrite pchisqGC() to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pchisqGC <- function(bound,region="above",df=NA,xlab="chi_square_statistic",graph=FALSE) {
+  if (!is.numeric(bound)) stop("Specify a numerical boundary")
+  if (bound < 0)  stop("The chi-square statistic must be at least 0")
+  if (is.na(df)) stop("Specify the degrees of freedom using the argument df")
+  if (!(region %in% c("below","above"))) stop("Specify either \"region=\"below\" or
+\"region=\"above\"")
+  if (df < 0) stop("Degrees of freedom must be positive")
+
+  if (region=="below")  {
+    area <- pchisq(bound,df=df)
+    if (graph && df==1) warning("No graph produced for region below when df=1")
+    if (graph) {
+    bound <- round(bound,2)
+    upper <- max(qchisq(.9999,df=df),bound+1)
+    lower <- 0
+    curve(dchisq(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=501,xlab=xlab,
+          main=paste("Chi-Square Curve, df = ",df,"\nShaded Area = ",round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    axis(1,at=c(lower,bound,upper),labels=c(as.character(0),as.character(bound),""),cex.axis=2.5)
+    axis(2)
+   x.coords <- c(lower,seq(lower,bound,length.out=301),bound)
+   y.coords <- c(0,dchisq(seq(lower,bound,length.out=301),df=df),0)
+   polygon(x.coords,y.coords,col="lightblue",cex=2)
+    }
+  return(area)
+  }
+
+  if (region=="above")  {
+    area <- pchisq(bound,df=df,lower.tail=FALSE)
+    if (graph) {
+    bound <- round(bound,2)
+    upper <- max(qchisq(.9999,df=df),bound+1)
+    lower <- 0
+    curve(dchisq(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=501,xlab=xlab,
+          main=paste("Chi-Square Curve, df = ",df,"\nShaded Area = ",round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    axis(1,at=c(lower,bound,upper),labels=c(as.character(0),as.character(bound),""),cex.axis=2.5)
+    axis(2)
+    x.coords <- c(bound,seq(bound,upper,length.out=301),upper)
+    y.coords <- c(0,dchisq(seq(bound,upper,length.out=301),df=df),0)
+    polygon(x.coords,y.coords,col="lightblue",cex=2)
+    }
+    return(area)
+  }
+  
+ 
+
+}#end of pchisqGC
+```
+
+A Random Sample?
+===================
+type:  section
+id:  random
+
+[Back to Contents](#/Contents)
+
+
+An April Event
+=================
+
+* At Georgetown College, all students must acquire 48 "NEXUS" credits to graduate
+* You get NEXUS credits by participating in "culturally enriching" events
+* A certain NEXUS event in April drew 200 students
+* The breakdown of attendees by class rank was as follows:
+
+|**Class**|Fresh|Sop|Jun|Sen|
+|:---:|:---:|:---:|:---:|:----:|
+|**Observed Count**|62|27|33|80|
+
+The GC Population
+=================
+
+At the time, the distribution of class rank for GC was known to be:
+
+|**Class**|Fresh|Sop|Jun|Sen|
+|:---:|:---:|:---:|:---:|:----:|
+|**Percent**|30%|25%|25%|20%|
+
+If Turnout is Random ...
+=======================
+
+...then one's chance of deciding to attend the event would not depend on class rank.
+
+So in a group of 200 attendees we would expect to see about:
+
+* $200 \times0.30=60$ freshmen
+* $200 \times 0.25 = 50$ sophomores
+* $200 \times 0.25 = 50$ juniors
+* $200 \times 0.20 = 40$ seniors,
+
+give a take some for chance variation in the process of deciding whether to attend.
+
+Observed vs. Expected
+=======================
+
+|**Class**|Fresh|Sop|Jun|Sen|
+|:---:|:---:|:---:|:---:|:----:|
+|**Observed Count**|62|27|33|80|
+|**Expected Count**|60|50|50|40|
+
+  >*Does this data provide strong evidence that the attendees were NOT like a random sample from the GC population?*
+
+Parameters
+===============
+
+* This time we KNOW the distribution of the factor variable **class rank**.
+* The question is whether April NEXUS attendance is like random sampling.
+
+  >$H_0:$  Attendance at the event is like random sampling, as far as class rank is concerned
+  
+  >$H_a:$  Decision to attend is based on class rank
+  
+The Code
+==============
+
+Set up Null values and observed counts:
+
+```{r}
+Nulls <- c(0.30,0.25,0.25,0.20)
+obs <- c(fresh=62,soph=27,jun=33,sen=80)
+```
+
+The test:
+
+```{r eval=FALSE}
+chisqtestGC(obs,p=Nulls,verbose=FALSE)
+```
+
+The Results
+================
+
+```
+Chi-Square Statistic = 55.8482 
+Degrees of Freedom of the table = 3 
+P-Value = 0 
+```
+
+* $P < 0.05$, so we reject $H_0$.
+* This data provided strong evidence that decision to attend in April is based on class rank.
+* (Graduating seniors are scrambling for NEXUS credits!)
+
+Too Good to be True?
+=====================
+type:  section 
+id:  toogood
+
+[Back to Contents](#/Contents)
+
+A Ridiculous Assignment
+===================
+
+* You are asked to roll a fair die 6000 times, and turn in a tally of the results
+* No way are you going to do this
+* You don't know that R could do it in a flash:
+
+```{r eval=FALSE}
+rmultinom(n=1,size=6000,
+        prob=rep(1/6,6))
+```
+
+* So you decide to make up the results
+
+Faking It
+===================
+
+How to fill in the table?
+
+Spots|One|Two|Three|Four|Five|Six|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|Made-Up Count|?|?|?|?|?|?|
+
+* Counts must add to 6000
+* Each count should be $\approx 1000$
+* give or take some for fake chance error!
+
+Faking It
+===============
+
+You decide on:
+
+Spots|One|Two|Three|Four|Five|Six|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|Made-Up Count|1003|998|999|1002|1001|997|
+
+* You turn in these "results"
+* Instructor thinks: "The observed counts agree with expected counts, very, very well."
+* Instructor wonders:
+
+  >*Is it reasonable to believe that the observed data are the result of 6000 actual rolls of a fair die?*
+  
+Too-Good-to-be-True Test
+===========================
+ 
+The hypotheses are:
+
+  >$H_0:$  Data are the result of 6000 real rolls
+    
+  >$H_a:$  Data are faked
+    
+The Code
+===============
+
+```{r eval=FALSE}
+chisqtestGC(c(1003,998,999,1002,1001,997),
+            p=rep(1/6,6),
+            verbose=FALSE)
+```
+
+The Results
+=============
+
+```
+Chi-Square Statistic = 0.028 
+Degrees of Freedom of the table = 5 
+P-Value = 1 
+```
+
+* $\chi^2$-statistic really is $0.028$
+* but the $P$-value is not right.  We need:
+
+$$P(\chi^2 \leq 0.028 \vert H_0 \text{ is true})$$
+
+This is $1-\text{the P-value reported in test output}$
+
+Graph of P-Value
+===================
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+opar <- par()
+par(mar=c(5.1,5.1,5.1,4.1))
+pchisqGC(0.028,region="below",df=5,graph=TRUE)
+par(opar)
+```
+
+Results
+===============
+
+* $P \approx 0$, so reject $H_0$.
+* It seems the data was faked.

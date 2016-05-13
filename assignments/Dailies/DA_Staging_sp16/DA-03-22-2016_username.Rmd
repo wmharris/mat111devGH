@@ -1,0 +1,68 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday, March 16 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# Which Game do You Prefer?
+
+In Game A, you you win either 2 dollars or 4 dollars, each time you play.  (%0% chance of either outcome).
+
+In Game B you have a 75% chance to lose 8 dollars and a 25% chance to win 40 dollars, each time you play.
+
+You can play Game A 10,000 times, or you can play Game B 10,000 times.
+
+## Part A
+
+Which would you prefer?  State a preference right now, before we do any math, and briefly explain your preference.
+
+
+## Part B
+
+Now let's look at the question from the point of view of expected value.  The following code chunk gives you the expected value of Game A:
+
+```{r}
+p.a <- c(1/2,1/2)
+a <- c(2,4)
+evA <- sum(a*p.a)
+evA
+```
+
+The next code chunk gives you the expected value for game B:
+
+```{r}
+p.b <- c(3/4,1/4)
+b <- c(-8,40)
+evB <- sum(b*p.b)
+evB
+```
+
+Do these computations affect your original answer?  Why or why not?
+
+
+## Part C
+
+Now let's examine the question using simulation.  The following code chunk illustrates what your total winnings could be if you played Game A 10,000 times:
+
+```{r}
+winningsA <- sample(a,size=10000,p=p.a,replace=TRUE)
+sum(winningsA)
+```
+
+Run the chunk a few times.
+
+The next code chunk illustrates what your total winnings might be like if you played Game B 10,000 times:
+
+```{r}
+winningsB <- sample(b,size=10000,p=p.b,replace=TRUE)
+sum(winningsB)
+```
+
+Run this chunk a few times.
+
+Does the results alter your original answer?  Why or why not?

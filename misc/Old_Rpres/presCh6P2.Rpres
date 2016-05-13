@@ -1,0 +1,516 @@
+Design of Studies (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [Completely Randomized Designs](#/randomized)
+- [Randomized Block Designs](#/block)
+- [Matched Pairs/Repeated Measures](#/matched)
+- [Additional Concepts in Experiments](#/experiment)
+* [The Role of Chance](#/role)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE,message=FALSE}
+require(diagram)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Completely Randomized Designs
+===================
+type:  section
+id:  randomized
+
+[Back to Contents](#/Contents)
+
+
+Experimental Ideal
+======================
+
+Remember that our ideal is:
+
+  >*the treatment groups should be as similar as possible with respect to every variable (except $X$) that might affect $Y$*.
+  
+Interestingly, we always use *chance*, at least in part, in order to approximate this ideal.
+
+Completely Randomized Design
+===================
+type:  prompt
+
+  >In a *completely randomized design*, subjects are divided into the available treatment groups solely by chance.
+  
+If a treatment group is to have size $m$, then every set of $m$ subjects has the same chance to be that treatment group.
+
+Example
+=============
+
+For an experiment on whether aspirin reduces risk of heart disease, suppose that the first 200 members of `imagpop` have agreed to participate:
+
+```{r}
+AspHeartSubs <- imagpop[1:200,]
+```
+
+Treatment Groups
+===================
+
+**Group** | **Treatment** | **Size**
+--------- | ------------- | -----------
+Aspirin Group  | Aspirin Pills | 100 subjects
+Placebo Group | Fake Pills | 100 subjects
+
+Complete Randomization:
+
+* pick 100 at random for Aspirin Group
+* rest will be in Placebo Group
+
+The Code
+============
+
+```{r}
+set.seed(12345)
+Assignment <- RandomExp(AspHeartSubs,
+                  sizes=c(100,100),
+                  groups=c("placebo","aspirin"))
+```
+
+Results
+==========
+
+```{r echo=FALSE}
+Assignment[1:2,c(1,2,3,9)]
+```
+...
+```{r echo=FALSE}
+Assignment[100:101,c(1,2,3,9)]
+```
+...
+```{r echo=FALSE}
+Assignment[199:200,c(1,2,3,9)]
+```
+
+Groups Similar ...
+===========
+
+... with respect to **sex**?
+
+```{r}
+xtabs(~sex+treat.grp,data=Assignment)
+```
+
+```{r echo=FALSE}
+rowPerc(xtabs(~treat.grp+sex,data=Assignment))
+```
+
+
+Groups Similar ...
+==============
+
+... with respect to **income**?
+
+```{r}
+favstats(income~treat.grp,
+  data=Assignment)[c(".group","mean","sd")]
+```
+
+Replication
+===============
+type:  prompt
+
+  >An experiment is said to involve *replication* if each the treatment group contains more than one subject.
+  
+The more replication, the better!
+
+
+There are two reasons why replication is good.
+
+First Reason
+===================
+
+The more subjects you have, the more likely it is that the randomization produces treatment groups that are similar to each other.
+
+(And the more similar they are likely to be!)
+
+Second Reason
+==============
+
+This has to do with our notion of causality.
+
+Reminder:
+======================
+
+Roughly we say that $X$ *causes* $Y$ if, there exist two different values $x_1$ and $x_2$ of $X$ so that whenever two people A and B are alike in **every** way except that
+
+* A's value of $X$ is $x_1$, and
+* B's value of $X$ is $x_2$
+
+then:
+
+the distribution of $Y$ for A is different from the distribution of $Y$ for B.
+
+So, for example ...
+=============
+
+We would say that asprin *causes* reduced risk of heart disease IF we could show that:
+
+  >if two people are alike in every way except that one takes aspirin and the other does not, then the one who takes asprin has a less chance of getting heart disease.
+  
+But ...
+=============
+
+* In practice, we can't find two people who are exactly alike.
+* With just two people, we could not estimate very well the *chance* of heart disease for each one.
+
+
+So ..
+============
+
+... we settle for two *groups*, instead.  If the number of subjects is large and we randomize, then
+
+* we can be pretty sure that the groups are pretty similar, and
+* we can use the outcomes for members of each group to estimate the chance of heart disease for each group.
+
+If these estimated chances differ enough, then we can ascribe the difference to the asprin.
+
+Randomized Block Designs
+=================
+type:  section
+id:  block
+
+What do you do if you can't have much replication?
+
+[Back to Contents](#/Contents)
+
+A Small Experiment
+================
+
+```{r eval=FALSE}
+data(SmallExp)
+View(SmallExp)
+help(SmallExp)
+```
+
+16 subjects for experiment to compare two weight-lifting programs:
+
+* Program A, and
+* Program B
+
+Problem With Limited Replication
+=================
+
+Try complete randomization several times:
+
+```{r eval=FALSE}
+RandomExp(SmallExp,sizes=c(8,8),
+      groups=c("Program.A","Program.B"))
+```
+
+Do the groups always look similar?
+
+Partial Solution:  Block ...
+===========================
+
+Step One:  Create **Blocks** (groups of very similar subjects):
+
+* the four females who are athletes
+* the four females who are not athletes
+* the four males who are athletes
+* the four males who are not athletes
+
+... Then Randomize
+==================
+
+Step two:  In each block, randomly assign subjects to the two groups:
+
+* the four females who are athletes:
+    - two at random to Group A; other two to Group B
+* the four females who are not athletes:
+    - two at random to Group A; other two to Group B
+* the four males who are athletes:
+    - two at random to Group A; other two to Group B
+* the four males who are not athletes:
+    - two at random to Group A; other two to Group B
+    
+Code for Randomized Block Design
+=======================
+
+```{r eval=FALSE}
+set.seed(33192)
+RandomExp(SmallExp,sizes=c(8,8),
+          groups=c("Program.A","Program.B"),
+          block=c("sex","athlete"))
+```
+
+Then at least **sex** and **athelete** won't be confounding factors!
+
+Blocking Example
+==================
+
+```{r eval=FALSE}
+data(saltmarsh)
+View(saltmarsh)
+help(saltmarsh)
+```
+
+```{r echo=FALSE}
+head(saltmarsh,10)
+```
+
+Blocking Example
+===============
+
+  >**Research Question**:  Does the level of salt in soil affect how much plant life grows there?
+
+* Four fields
+* Each field is a block
+* Each field divided into six equal plots
+* In each field, plots randomly assigned to the six levels of salt
+
+Blocking Example
+=======================
+You can tell blocking was done:
+
+```{r}
+xtabs(~salt+block,data=saltmarsh)
+```
+
+Saltmarsh Results
+=====================
+
+```{r saltmarshplot, echo=FALSE,fig.cap="Biomass and Salinity.  The higher the concentration of salt, the lower the biomass in the plot."}
+xyplot(biomass~salt,data=saltmarsh,pch=19,
+       xlab="Salinity (ppm)",
+       ylab="Biomass",
+       main="Effect of Salt on Plant Growth")
+```
+
+
+
+Matched Pairs/Repeated Measures
+==============
+type:  section
+id:  matched
+
+[Back to Contents](#/Contents)
+
+Matched Pairs
+================
+type:  prompt
+
+Suppose you plan two treatment groups.
+
+  >A *matched pairs* design is an extreme form of blocking in which each block contains exactly two subjects.
+  
+* In each pair, randomly assign one member to Group A, other to Group B
+* Usually compute the difference between the responses, for each pair
+
+Matched Pairs Example
+========================
+
+  >**Research Questions**:  Which shoe sole (A or B) wears out more quickly?
+  
+* 20 people agree to participate in experiment
+* Subjects are the forty feet (!)
+* 20 pairs (two feet per person)
+* randomize:  for each person,
+    * pick one foot at random to wear sole A
+    * other foot wears sole B
+    
+Repeated Measures Design
+===========================
+
+  >In a *repeated measures* design, each subject is measured two or more times under different conditions.
+  
+* We are interested in the effect of the conditions on the measurements.
+* Often we work with the differences between the measurements, for each subject.
+
+Repeated Measures Example
+============================
+
+```{r eval=FALSE}
+data(labels)
+View(labels)
+help(labels)
+```
+
+Labels Results
+====================
+
+Compute difference between ratings, for each subject:
+
+```{r}
+diff <- labels$jiffrating - 
+  labels$greatvaluerating
+```
+
+Numerical look at the differences:
+
+```{r eval=FALSE}
+favstats(~diff)
+```
+
+
+```{r echo=FALSE}
+round(favstats(~diff)[-9],2)
+```
+
+Further Concepts
+================
+type:  section
+id:  experiment
+
+[Back to Contents](#/Contents)
+
+Control Group
+=================
+type:  prompt
+
+  >If one group in an experiment is not treated in any special way, or is present for comparative purposes, then this group is often called the *control group*.
+
+**Example**:  In the aspirin-and-heart-disease experiment, the Control Group was the group that took the fake pill.
+
+(Experiment is to see if the aspirin works better than taking nothing at all.)
+
+Single-Blinding
+=================
+type:  prompt
+
+  >If the subjects in an experiment do not know which treatment group they are in, then the experiment is said to be *single-blinded*.
+
+  >If the people who measure the response variable do not know which groups the subjects are in, then the experiment is also said to be *single-blinded*.
+
+**Purposes**:
+
+* reduce bias due to subjects behaving differently depending on the group they are in;
+* to keep researchers from skewing the results
+
+Placebo
+===========
+type:  prompt
+
+  >A *placebo* is an inert substance given to subjects in the control group.
+  
+The placebo resembles the substances given to subjects in the other treatment groups.
+
+**Purpose**:  to make the experiment single-blinded.
+
+
+Double-Blind Experiment
+===========================
+type:  prompt
+
+  >If neither the subjects nor the people responsible for measuring the response variable know the group assignments of the subjects, then the experiment is said to be *double-blinded*.
+
+
+Double-Dummy Design
+======================
+type:  prompt
+
+  >A *double-dummy* design is a procedure to blind an experiment, even when the treatments don't resemble each other at all.
+
+Double-Dummy Example
+=======================
+
+  >**Research Question**:  Which type of smoking-cessation treatment---nicotine gum or nicotine patch---is more effective in helping people quit smoking?
+  
+Suppose 50 smokers agree to participate.
+
+**Problem**:  subject KNOWS whether he/she is getting gum or patch.
+
+Double Dummy Example
+================
+
+**Solution**:
+
+* Members of the Patch Group
+    * wear a real nicotine patch, and
+    * chew a fake nicotine-flavored gum (dummy)
+* Members of the Gum Group
+    * chew real nicotine gum, and 
+    * wear a fake patch (dummy)
+  
+In neither group would subjects be able to tell which group -- Patch or Gum -- they are in.
+
+The Role of Chance
+=====================
+type:  section
+id:  role
+
+[Back to Contents](#/Contents)
+
+Observational Study
+=======================
+
+From the `attitudes` data:
+
+  >**Reseach Question**:  Is length of sentence related to choice of major?
+  
+Pattern in the Data
+======================
+  
+```{r eval=FALSE}
+favstats(sentence~major,data=attitudes)
+```
+
+  
+```{r echo=FALSE}
+favstats(sentence~major,data=attitudes)[c(".group","mean","sd")]
+```
+
+Statistical Significance?
+===============================
+
+* Does the pattern we see in the data provide strong evidence that in the GC population math/science majors are harder on crime, OR
+* could the pattern reasonably be ascribed solely to chance variation in the random sampling from the population?
+
+(The question is about chance in the gathering of the subjects!)
+
+Experiment
+============
+
+From the `attitudes` data:
+
+  >**Reseach Question**:  Is length of sentence affected by suggested race of the defendant?
+  
+Pattern in the Data
+======================
+  
+```{r eval=FALSE}
+favstats(sentence~def.race,data=attitudes)
+```
+
+  
+```{r echo=FALSE}
+favstats(sentence~def.race,data=attitudes)[c(".group","mean","sd")]
+```
+  
+Statistical Significance?
+===============================
+
+* Does the pattern we see in the data provide strong evidence that in the suggested race of the defendant makes a difference in the length of sentence recommended, OR
+* could the pattern reasonably be ascribed solely to chance variation in the random assignment of forms to the subjects?
+
+(The question is about chance in the assignment of subjects to treatment groups!)
+
+Either Way ...
+====================
+
+... patterns in the data depend, at least in part, on chance.
+
+So we have to step back and learn more about how chance processes work.  This is the subject of *probability*.

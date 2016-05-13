@@ -1,0 +1,94 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Thursday, April 14 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# UC-Davis
+
+
+```{r eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+Let p1 be the proportion of all UC-Davis females who prefer to sit in the front.
+
+Let p2 be the proportion of all UC-Davis males who prefer to sit in the front.
+
+Your job is to make a 90%-confidence interval for p1−p2.  Do this by modifying the code below.  Here are some tips:
+
+* use the `success` argument to count people who prefer the Front
+* use the `first` argument to say which group should come first
+* add the `conf.level` argument for confidence levels other than 95%
+
+
+```{r}
+proptestGC(~sex+extra_life,data=m111survey,
+           success="yes",first="female")
+```
+
+
+# Difference of Two Proportions, Summary Data
+
+* In a random sample of 2000 adults in the year 1940, 800 had completed high school.
+* In a random sample of 2500 adults in the years 1991, 1900 had completed high school.
+
+
+Let p1 be the proportion of all adults in 1991 who had completed high school.
+
+Let p2 be the proportion of all adults in 1940 who had completed high school.
+
+Find a 95%-confidence interval for p1−p2.  Do this by modifying the code below:
+
+```{r}
+proptestGC(x=c(23,33),n=c(100,110))
+```
+
+
+
+# A Tall Sample
+
+You want to estimate the mean height of all GC students, so you record the heights of the students in your KHS Coaching basketball class. The mean height is 73 inches. Realizing that your sample may be biased toward taller students, you compute a 95% confidence interval for the mean. It turns out to be 71 to 75 inches.
+
+True or False (and explain briefly):  "You can be about 95%-confident that the mean height of all GC students is between 71 and 75 inches.""
+
+
+
+# Drinking at UC-Davis
+
+```{r eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+
+Let $\mu$ be the mean number of drinks consumed each week, for all UC-Davis students.
+
+At Penn State, the mean is known to be 4. Is it the same at UC-Davis?
+
+$H_0:  \mu = 4$
+
+$H_a:  \mu \neq 4$
+
+## Part a
+
+Perform the test of significance.  Do this by modifying the code below:
+
+```{r}
+ttestGC(~GPA,data=m111survey,
+         mu=3.3,alternative="two.sided",
+         graph=TRUE)
+```
+
+
+## Part b
+
+Do you think the study provides strong enough evidence to conclude that the mean number of drinks consumed at UC-Davis differs from 4?  Why or why not?

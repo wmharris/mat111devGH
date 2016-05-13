@@ -1,0 +1,84 @@
+---
+title: "Moodle Questions Chapter 1"
+author: "Homer White"
+date: "Sunday June 22, 2014"
+output: word_document
+---
+
+# R as a Calculator
+
+Which of the following bits of R-code will return the number 3, when entered into the Console?  (More than one answer may be correct:  try them all before committing to your answers!)
+
+```{r eval=FALSE}
+sqrt(9)
+```
+
+
+```{r eval=FALSE}
+(2+3*2142)/1000 - 3.428
+```
+
+
+```{r eval=FALSE}
+sqrt(sqrt(81))
+```
+
+
+```{r eval=FALSE}
+2+7/3
+```
+
+
+# c(), rep() and seq()
+
+Match each of the following bits of R-code with its output.
+
+```{r}
+seq(1,13,by=2)
+```
+
+
+```{r}
+myNumbers <- seq(1,13,by=2)
+myNumbers
+```
+
+
+```{r}
+rep(5,times=3)
+```
+
+```{r}
+rep(3,times=5)
+```
+
+
+```{r}
+stoneAgeFriends <- c("fred","barney")
+rep(stoneAgeFriends,times=3)
+```
+
+
+# Making a List of Numbers
+
+Which of the following R commands will produce a list of numbers that begins with 50 and goes up through 90, counting by fives?
+
+(That is, you want the numbers 50,55,60,65,70,75,80,85, and 90.)
+
+```{r eval=FALSE}
+seq(from=50,to=90,by=5)
+```
+
+
+```{r eval=FALSE}
+seq(from=50,to=90)
+```
+
+```{r eval=FALSE}
+rep(50,90,times=5)
+```
+
+```{r eval=FALSE}
+c(50,55,60,65,70,75,80,85,90)
+```
+

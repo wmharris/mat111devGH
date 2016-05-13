@@ -1,0 +1,542 @@
+Two Numerical Variables (Part 2)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+
+
+Load Packages
+================
+
+```{r,include=FALSE}
+require(mosaic)
+require(tigerstats)
+trellis.par.set(theme.rpres())
+```
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+Load & View Data
+=================
+
+The datasets that will be discussed in this section are:
+
+```{r,eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+```{r,eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+```{r,eval=FALSE}
+data(pennstate1)
+View(pennstate1)
+help(pennstate1)
+```
+
+
+Statistical Relationships in Part 2:
+==================
+type:  Contents
+id:  StatRel
+
+- [Correlation](#/Corr)
+- [Regression Equation](#/Reg)
+
+
+
+
+
+Correlation
+==================
+type:  sub-section
+id:  Corr
+
+[Back to Contents](#/StatRel)
+
+Strength of Association
+=============
+
+It is important to consider the **strength** of association as well as the direction.
+
+In the `m111survey` data, the variables **height** and **fastest** have a positive association.  
+
+However, **height** and **ideal_ht** have a *stronger* positive association.  The points are less scattered.
+
+Comparison of Association Strength
+===================
+
+```{r,echo=FALSE}
+par(mfrow=c(1,2))
+meanX=mean(m111survey$height,na.rm=TRUE)
+meanY=mean(m111survey$fastest,na.rm=TRUE)
+xyplot(fastest~height, data=m111survey,xlab="Height (in)", ylab="Top Speed (mph)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+```
+***
+
+
+```{r,echo=FALSE}
+meanX=mean(m111survey$height,na.rm=TRUE)
+meanY=mean(m111survey$ideal_ht,na.rm=TRUE)
+xyplot(ideal_ht~height, data=m111survey, xlab="Height (in)", ylab="Ideal Height (in)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+par(mfrow=c(1,1))
+```
+
+Correlation Coefficient
+=============
+
+The **correlation coefficient** is the numerical measure of the direction and strength of the linear association between two numerical variables.
+
+The correlation coefficient, $r$, is
+
+$$r=\sum (z_x)(z_y)/(n-1)$$
+
+where
+
+* $z_x=(x-\bar{x})/s_x$
+
+* $z_y=(y-\bar{y})/s_y$.
+
+r in R
+======
+
+The correlation coefficient for **height** and **fastest** is
+
+```{r}
+cor(fastest~height,
+    data=m111survey,
+    use="na.or.complete")
+```
+
+***
+
+```{r,echo=FALSE}
+par(mfrow=c(1,2))
+meanX=mean(m111survey$height,na.rm=TRUE)
+meanY=mean(m111survey$fastest,na.rm=TRUE)
+xyplot(fastest~height, data=m111survey,xlab="Height (in)", ylab="Top Speed (mph)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+```
+
+
+r in R
+======
+
+The correlation coefficient for **height** and **ideal_ht** is
+
+```{r}
+cor(ideal_ht~height,
+    data=m111survey,
+    use="na.or.complete")
+```
+
+***
+
+```{r,echo=FALSE}
+meanX=mean(m111survey$height,na.rm=TRUE)
+meanY=mean(m111survey$ideal_ht,na.rm=TRUE)
+xyplot(ideal_ht~height, data=m111survey, xlab="Height (in)", ylab="Ideal Height (in)", pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.abline(v=meanX,...)
+             panel.abline(h=meanY,...)
+            })
+par(mfrow=c(1,1))
+```
+
+Properties of r
+===========
+
+* $r$ always falls between -1 and 1
+
+* The **sign** of $r$ indicates the *direction* of the relationship.
+  * $r>0$ indicates a positive linear association.
+  * $r<0$ indicates a negative linear association.
+  
+* The **magnitude** of $r$ indicates the *strength* of the relationship.  
+  * $r=1$ indicates a perfect positive linear relationship.
+  * $r=-1$ indicates a perfect negative linear relationship.
+  * $r=0$ indicates no linear relationship.
+
+Perfect Positive Correlation
+===========
+
+```{r,fig.width=10,echo=FALSE}
+x1=seq(from=1,to=10,by=1)
+y1=1+x1
+plot(y1~x1,pch=19,col="blue", cex=3,xlab="",ylab="",axes=FALSE,frame.plot=TRUE)
+text(8,4,"r=1",col="blue",cex=5)
+```
+
+Perfect Negative Correlation
+===========
+
+```{r,fig.width=10,echo=FALSE}
+x2=seq(from=1,to=10,by=1)
+y2=10-x2
+plot(y2~x2,pch=19,col="blue",cex=3,xlab="",ylab="",axes=FALSE,frame.plot=TRUE)
+text(2,4,"r=-1",col="blue",cex=5)
+```
+
+No Correlation
+===========
+
+```{r,fig.width=10,echo=FALSE}
+x3=c(rep(4,4),rep(5,4),rep(6,4),rep(7,4),rep(8,4))
+y3=c(rep(seq(from=4,to=7,by=1),5))
+plot(y3~x3,pch=19,col="blue",cex=3,xlab="",ylab="",xlim=c(2,10),ylim=c(0,10),axes=FALSE,frame.plot=TRUE)
+text(6,2,"r=0",col="blue",cex=5)
+```
+
+Further Investigation
+=====================
+
+You can further investigate the values of $r$ with the following app:
+
+```{r,eval=FALSE}
+require(manipulate)
+VaryCorrelation()
+```
+
+
+Idea for Investigation
+================
+
+>**Research Question**:  At UC Davis, how is a student's mother's height related to their father's height? 
+
+* Explanatory variable:  **dadheight** (numerical)
+
+* Response variable:  **momheight** (numerical)
+
+```{r,eval=FALSE}
+xyplot(momheight~dadheight,data=ucdavis1,
+       col="blue",pch=19)
+```
+
+Graphical Investigation
+==========
+
+It appears that students with tall dads have tall moms.  Students with short dads have short moms.
+
+Since the points do not form a tight cluster, the positive assocation does not appear to be very strong.
+
+***
+
+```{r,echo=FALSE}
+xyplot(momheight~dadheight,data=ucdavis1,
+       main="Parents' Heights",
+       col="blue",pch=19,cex=1.5)
+```
+
+
+
+Numerical Investigation
+============
+
+```{r}
+cor(momheight~dadheight,data=ucdavis1,
+    use="na.or.complete")
+```
+
+
+Regression Equation
+==================
+type:  sub-section
+id:  Reg
+
+[Back to Contents](#/StatRel)
+
+
+Regression Analysis
+=============
+
+A linear relationship can be explained using the equation of a line.
+
+**Regression equation** - the equation of a line used to *predict* the value of the response variable from a known value of the explanatory variable.
+
+$$\hat{y}=a+bx$$
+
+* $a$ is the $y$-intercept.
+* $b$ is the slope.
+* $x$ is the known value of the explanatory variable.
+* $\hat{y}$ is the predicted value of the response variable.
+
+Regression Line
+================
+
+>**RQ**:  At Penn State, how is a student's right handspan related to his/her height?
+
+Each point on the scatterplot, $(x,y)$, is a known observation.
+
+Each point on the line, $(x,\hat{y})$, is a predicted response for a value of the explanatory variable.
+
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", ylab="Height (in)",
+       type=c("r","p"),pch=19,cex=1.5) 
+```
+
+
+Residuals
+=========
+
+A **residual** is the vertical distance between a point and the regression line.
+
+$$\mbox{residual}=y-\hat{y}$$
+
+
+
+***
+
+```{r,echo=FALSE}
+mymod=lmGC(Height~RtSpan,data=pennstate1)
+x1=pennstate1$RtSpan[98]
+y1=pennstate1$Height[98]
+y1hat=predict(mymod,x1)
+x2=pennstate1$RtSpan[25]
+y2=pennstate1$Height[25]
+y2hat=predict(mymod,x2)
+x3=pennstate1$RtSpan[161]
+y3=pennstate1$Height[161]
+y3hat=predict(mymod,x3)
+
+
+xyplot(Height~RtSpan,data=pennstate1,xlab="Right Handspan (cm)", ylab="Height (in)",type=c("r","p"),pch=19,cex=1.5,
+       panel=function(x,...) {
+             panel.xyplot(x,...)
+             panel.polygon(x=c(x1,x1),y=c(y1,y1hat),border="red")
+             panel.polygon(x=c(x2,x2),y=c(y2,y2hat),border="red")
+             panel.polygon(x=c(x3,x3),y=c(y3,y3hat),border="red")
+            })
+
+```
+
+
+Regression Line and Residuals
+==========
+
+The regression line is the line that minimizes the sum of the squared residuals.
+
+$$\mbox{Sum of Squares} = \sum (\mbox{residuals})^2= \sum(y_i-\hat{y})^2$$
+
+
+Investigate this further with the following app:
+```{r,eval=FALSE}
+require(manipulate)
+FindRegLine()
+```
+
+
+Linear Model Function
+==========================
+
+The built-in function, **lmGC**, outputs the
+
+* correlation coefficient,
+
+* equation of the regression line,
+
+* gives the option to display the graph of the regression line,
+
+* and more.
+
+Finding the Regression Equation
+=======================
+
+```{r}
+lmGC(Height~RtSpan,data=pennstate1)
+```
+
+Graphing the Regression Line
+===================
+
+Including the argument **graph=TRUE** will output the regression line and provide a graph.
+
+```{r,eval=FALSE}
+lmGC(Height~RtSpan,data=pennstate1,
+     graph=TRUE)
+```
+
+
+The Result
+===================
+
+```{r,echo=FALSE}
+lmGC(Height~RtSpan,data=pennstate1)
+```
+***
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,
+       xlab="Right Handspan (cm)", ylab="Height (in)",
+       type=c("r","p"),pch=19,cex=1.5) 
+```
+
+
+Predictions
+===========
+
+
+>What is the predicted height of a Penn State student with a right handspan of 22 cm?
+
+We can use the regression equation  
+
+$$\hat{y}=41.96+1.239x$$
+
+to predict this height by plugging in $x=22$.
+
+$$\hat{y}=41.96+1.239(22)=69.2$$
+
+**A Penn State student with a right handspan of 22 cm is predicted to be 69.2 inches tall.**
+
+
+Predictions using the Predict Function
+====================================
+
+The **predict** function will also compute this.  The **predict** function requires two inputs: 
+
+* a linear model
+
+* an $x$-value.
+
+```{r}
+handheightmod<-lmGC(Height~RtSpan,
+                    data=pennstate1)
+
+predict(handheightmod,x=22)
+```
+
+Interpretation of Regression Line
+=============
+
+The regression line is $\hat{y}=41.9593+1.2394x$.
+
+The **intercept** is 41.9593.
+
+The **slope** is 1.2394.
+
+What do these numbers *mean*?
+
+***
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1,xlab="Right Handspan (cm)", ylab="Height (in)",
+       type=c("r","p"),pch=19,cex=1.5) 
+```
+
+Interpretation of Slope and Intercept
+=====================
+
+**Intercept:**  41.9593 is the *predicted* height of a Penn State student whose right handspan is 0 cm.
+
+*The interpretation of the intercept does not always make logical sense!*
+
+**Slope:**  The *predicted* height of a Penn State student changes by 1.2394 inches as right handspan increases by 1 centimeter. 
+
+*For every one centimeter increase in right handspan, the predicted height increases by 1.2394 inches.*
+
+
+How well does our line fit?
+=============
+
+When there is variation in the data, a line is not a perfect explanation of the relationship.
+
+The variation is measured two ways:
+
+* Residual Standard Error (RSE)
+
+* Squared Correlation ($r^2$)
+
+Residual Standard Error
+=============
+
+Let's return to the Penn State data of right handspans and heights.
+
+
+```{r,eval=FALSE}
+lmGC(Height~RtSpan,data=pennstate1)
+```
+
+RSE measures the *spread* of the residuals.  
+
+$$\mbox{RSE}=3.149$$
+
+**Warning**:  RSE is directly affected by a change in scale.
+
+RSE for Different Units
+=======================
+
+
+
+```{r,echo=FALSE}
+xyplot(Height~RtSpan,data=pennstate1, xlab="Right Handspan (cm)", ylab="Height (in)",pch=19, type=c("r","p"),cex=1.5)
+```
+
+    RSE=3.149
+
+***
+
+
+
+```{r,echo=FALSE}
+xyplot(I(Height/12)~RtSpan,data=pennstate1,  xlab="Right Handspan (cm)", ylab="Height (ft)",pch=19, type=c("r","p"),cex=1.5)
+```
+
+    RSE=0.262
+
+
+
+Squared Correlation
+===========
+
+The squared correlation, $r^2$, is 
+
+* another measurement of the explained variation in the scatterplot.  
+
+* the *proportion* of variation in the response variable that is explained by the explanatory variable.
+
+* unaffected by a change in scale.
+
+Properties of r-squared
+===================
+
+* $r^2$ is always between 0 and 1.
+
+* $r^2=1$ implies perfect correlation between explanatory and response variables.
+
+* $r^2=0$ implies no correlation.
+
+Next Topic
+========================
+
+Part 3 will discuss topics of **caution** when examining relationships between two numerical variables. 
+
+

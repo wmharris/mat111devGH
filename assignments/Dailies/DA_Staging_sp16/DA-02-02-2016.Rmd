@@ -1,0 +1,106 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/02/2016"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(tigerstats)
+```
+
+
+# Kim Kardashian
+
+Ten thousand people were asked to give their "temperature rating" of Kim Kardashian, on a scale from 0 to 100.  0 means you don't like her at all, and 100 means you like her very much.  Here is some code for a density plot of the ratings:
+
+```{r}
+densityplot(~kkardashtemp,data=imagpop,
+            main="Kim Kardashian Ratings",
+            xlab="rating",
+            from=0,to=100,
+            plot.points=FALSE)
+```
+
+
+Is the distribution symmetric or skewed?
+
+
+Is the distribution unimodal, bimodal, or neither?
+
+
+True or False:  Most of the ratings were between 40 and 60.
+
+
+
+# Justin Verlander Again
+
+## Practice Part a
+
+About 68% of Justin Verlander's four-seam fast were between ? and ??  (Give the two speeds.)
+
+
+
+## Practice Part b
+
+About what percentage of the time were his four-seam fastballs faster than 100 miles per hour?
+
+
+## Practice Part c
+
+Find a speed so that about 16% of his four-seam fastballs were slower than that speed.
+
+# Row Percents for Sex and Seat
+
+What percentage of females preferred the back?  In the code chunk below, enter the math to find this percentage:
+
+```{r}
+
+```
+
+
+What percentage of males preferred the back?  In the code chunk below, enter the math to find this percentage:
+
+```{r}
+
+```
+
+
+# Sex and Belief in Love at First Sight
+
+The code-chunk below gives code for a two way-table for the sex and seat question, followed by a table of row percents, and a barchart.  Run the code to see what it does.
+
+```{r}
+sexSeat <- xtabs(~sex+seat,data=m111survey)
+sexSeat
+rowPerc(sexSeat)
+barchartGC(sexSeat,type="percent",flat=TRUE)
+```
+
+In the code chunk below, enter the code needed to make a two-way table, a table of row percents and a barchart for the question about the relationship between sex and belief in love at first sight.  **Tip**:  copy the above code into the chunk, then modify it.
+
+```{r}
+
+```
+
+# Inference for Sex and Belief in Love at First Sight
+
+Try the simulation app for the question about sex and belief in love at first sight:
+
+
+```{r eval=FALSE}
+chisqSh(~ sex + love_first, data = m111survey)
+```
+
+How many times did you re-sample?
+
+
+
+What percentage of the time did the re sampled chi-square statistic exceed the chi-square statistic in the actual study?
+
+
+
+Do you think there is overwhelming evidence that in the GC population the two sexes differ in whether they believe in love at first sight?
+
+
+

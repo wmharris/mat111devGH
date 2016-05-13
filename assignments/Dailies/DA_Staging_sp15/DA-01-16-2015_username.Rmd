@@ -1,0 +1,98 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "8/28/2014"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# R as a Calculator
+
+## Practice Part a
+
+We can use R to find 2+7-3*5.  Run the code chunk below to see if it works:
+
+```{r}
+2+7-3*5
+```
+
+You should get -6.
+
+## Pratice Part b
+
+Next, insert write into the following the code needed to (25.5-20.2)/3:
+
+```{r}
+
+```
+
+## Practice Part c
+
+Next, insert your own code chunk below and write into it the code needed to produce the 12 squared plus 10 squared.
+
+
+
+
+## Practice Part d
+
+Finally, insert your own code chunk and put write into it one line of code that does all of the following:
+
+* squares 3.1, then divides it by 25
+* squares 5.2, then divides it by 36
+* adds the previous two results together
+* then takes the square root of the result
+
+
+
+# Data Frames
+
+## Practice Part 1
+
+Run the following code chunk to learn about `m111survey`:
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+How many students took part in this survey?
+
+
+## Practice Part b
+
+Is **fastest** a numerical variable or a factor variable?
+
+
+Is **seat** a numerical variable or a factor variable?
+
+
+## Practice Part c
+
+How many students did not answer the question about their ideal height?
+
+
+# Making Lists with R
+
+## Practice Part a
+
+In the following code chunk, insert the code needed to make a list of 100 fives.
+
+```{r}
+
+```
+
+
+## Practice Part b
+
+In the following code chunk, insert the code needed to make a list of all the numbers from 100 to 220, going up in steps of 10.
+
+```{r}
+
+```
+

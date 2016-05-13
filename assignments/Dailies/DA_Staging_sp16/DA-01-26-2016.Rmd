@@ -1,0 +1,162 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "01/26/2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+# R as a Calculator
+
+## Practice Part a
+
+We can use R to find 2+7-3*5.  Run the code chunk below to see if it works:
+
+```{r}
+2+7-3*5
+```
+
+You should get -6.
+
+## Pratice Part b
+
+Next, insert into the following chunk the code needed to (25.5-20.2)/3:
+
+```{r}
+
+```
+
+## Practice Part c
+
+Next, insert your own code chunk below and write into it the code needed to produce the square root of 12 squared plus 10 squared.
+
+
+
+
+## Practice Part d
+
+Finally, insert your own code chunk and write into it one line of code that does all of the following:
+
+* squares 3.1, then divides it by 25
+* squares 5.2, then divides it by 36
+* adds the previous two results together
+* then takes the square root of the result
+
+
+
+# Data Frames
+
+## Practice Part 1
+
+Run the following code chunk to learn about `m111survey`:
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+help(m111survey)
+```
+
+How many students took part in this survey?
+
+
+## Practice Part b
+
+Is **fastest** a numerical variable or a factor variable?
+
+
+Is **seat** a numerical variable or a factor variable?
+
+
+## Practice Part c
+
+How many students did not answer the question about their ideal height?
+
+
+# Making Lists with R
+
+## Practice Part a
+
+In the following code chunk, insert the code needed to make a list of 100 fives.
+
+```{r}
+
+```
+
+
+## Practice Part b
+
+In the following code chunk, insert the code needed to make a list of all the numbers from 100 to 220, going up in steps of 10.
+
+```{r}
+
+```
+
+
+# Descriptive Statistics Part I
+
+# Verlander Pitching
+
+We are looking at the data frame `verlander` in the `tigerstats` package.
+
+We would like to see whether the speed of a Justin Verlander pitch depends on the type of pitch he is throwing.
+
+## Practice Part a
+
+We know that the two variables involved in our Research Question are **speed** and **pitch_type**.
+
+What kind of variable is the explanatory variable **pitch_type**:  factor or numerical?
+
+
+
+What kind of variable is the response variable **speed**:  factor or numerical?
+
+
+## Practice Part b
+
+Which of the following types of graph could we use to look at the pitching speeds:  bar-charts or density plots?  Why?
+
+
+## Practice Part c
+
+Here is a code chunk containing code from the slides to make density plots to compare the fastest speeds driven by guys and the fastest speeds driven by gals in the `m1111survey` data:
+
+```{r eval=FALSE}
+densityplot(~fastest|sex,data=m111survey,
+       main="Fastest Speeds, by Sex",
+       xlab="Fastest Speed (mph)",
+       layout=c(1,2))
+```
+
+In the chunk below, write the code you need in order to make density plots to compare the speeds for the various types of pitches that Justin Verlander throws.  (**Tip:**  copy and paste the code from the previous chunk into the chunk below.  Then modify it to fit the Verlander situation.  **Big Hint:  Find out HOW MANY types of ptiches Verlander throws, so you can changwe the `layout` arugment correctly.)
+
+```{r}
+
+```
+
+
+## Practice Part d
+
+Study the same Research Question numerically, now.
+
+Should you use `xtabs()` to make a two-way table, or should you use `favstats()`?  Why?
+
+
+
+## Practice Part e
+
+Use `favstats()` to break the speeds down by the type of pitch thrown.  (**Tip**:  look back in the slides to find the code used to break down the fastest speed driven by sex.  Copy this code into the chunk below, then make the needed changes.)
+
+```{r}
+
+```
+
+
+## Practice Part f
+
+Which types of pitches are the fastest?  Which types are the slowest?
+
+
+

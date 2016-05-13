@@ -1,0 +1,89 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday, April 8 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+## Drinking at UC-Davis
+
+```{r eval=FALSE}
+data(ucdavis1)
+View(ucdavis1)
+help(ucdavis1)
+```
+
+
+Let $\mu$ be the mean number of drinks consumed each week, for all UC-Davis students.
+
+At Penn State, the mean is known to be 4. Is it the same at UC-Davis?
+
+$H_0:  \mu = 4$
+
+$H_a:  \mu \neq 4$
+
+## Part a
+
+Perform the test of significance.  Do this by modifying the code below:
+
+```{r}
+ttestGC(~GPA,data=m111survey,
+         mu=3.3,alternative="two.sided",
+         graph=TRUE)
+```
+
+
+## Part b
+
+Do you think the study provides strong enough evidence to conclude that the mean number of drinks consumed at UC-Davis differs from 4?  Why or why not?
+
+
+
+# Spider Speeds (one last time!)
+
+Does losing a pedipalp affect the sprinting speed of a Tidarren spider?
+
+Let $\mu_d$ be the mean difference in speed (after amputation minus before) for all Tidarren spiders.
+
+$H_0:  \mu_d = 0$
+
+$H_a:  \mu_d \neq 0$
+
+
+## Part a
+
+
+Perform the test of significance.  Do this by modifying the code below:
+
+```{r}
+ttestGC(~jiffrating-greatvaluerating,
+      data=labels, mu=0)
+```
+
+
+## Part b
+
+What's the value of the test statistic?
+
+
+By how many standard errors does the sample mean of differences $\bar{d}$ differ from 0?
+
+
+What's the P-value?
+
+
+If amputation makes no difference in speed, on average, then what's the chance of getting a test statistic at least as far form 0 as the one we actually got?
+
+
+What should we do with the Null Hypothesis this time?  Reject it or not?
+
+
+Do you think that the data provided strong evidence that amputation makes a difference in speed, on average?
+

@@ -1,0 +1,554 @@
+Confidence Intervals (Pt 3)
+========================================================
+author: Rebekah Robinson, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 3:
+============
+id: Contents
+
+- [Confidence Intervals for $p$](#/oneprop)
+- [Confidence Intervals for $p_1-p_2$](#/twoprops)
+
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Recall:  A Four-Step Procedure
+============
+
+1.  Define the parameter of interest.
+2.  Run the code, and perform a "safety check".
+3.  Report the confidence interval and interpret it.
+4.  Use the interval to answer your Research Question.
+
+Intervals for One Proportion
+============
+type:  section
+id:  oneprop
+
+[Back to Contents](#/Contents)
+
+Research Question
+================
+
+> What proportion of GC students are female?
+
+We will investigate this question with the `m111survey` data.
+
+Step 1:  Parameters
+===================
+
+Let 
+
+> $p=$ the proportion of all GC students that are female.
+
+We will make a 95% confidence interval for $p$.
+
+Rough Interval using 68-95 Rule
+=======================
+
+The statistic 
+
+$$\hat{p}=\dfrac{X}{n},$$
+
+is used to estimate the parameter $p$.
+
+* We are 68% confident that $p$ lies within one SE of $\hat{p}$.
+
+* We are 95% confident that $p$ lies within two SE's of $\hat{p}$.
+
+
+The Statistic
+=====================
+
+* $X=$ number of females in sample
+
+* $n=$ total number of people in sample
+
+$X$ counts the number of "successes" (females) out of a total number of "tries" (people in the sample).
+
+$X$ is a binomial random variable!
+
+
+
+More About the Statistic
+============
+
+```{r}
+xtabs(~sex,data=m111survey)
+```
+
+* $X= 40$
+
+* $n= 71$
+
+* $\hat{p}=\dfrac{40}{71}\approx 0.563$
+
+SE of the Statistic
+==================
+
+We need:
+
+$$SE(\hat{p})=\sqrt{\dfrac{\hat{p}(1-\hat{p})}{n}}$$
+
+```{r}
+n<-71
+phat<-40/71
+SE.phat<-sqrt(phat*(1-phat)/n)
+SE.phat
+```
+
+Compute the Rough 95% Interval
+========================
+
+
+```{r}
+c(phat-2*SE.phat,phat+2*SE.phat)
+```
+
+We are *about* 95% confident that the proportion of females in the GC population is somewhere between 0.4457 and 0.6811.
+
+
+But,
+
+> **Is 2 the correct multiplier?**
+
+Multiplier
+==========
+
+Since $X$ is a binomial random variable, the correct multiplier comes from the binomial distribution.
+
+The function `binomtestGC()` constructs exact confidence intervals for proportions based on the binomial distribution.
+
+
+
+
+
+
+
+
+Step 2 (1):  Run Code
+===================
+
+Run the code:
+
+```{r,eval=FALSE}
+binomtestGC(~sex,data=m111survey,
+            success="female")
+```
+
+
+
+Additional argument, `success`, specifies which value of the variable is of interest.
+
+The Output
+=======================
+
+```
+Descriptive Results:
+
+40 successes in 71 trials
+
+Inferential Results:
+
+Estimate of p:  0.5634
+SE(p.hat):  0.0589
+
+95% Confidence Interval for p:
+
+lower.bound       upper.bound
+0.440455          0.680850
+```
+
+
+
+Step 2 (2):  Safety Check
+============
+
+Similar to before:
+
+* Need to have taken a simple random sample from the population.
+
+* No restriction on sample size when using `binomtestGC()` because this function does not rely on any kind of an approximation.
+
+Are We Safe?
+==========
+
+At least with regards to the variable **sex**, the `m111survey` data is like a simple random sample of the GC population.
+
+
+Step 3 (1):  Report Interval
+===========================
+Report it:
+
+``` 
+95% Confidence Interval for p:
+
+lower.bound          upper.bound
+0.440455             0.680850
+
+
+Step 3 (2):  Interpret the Interval
+=================
+
+> Based on the data at hand, we are 95% confident that $p$ is somewhere between 0.440455 and 0.680850.
+
+*Reminder:* Once a confidence interval is constructed, it either **does** or **does not** contain the parameter.  Our statement of confidence comes from the process of construction of these intervals:  *in repeated sampling, about 95% of confidence intervals will contain the parameter and about 5% will not.*
+
+Check it out:
+
+```{r eval=FALSE}
+require(manipulate)
+CIProp()
+```
+
+
+
+
+Step 4:  Conclusion
+================
+
+Use the interval to answer the Research Question:
+
+We are 95% confident that the proportion of females in the GC population is between 0.440455 and 0.680850.
+
+Thought Question
+================
+incremental:  true
+
+Based on this data, can we conclude that at least 50% of GC students are female?  
+
+* Not really, because:
+  * the confidence interval is the range of values of $p$ that are "reasonable"
+  * our 95% confidence interval includes 0.50, but
+  * it also includes values less than 0.50, and
+  * since all values in the confidence interval are "reasonable", we cannot say with confidence that $p>0.50$.
+
+
+(Approximate) Confidence Interval
+================================
+
+*Recall*:  When the number of trials, $n$, is large enough, the binomial distribution can be well approximated by the normal distribution.
+
+We say that $n$ is "big enough" when the sample contains
+
+* at least 10 successes, and
+* at least 10 failures.
+
+
+
+Z-Score Style
+==================
+
+For large enough $n$, the distribution of
+
+$$z=\dfrac{\hat{p}-EV(\hat{p})}{SE(\hat{p})}$$
+
+gets closer and closer to a standard normal distribution
+
+$$norm(0,1).$$
+
+
+Multipliers
+===========
+
+If the sample size is large enough,
+
+* the confidence interval will look like 
+
+$$\hat{p} \pm z^{*}SE(\hat{p})$$
+
+* and we want to find $z^{*}$ so that
+
+$$P(-z^{*} < z < z^{*})=0.95$$
+
+
+=============
+```{r,echo=FALSE,fig.width=25,fig.height=10}
+pnormGC(c(-1.96,1.96),region="between",mean=0,sd=1,g=T)
+```
+
+Looks like $z^{*}$ should be 1.96.
+
+Constructing (approximate) CIs
+===========================
+
+The 95% confidence interval for the proportion of females at GC is:
+
+```{r}
+c(phat-1.96*SE.phat,phat+1.96*SE.phat)
+```
+
+
+In R
+=====
+
+The function `proptestGC` computes this (approximate) 95% confidence interval.
+
+```{r,eval=FALSE}
+proptestGC(~sex,data=m111survey,
+           success="female")
+```
+
+
+The Output
+==========
+
+```
+Descriptive Results:
+female    n    estimated.prop
+    40   71            0.5634
+    
+Inferential Results:
+Estimate of p:  0.5634
+SE(p.hat):      0.05886
+
+95% Confidence Interval for p:
+lower.bound     upper.bound
+0.448016        0.678745
+```
+
+Which Test to Use?
+=================
+
+To find a confidence interval for one proportion:
+
+* best to stick with `binomtestGC()`
+
+* only use `proptestGC()` when the sample size is big enough:
+  * (when there are at least 10 successes and 10 failures)
+  
+Additional Example
+==================
+Research Question:
+
+
+> A simple random sample of 1000 U.S. adults showed that 49% are in favor of the Affordable Care Act.  What is the percentage of all Americans that favor this law?
+
+Step 1:  Parameters
+===================
+
+Let 
+
+> $p=$ the proportion of all Americans in favor of the Affordable Care Act.
+
+We will make a 95% confidence interval for $p$.
+
+Step 2 (1):  Run Code
+===================
+
+Since we are given summary data instead of access to a dataset in R, we run the code:
+
+
+```{r eval=FALSE}
+binomtestGC(x=490,n=1000)
+```
+
+where
+
+* $x$ is the number of successes in the sample.
+
+* $n$ is the sample size.
+
+Step 2 (2):  Safety Check
+========================
+
+* We are told this is a simple random sample.
+
+* Since we are using `binomtestGC()`, there is no restriction on sample size.
+
+*Note:* If we used `proptestGC()`, we would need to verify:
+  * $490 \geq 10$ successes
+  * $510 \geq 10$ failures
+  
+Step 3:  Report & Interpret Interval
+==============================
+```
+95% Confidence Interval for p:
+
+lower.bound     upper.bound
+0.458585        0.521474
+```
+
+> Based on the data at hand, we are 95% confident that $p$ is somewhere between 0.458585 and 0.521474.
+
+Step 4:  Conclusion
+===================
+
+We are 95% confident that the percentage of US adults in favor of the Affordable Care Act is between 45.8585% and 52.1474%.
+
+(The Research Question was not very specific, so our conclusion cannot do much more than restate the interpretation of the confidence interval.)
+
+
+  
+
+
+
+
+
+Difference of Two Proportions
+============
+type:  section
+id:  twoprops
+
+[Back to Contents](#/Contents)
+
+Research Question
+==================
+
+> In the GC population, who is more likely to believe in extra-terrestrial life - gals or guy?
+
+We will investigate this question with the `m111survey` data.
+
+Step 1:  Parameters
+================
+
+Let 
+> $p_1=$ proportion of all GC gals that believe in extra-terrestrial life.
+
+> $p_2=$ proportion of all GC guys that believe in extra-terrestrial life.
+
+* Explanatory variable is **sex**.
+* Response variable is **belief in extra-terrestrial life**.
+* Both variables have two values.
+* So, we are interested in estimating the parameter $p_1-p_2$ using a 95% confidence interval.
+
+Step 2 (1):  Run Code
+====================
+
+Run the following:
+
+```{r eval=FALSE}
+proptestGC(~sex+extra_life,data=m111survey,
+           success="yes")
+```
+
+* Note the input format:
+
+$$\sim  expVar+respVar$$
+
+* The argument `success` specifies the category of the factor variable **extra_life** that defines a success.
+
+Step 2 (2):  Safety Check
+===================
+
+The statistic
+
+$$\hat{p_1}-\hat{p_2} = \dfrac{X_1}{n_1}-\dfrac{X_2}{n_2}$$
+
+where 
+
+* $X_1=$ # of gals that believe in extra-terrestrial life,
+* $X_2=$ # of guys that believe in extra-terrestrial life,
+* $n_1=$ # of gals in sample,
+* $n_2=$ # of guys in sample.
+
+is not binomial.  
+
+Safety Check (SRS)
+=====================
+
+Thus, `proptestGC()` must be used.  
+
+* With regards to the variable **extra_life**, the `m111survey` is like a simple random sample from the GC population.
+
+
+Safety Check (Sample Size)
+====================
+
+* The sample size is large enough:
+
+```{r}
+xtabs(~sex+extra_life,data=m111survey)
+```
+
+  * $10 \geq 10$ gals that believe (success)
+  * $30 \geq 10$ gals that do not believe (failure)
+  * $20 \geq 10$ guys that believe (success)
+  * $11 \geq 10$ guys that do not believe (failure)
+  
+Step 3 (1):  Report Interval
+==================
+
+```
+95% Confidence Interval for p1-p2:
+
+lower.bound     upper.bound
+-0.610510       -0.179812
+```
+Step 3 (2):  Interpret Interval
+===================
+incremental:  true
+
+> Based on the data at hand, we are 95% confident that $p_1-p_2$ is somewhere between -0.610510 and -0.179812.
+
+Since $p_1$ was defined to be the proportion of gals and $p_2$ the proportion of guys, 
+
+* negative values for $p_1-p_2$ indicate that the proportion of guys that believe in extra-terrestrial life is bigger than the proportion of gals.
+
+
+
+
+Step 4:  Conclusion/Answer
+=================
+
+(Here is where we use the interval to answer the Research Question, as specifically as possible.)
+
+* The confidence interval contains mostly negative values (corresponding to gals being less likely than guys to be believe in ET life).
+* But it also contains some positive values (corresponding to gals being MORE likely).
+* So from this data we cannot say with confidence which sex is more likely to believe in ET life.
+
+Example:  Summary Data
+===============
+
+The function `proptestGC()` can be used with summary data as well:
+
+Suppose we took two samples form two populations and:
+
+* there were 23 successes out of 100 trials in the first sample;
+* there were 33 out of 110 successes in the second sample.  
+
+```{r eval=F}
+proptestGC(x=c(23,33),n=c(100,110))
+```
+
+Results
+=====================
+
+```
+Descriptive Results:
+
+        successes   n estimated.prop
+Group 1        23 100           0.23
+Group 2        33 110           0.30
+
+Inferential Results:
+
+Estimate of p1-p2:   -0.07 
+SE(p1.hat - p2.hat):	 0.06066 
+
+95% Confidence Interval for p1-p2:
+
+lower.bound         upper.bound          
+-0.188899           0.048899
+```
+
+Next Topic
+==========
+
+In the next section, we will discuss warnings and misconceptions related to confidence intervals.
+  

@@ -1,0 +1,85 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "01/28/2015"
+output: pdf_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+
+# Kim Kardashian
+
+Ten thousand people were asked to give their "temperature rating" of Kim Kardashian, on a scale from 0 to 100.  0 means you don't like her at all, and 100 means you like her very much.  Here is some code for a density plot of the ratings:
+
+```{r}
+densityplot(~kkardashtemp,data=imagpop,
+            main="Kim Kardashian Ratings",
+            xlab="rating",
+            from=0,to=100,
+            plot.points=FALSE)
+```
+
+
+Is the distribution symmetric or skewed?
+
+
+Is the distribution unimodal, bimodal, or neither?
+
+
+True or False:  Most of the ratings were between 40 and 60.
+
+
+
+# Justin Verlander Again
+
+## Practice Part a
+
+About 68% of Justin Verlander's four-seam fast were between ? and ??  (Give the two speeds.)
+
+
+
+## Practice Part b
+
+About what percentage of the time were his four-seam fastballs faster than 100 miles per hour?
+
+
+## Practice Part c
+
+Find a speed so that about 16% of his four-seam fastballs were slower than that speed.
+
+
+# z-Scores
+
+## Practice Part a
+
+In the chunk below, write the math code to find the z-score for a Justin Verlander four-seam fastball that has a speed of 91 mph.
+
+```{r}
+
+```
+
+
+Would you say this fastball was unusually slow for Verlander?
+
+
+
+## Practice Part b
+
+In the chunk below, write the math code to find the z-score for a Justin Verlander four-seam fastball that has a speed of 95 mph.
+
+```{r}
+
+```
+
+
+Would you say this fastball was unusually slow for Verlander?
+
+
+
+

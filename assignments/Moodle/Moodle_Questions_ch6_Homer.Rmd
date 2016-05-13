@@ -1,0 +1,343 @@
+---
+title: "Moodle Questions"
+author: "Homer White"
+date: "Monday, June 16, 2014"
+output: word_document
+---
+
+```{r include=FALSE}
+require(knitr)
+require(mosaic)
+require(tigerstats)
+```
+
+
+# Seating and the Liberal Arts at UC-Davis I
+
+
+The `ucdavis1` data frame gives information on a random sample of students from the University of California at Davis.  One variable, **Seat**, records where the student preferred to sit in a classroom (Front, Middle or Back), and another variable, **Sex**, says whether or not the student was planning to major in one of the liberal arts disciplines.
+
+We are interested in the following Research Question:
+
+  >*Do male and female students at UC-Davis differ in their seating preferences, and if so, how?*
+
+Which of the two variables in the Research Question should be considered the explanatory variable, and which should be considered the response variable?
+
+* **Sex** is explanatory, and **Seat** is the response.
+* **Seat** is explanatory, and **Sex** is the response.
+* Neither variable can be considered to be an explanatory variable.
+* Both of the variables are explanatory.
+
+# Seating and the Liberal Arts at UC-Davis II
+
+
+The `ucdavis1` data frame gives information on a random sample of students from the University of California at Davis.  One variable, **Seat**, records where the student preferred to sit in a classroom (Front, Middle or Back), and another variable, **Sex**, says whether or not the student was planning to major in one of the liberal arts disciplines.
+
+We are interested in the following Research Question:
+
+  >*Do male and female students at UC-Davis differ in their seating preferences, and if so, how?*
+  
+Should the data we gathered to study this question be considered an observational study or an experiment?  Select the best answer.
+
+* It's an observational study, because we took a random sample from the population.
+* It's an observational study, because the explanatory variable (**sex**) was not assigned to subjects by the researchers who collected the data.  The researchers simply recorded the sex of each subject.
+* It's an experiment, because we took a random sample from the population.
+* It's an experiment because we manipulated something about the situation, and then recorded the value of the response variable **Seat** for each subject.
+
+
+# Pseudoscorpions:  Experiment or Observational Study?
+
+The data for this project is in data frame `Pseudoscorpions`, from package `abd`:
+
+```{r eval=FALSE}
+require(abd)
+data(Pseudoscorpions)
+View(Pseudoscorpions)
+help(Pseudoscorpions)
+```
+
+From the text *Analysis of Biological Data*, by Michael C. Whitlock and Dolph Schluter:
+
+  >Pseudoscorpions of the species *Chordylochernes scorpioides* live in tropical forests where they ride on the backs of harlequin beetles to reach rotting figs where they feed.  Females of the species are promiscuous and mate with multiple males over short lifetimes.  It is unclear what advantages there are for a female to mate multiple times, because the males don't help to care for her young, and mating just once provides all the sperm she needs to fertilize her eggs.
+  
+  >One possible advantage is that the sperm of some males is genetically incompatible with a given female and, by mating multiple times, a female increases the chances of mating with at least one male whose sperm is compatible with her.  To investigate this idea, Newcomer et al. (1999) recorded the number of successful broods by female pseudoscorpions randomly assigned to one of two treatments.  One group of females was each mated to two different males (DM), whereas females in the other group were each mated twice to the same male (SM).  By mating each female twice, the same amount of sperm was provided in both treatments, but the DM females received genetically more diverse sperm than the SM females.
+  
+The `Pseudoscorpions` data frame gives the results of this study.
+
+
+From the above description, it appears that the investigators were interested in the following Research Question:
+
+  >*On average, do female pseudoscorpions who mate with two males produce a larger number of successful broods than do female pseudoscorpions who mate with only one male?*
+  
+Study the data frame and the above information, and decide which of the following options best explains whether the Pseudoscorpions study was an observational study or a randomized experiment.
+
+* **Observational study**, because the response variable was **successful.broods**, and the researchers merely observed how many successful broods each female in the study produced:  they did not randomly assign the number of broods to each female.
+* **Randomized experiment**, because the explanatory variable was **treatment**, and the researchers randomly assigned the value of this variable to the females in the study:  some females were assigned to mate with one male (value "SM") and the others were assigned to mate with two males (value "DM").
+* **Randomized experiment**, because the number of males you mate with is believed to affect the genetic diversity of the sperm you store, which in turn affects your chance of a producing a successful brood.
+* **Observational study**, because for a randomized experiment you would have to take a random sample of female Psuedoscorpions from the population, and nowhere in the above information did we learn that this was done.
+
+
+# Pseudoscorpions:  Investigating the Research Question
+
+The data for this project is in data frame `Pseudoscorpions`, from package `abd`:
+
+```{r eval=FALSE}
+require(abd)
+data(Pseudoscorpions)
+View(Pseudoscorpions)
+help(Pseudoscorpions)
+```
+
+From the text *Analysis of Biological Data*, by Michael C. Whitlock and Dolph Schluter:
+
+  >Pseudoscorpions of the species *Chordylochernes scorpioides* live in tropical forests where they ride on the backs of harlequin beetles to reach rotting figs where they feed.  Females of the species are promiscuous and mate with multiple males over short lifetimes.  It is unclear what advantages there are for a female to mate multiple times, because the males don't help to care for her young, and mating just once provides all the sperm she needs to fertilize her eggs.
+  
+  >One possible advantage is that the sperm of some males is genetically incompatible with a given female and, by mating multiple times, a female increases the chances of mating with at least one male whose sperm is compatible with her.  To investigate this idea, Newcomer et al. (1999) recorded the number of successful broods by female pseudoscorpions randomly assigned to one of two treatments.  One group of females was each mated to two different males (DM), whereas females in the other group were each mated twice to the same male (SM).  By mating each female twice, the same amount of sperm was provided in both treatments, but the DM females received genetically more diverse sperm than the SM females.
+  
+The `Pseudoscorpions` data frame gives the results of this study.
+
+
+From the above description, it appears that the investigators were interested in the following Research Question:
+
+  >*On average, do female pseudoscorpions who mate with two males produce a larger number of successful broods than do female pseudoscorpions who mate with only one male?*
+  
+Which of the following bits of R-code would be appropriate for investigating the above Research Question?  (There is more than one correct answer.)
+
+Option A:
+
+```{r eval=FALSE}
+favstats(successful.broods~treatment,data=Pseudoscorpions)
+```
+
+Option B:
+
+```{r eval=FALSE}
+densityplot(~successful.broods,data=Pseudoscorpions,
+      groups=treatment,
+      auto.key=TRUE,
+      xlab="Number of successful broods",
+      main="Pseudoscorpions Study")
+```
+
+Option C:
+
+```{reval=FALSE}
+densityplot(~successful.broods,data=Pseudoscorpions,
+      xlab="Number of successful broods",
+      main="Pseudoscorpions Study")
+```
+
+
+Option D:
+
+```{reval=FALSE}
+barchartGC(~treatment,data=Pseudoscorpions,
+           type="frequency",
+           main="Pseudoscorpions Study")
+```
+
+Option E:
+
+```{r eval=FALSE}
+favstats(~successful.broods,data=Pseudoscorpions)
+```
+
+# A Small Experiment:  Completely Randomized Design
+
+Recall the imaginary list of subjects, stored in the data frame `SmallExp`, discussed in Chapter 6:
+
+```{r eval=FALSE}
+data(SmallExp)
+View(SmallExp)
+help(SmallExp)
+```
+
+For your convenience, here's the entire data frame:
+
+```{r}
+SmallExp
+```
+
+George plans to perform an experiment that involves assigning the subjects to two treatment groups.  One treatment (called "music") involves listening to headphone-music while going through a stationary bike workout, and the other treatment (called "control") involves just going through the workout, without any music.  George will measure how many calories each person burns during the workout.
+
+Which of the following assignments of subjects to treatment group is possible if George plans to use a completely randomized design to divide subjects into two groups of eight subjects each? (More than one answer may be correct.)
+
+Option A:
+
+```{r}
+set.seed(2020)
+opta <- RandomExp(SmallExp,sizes=c(8,8),
+          groups=c("control","music"))
+opta
+```
+
+
+Option B:
+
+```{r}
+set.seed(2610)
+optb <- RandomExp(SmallExp,sizes=c(8,8),
+          groups=c("control","music"))
+optb
+```
+
+Option C:
+
+```{r}
+set.seed(3320)
+optc <- RandomExp(SmallExp,sizes=c(8,8),
+          block="sex",
+          groups=c("control","music"))
+optc
+```
+
+Option D:
+
+
+```{r}
+set.seed(5555)
+optd <- RandomExp(SmallExp,sizes=c(8,8),
+          block="sex",
+          groups=c("control","music"))
+optd
+```
+
+# A Small Experiment:  Randomized Block Design
+
+Recall the imaginary list of subjects, stored in the data frame `SmallExp`, discussed in Chapter 6:
+
+```{r eval=FALSE}
+data(SmallExp)
+View(SmallExp)
+help(SmallExp)
+```
+
+For your convenience, here's the entire data frame:
+
+```{r}
+SmallExp
+```
+
+George plans to perform an experiment that involves assigning the subjects to two treatment groups.  One treatment (called "music") involves listening to headphone-music while going through a stationary bike workout, and the other treatment (called "control") involves just going through the workout, without any music.  George will measure how many calories each person burns during the workout.
+
+Which of the following assignments of subjects to treatment group is possible if George plans to use a randomized block design, blocking by the possible confounder variable **sex**, to divide subjects into two groups of eight subjects each, in such a way that the percentage of males in each group is the same? (More than one answer may be correct.)
+
+(Present same set of options as in the last question.)
+
+# The Beans Experiment:  What is the Design?
+
+In the `tigerstats` package we find the `beans` data frame:
+
+```{r eval=FALSE}
+data(beans)
+View(beans)
+help(beans)
+```
+
+This was an experiment performed at UC-Davis; fifteen students participated. Each student was asked to place as many beans into a cup as he/she could, in 15 seconds. Each student performed this task once with the dominant hand, and once with the non-dominant hand, but the order of performance was randomized. The purpose of the study was to see whether manual dexterity was better for the dominant hand. Assume that the subjects in the experiment are the fifteen students.  (*Reminder about terminology*: your dominant hand is the hand you use the most.)
+
+What was the design of this experiment?  Choose the most accurate option below.
+
+Option A:  Completely Randomized Design.
+
+Feedback:  This is tempting response, because researchers randomized the order in which the subjects performed the work.  However, in a a randomized design you assign subjects randomly to the various treatment groups, and this time there weren't even treatment groups.  This study is actually a repeated measures design, with the randomization being done to correct for bias that could arise if practice moving beans makes the subject better at moving them. (For a similar example, see the `labels` experiment in the Chapter Six course notes (Repeated Measures section) and in the Chapter Six Part 2 slides.)
+
+Option B:  Randomized Block Design
+
+Feedback:  There was no blocking variable.
+
+Option C:  Matched Pairs Design.
+
+Feedback:  Close, but no cigar.  There weren't any blocks, so there weren't any blocks of size two each to make the "matched pairs".  If you thought of the subjects in the experiment as the 30 hands (two for each person), then you could say that we have a matched pairs design where each pair is the pair of hands of a person, but in the directions we said to think of the subjects as the fifteen people.
+
+Option D:  Repeated Measures Design.
+
+Feedback:  Correct!  We made two measurements on each subject:  one measurement is the number of beans moved with the dominant hand, and the other is the number of beans moved with the non-dominant hand.
+
+# Experiment Terminology
+
+Researchers wanted to know which treatment is more effective for relieving joint pain:  an ibuprofen pill, or a newly-developed topical ointment rubbed on the affected joint.  Fifty subjects agreed to participate in the experiment.  Researchers had the following supplies on hand:
+
+* real ibuprofen pills;
+* pills that looked and tasted like ibuprofen pills but which were actually made of an inert substance;
+* the real topical ointment;
+* a topical ointment that looked and felt like the real ointment but which actually has no affect on the body.
+
+Twenty-five of the subjects were randomly selected to take the real pills and use the fake ointment.  The remaining twenty-five used the fake pills and the real ointment.  The subjects did not knew that they were using one real and one fake item, but they did not know which was which.
+
+At the end of the period of study, each patient reported their decrease in pain on a numerical scale form 0 to 10, where 0 stands for "no decrease in pain at all" and 10 stands for "my pain is all gone!"
+
+Which of the following terms apply to this experiment?  Select all correct answers.
+
+Option A:  Completely Randomized Design
+
+Feedback: Yes, there two treatments (real pills vs. real ointment) and the subject were divided randomly into these two groups.
+
+Option B:  Randomized Block Design
+
+Feedback:  There was no blocking variable.
+
+Option C;  Matched Pairs Design.
+
+Feedback:  Treatments were give in pairs (one real and one fake), but the subjects were not blocked into matched pairs, so this is not a matched pairs design.
+
+Option D:  Repeated Measures Design
+
+Feedback:  No each subject reported their decrease in pain just once.
+
+Option E:  Double-Dummy Design
+
+Feedback:  Yes, there were two dummy treatments:  the fake pills and the fake ointment.
+
+Option F:  Blinding
+
+Feedback:  Yes, the double-dummy design prevented the subjects from knowing which group they were in.
+
+Option G:  Replication
+
+Feedback:  Yes, there was more than one subject in each treatment group (there were 25 in each group, in fact).
+
+# A favstats() Review:  The Attitudes Experiment
+
+Review the `attitudes` data frame (as discussed in Chapter 6 Course Notes and slides):
+
+```{r eval=FALSE}
+data(attitudes)
+View(attitudes)
+help(attitudes)
+```
+
+Match the question with the `favstats()` R-code that will help to answer it.
+
+
+
+What was the mean sentence recommended by all the subjects?
+
+```{r eval=FALSE}
+favstats(~sentence,data=attitudes)
+```
+
+What was the median sentence recommended by all the subjects?
+
+```{r eval=FALSE}
+favstats(~sentence,data=attitudes)
+```
+
+What was the mean sentence reommended by the subjects who were looking at a form that suggested the race of the defendant was White?
+
+```{r eval=FALSE}
+favstats(sentence~def.race,data=attitudes)
+```
+
+What was the mean sentence reommended by the subjects who were looking at a form that suggested the race of the defendant was Black?
+
+```{r eval=FALSE}
+favstats(sentence~def.race,data=attitudes)
+```
+
+What was the mean sentence recommended by the subjects who were looking at a form that suggested the race of the victim was Black?
+
+```{r eval=FALSE}
+favstats(sentence~vic.race,data=attitudes)
+```
+

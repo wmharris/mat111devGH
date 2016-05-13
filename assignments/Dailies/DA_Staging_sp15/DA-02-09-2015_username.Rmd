@@ -1,0 +1,125 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday February 9, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+## Speed and Fuel Efficiency
+
+## Part a
+
+We decided that **speed** and **fuel** are both numerical variables.
+
+In our study, which one do you think is the explanatory variable?
+
+
+
+Which one is the response?
+
+
+## Part b
+
+Create a code chunk below and write into it the code to make a scatter plot to study the relationship between driving speed and fuel efficiency.  Remember:  the explanatory variable should be on the x-axis!
+
+
+
+
+
+
+## Part c
+
+Describe the relationship:  is it positive linear, negative linear, curvilinear, or is there no relationship?
+
+
+
+## Part d
+
+Units for **efficiency** are "liters per 100 km", the number of liters of fuel required to drive the car 100 kilometers at the given speed.
+
+Does a high number for efficiency represent good or poor fuel efficiency?
+
+
+At about what speed does the car have the best fuel efficiency?
+
+
+
+# Beetles and Stumps
+
+## Part a
+
+In the code chunk below, we have the code need to predict **larvae** (the number of beetle larvae clusters) from **stumps**, the number of stumps in each plot:
+
+```{r}
+beetleMod <- lmGC(larvae~stumps,data=stumps)
+beetleMod
+```
+
+Run the code chunk and examine the output.
+
+What is the correlation coefficient r?  Based on r, would say the linear relationship is weak, moderate or strong?  (It's a judgement-call on your part?)
+
+
+
+## Part b
+
+Here is the code needed to predict the number of larvae cluster in a plot with 3 stumps:
+
+```{r}
+predict(beetleMod,x=3)
+```
+
+
+By how much is this prediction liable to be in error?
+
+
+
+## Part d
+
+What is the R-squared value?
+
+
+
+# Latitude and Temperature
+
+## Part a
+
+
+In the code chunk below, insert the code needed to make a linear model to predict the temperature of a U.S. city from its latitude:
+
+```{r}
+tempLat <- # replace this remark (including the #) with the code needed
+tempLat
+```
+
+
+## Part b
+
+Use the model `tempLat` predict the August temperature of Georgetown, KY (latitude 39.21 deg N).  Insert the needed code in the chunk below:
+
+```{r}
+
+```
+
+
+By about how much is the prediction liable to be in error?
+
+
+## Part c
+
+Use the `tempLat` model to predict the August temperature of Singapore (1.3 deg N).  Insert the needed code in the chunk below:
+
+```{r}
+
+```
+
+
+Is your prediction reliable?  Why or why not?
+

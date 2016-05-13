@@ -1,0 +1,185 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "01/26/2015"
+output: pdf_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Love at First Sight
+
+Now we will look at the `m111survey` data, and ask the Research Question:
+
+>*Who is more likely to believe in love at first sight:  a GC gal or a GC guy?*
+
+## Practice Part a
+
+What are the two variables form the `m111survey` data frame that are involved in this Research Question?
+
+
+
+
+Which one would you say is the explanatory variable?
+
+
+
+Which one would you say is the response variable?
+
+
+
+For each variable, say what type of variable it is:  factor or numerical.
+
+
+
+## Practice Part b
+
+Why would it not be correct to make density plots to study this Research Question?
+
+
+
+## Practice Part c
+
+The following code makes a two-way table of the responses about love at first sight, broken down by the sex of the respondent:
+
+```{r}
+sexLove <- xtabs(~sex+love_first,data=m111survey)
+sexLove
+```
+
+Run this code.  How many people in the study were males who believe in love at first sight?
+
+
+
+
+## Practice Part c
+
+Insert code below to make row percents for the two-way table stored as `sexLove`:
+
+```{r}
+
+```
+
+
+
+What percentage of the females believe in love at first sight?
+
+
+
+What percentage of the males believe in love at first sight?
+
+
+
+## Practice Part d
+
+Here is some code (from the slides) that makes a bar-chart to study the relationship between batter hand and type of pitch thrown by Justin Verlander:
+
+```{r eval=FALSE}
+barchartGC(~batter_hand+pitch_type,data=verlander,
+           main="Verlander's Pitches, by Batter Stance",
+           type="percent")
+```
+
+
+In the chunk below, write the code to make a bar-chart to study the relationship between **sex** and **love_first** in the `mat111survey` data.  (**Tip**:  Copy and paste the code from the previous chunk, and then make the necessary changes.)
+
+```{r}
+
+```
+
+
+# Medians and Boxplots
+
+## Pratice a
+
+Here's the code to make `favstats()` on the speeds of Justin Verlander's pitches:
+
+```{r eval=FALSE}
+favstats(~speed,data=verlander)
+```
+
+
+In the code chunk below, enter the code to make `favstats()` for the fastest speeds driven by the students in the `m111survey` data.
+
+```{r}
+
+```
+
+
+What is the median of the fastest speeds?
+
+
+The first quartile?
+
+
+The third quartile?
+
+
+The interquartile range (IQR)?
+
+
+
+## Practice b
+
+Here's the code to make a box plot of the fastest speeds, broken down by sex:
+
+```{r}
+bwplot(fastest~sex,data=m111survey,
+       main="Fastest Speed at GC, by Sex",
+       xlab="sex",
+       ylab="speed (mph)")
+```
+
+
+Make your own code chunk below, and inside it put the code needed for a box-plot of the speed of Justin Verlander's pitches, broken down by the type of pitch he threw.  **Tip**:  After you insert eh chunk, copy the code above and paste it into the chunk, then modify it so that it does what you want.
+
+
+
+
+
+# Kim Kardashian
+
+Ten thousand people were asked to give their "temperature rating" of Kim Kardashian, on a scale from 0 to 100.  0 means you don't like her at all, and 100 means you like her very much.  Here is some code for a density plot of the ratings:
+
+```{r}
+densityplot(~kkardashtemp,data=imagpop,
+            main="Kim Kardashian Ratings",
+            xlab="rating",
+            from=0,to=100,
+            plot.points=FALSE)
+```
+
+
+Is the distribution symmetric or skewed?
+
+
+Is the distribution unimodal, bimodal, or neither?
+
+
+True or False:  Most of the ratings were between 40 and 60.
+
+
+
+# Justin Verlander Again
+
+## Practice Part a
+
+About 68% of Justin Verlander's four-seam fast were between ? and ??  (Give the two speeds.)
+
+
+
+## Practice Part b
+
+About what percentage of the time were his four-seam fastballs faster than 100 miles per hour?
+
+
+## Practice Part c
+
+Find a speed so that about 16% of his four-seam fastballs were slower than that speed.
+
+

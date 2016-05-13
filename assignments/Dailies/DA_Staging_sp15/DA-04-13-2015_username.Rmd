@@ -1,0 +1,79 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Monday, April 13 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# Miguel Cabrera
+
+
+
+In the 2014 Major League season, Detroit Tiger Miguel Cabrera had a batting average of .313 on 611 at-bats. Can we conclude from this data that in 2014 his chance of getting a hit was more than 30 percent?
+
+Define p to be the probability that Cabrera gets a hit when he is at bat.
+
+$H_0:  p = 0.3$
+
+$H_a:  p \neq 0.3$
+
+
+## Part a
+
+You will perform the two sided test with binomtestGC(), using the summary data given above.  To do this modify the code form our previous example:
+
+```{r}
+binomtestGC(x=1325,n=2500,p=0.50,graph=TRUE)
+```
+
+
+## Part b
+
+
+Can you conclude that Cabrera's chance was better than 30%?  Why or why not?
+
+
+
+# Political Party and Belief in Astrology
+
+
+## Part a
+
+Conduct the desired two-sided test by modifying the code in the example below:
+
+```{r}
+proptestGC(x=c(899,1183),
+           n=c(1308,1824),
+           p=0,graph=TRUE)
+```
+
+
+## Part b
+
+What is the P-value?
+
+## Part c
+
+What's the value of the test statistic?
+
+
+## Part d
+
+If Democrats and Republicans out in the population at large are equally likely to believe in astrology, then what is the chance of getting a test statistic at least as far from 0 as the one we actually got in this study?
+
+
+## Part e
+
+What should we do about the Null Hypothesis:  reject it, or not?
+
+
+## Part f
+
+Did this study provide strong evidence that Democrats are more likely than Republicans to believe in astrology?
+

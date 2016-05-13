@@ -1,0 +1,441 @@
+Tests of Significance (Pt. 3)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 3:
+============
+id: Contents
+
+- [Safety Checks are Important](#/safety)
+- [Types of Error](#/typeerror)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+```{r echo=FALSE}
+
+#overwrite pnormGC() and pbinomGC() with function to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pnormGC <- function(bound,region="below",mean=0,sd=1,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  if (length(bound)==1 & !(region %in% c("below","above"))) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(region %in% c("between","outside"))) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  if (grepl("^be[lf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+
+  if (grepl("^a[bf]",region,perl=TRUE))  {
+    area <- pnorm(bound,mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound,high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound,mean,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^bet|^in",region,perl=TRUE))  {
+    area <- pnorm(bound[2],mean=mean,sd=sd)-pnorm(bound[1],mean=mean,sd=sd)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=bound[1],high=bound[2],func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (grepl("^out",region,perl=TRUE))  {
+    area <- pnorm(bound[1],mean=mean,sd=sd)+pnorm(bound[2],mean=mean,sd=sd,lower.tail=FALSE)
+    if (graph) {
+    upper <- max(qnorm(.9999,mean=mean,sd=sd),bound+0.1*sd)
+    lower <- min(qnorm(0.0001,mean=mean,sd=sd),bound-0.1*sd)
+    curve(dnorm(x,mean=mean,sd=sd),from=lower,to=upper,ylab="density",axes=FALSE,n=50,lwd=2.5,
+          main=paste("Normal Curve, mean = ",mean,", SD = ",sd,"\n Shaded Area = ",
+                     round(area,4)),cex.main=2.5,cex.lab=2.5)
+    UnderShade(low=lower,high=bound[1],func=dnorm,mean=mean,sd=sd)
+    UnderShade(low=bound[2],high=upper,func=dnorm,mean=mean,sd=sd)
+    axis(2)
+    places <- c(lower,bound[1],bound[2],upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pnormGC
+
+pbinomGC  <- function(bound,region="below",size=100,prob=0.5,graph=FALSE) {
+  
+  par(mar=c(5.1,5.1,5.1,4.1))
+  
+  if (!is.numeric(bound)) stop("Specify one or two numerical boundaries")
+  below <- grepl("^be[lf]",region,perl=TRUE)
+  above <- grepl("^a[bf]",region,perl=TRUE)
+  between <- grepl("^bet|^in",region,perl=TRUE)
+  outside <- grepl("^out",region,perl=TRUE)
+  if (length(bound)==1 & !(below | above)) stop("Specify region=\"below\" or
+          region=\"above\"")
+  if (length(bound)==2 & !(between | outside)) stop("Specify region=\"between\" or
+          region=\"outside\"")
+  if (length(bound)>2) stop("Specify one or two numerical boundaries")
+
+  if (length(bound)==2 & bound[1]>bound[2])  bound <- rev(bound)
+
+  sd <- sqrt(size*prob*(1-prob))
+  
+  if (below)  {
+    area <- pbinom(bound,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals <= bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound),upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+
+  if (above)  {
+    area <- pbinom(bound,size=size,prob=prob,lower.tail=FALSE)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(nvals > bound,"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound)+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (between)  {
+    area <- pbinom(bound[2],size=size,prob=prob)-pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse((bound[1] <= nvals & nvals <= bound[2]),"lightblue",NA)
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1]),floor(bound[2]),upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  if (outside)  {
+    area <- pbinom(bound[2],size=size,prob=prob,lower.tail=FALSE)+pbinom(bound[1]-1,size=size,prob=prob)
+    if (graph) {
+    upper <- ceiling(max(qbinom(.9999,size=size,prob=prob),bound+0.1*sd))
+    lower <- floor(min(qbinom(0.0001,size=size,prob=prob),bound-0.1*sd))
+    nvals <- lower:upper
+    Shading <- ifelse(bound[1] <= nvals & nvals <= bound[2],NA,"lightblue")
+    plot(nvals,dbinom(nvals,size=size,prob=prob),type="h",col=NA,axes=FALSE,
+         xlab="x",ylab="p(x)",xlim=c(lower-0.5,upper+0.5),
+         main=paste("binom(",size,",",prob,") Distribution:\nShaded Area = ",round(area,3),sep=""),
+         cex.main=2.5,cex.lab=2.5)
+    rect(nvals-0.5,rep(0,times=size+1),nvals+0.5,dbinom(nvals,size=size,prob=prob),
+         col=Shading,border="black")
+    axis(2)
+    places <- c(lower,floor(bound[1])-1,floor(bound[2])+1,upper)
+    axis(1,at=places,labels=c("",as.character(places[2:3]),""),cex.axis=2.5)
+    }
+  }
+  
+  par(mar=c(5.1,4.1,4.1,4.1))
+  return(area)
+
+}#end of pbinomGC
+```
+
+Safety Checks
+===================
+type:  section
+id:  safety
+
+[Back to Contents](#/Contents)
+
+
+t-statistic Distribution
+=========================
+
+We are using the $t$-statistic to:
+
+* build confidence interval for $\mu$, and
+* to get $P$-values in tests about $\mu$.
+
+
+
+Statistical Theory Says:
+=================================
+
+If
+
+* you sample $n$ items randomly from a population, and
+* that population is normally distributed,
+
+then the t-statistic
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})}$$
+
+has a $t(n-1)$-distribution, with "degrees of freedom" equal to $n-1$.
+
+Reminder about t-Curves
+=========================
+
+```{r eval=FALSE}
+require(manipulate)
+tExplore()
+```
+
+Notice:  when sample size is large:
+
+$$t(n-1) \approx norm(0,1)$$
+
+But ...
+================
+
+What if the population is not normally distributed?
+
+(It hardly ever is.)
+
+Well ...
+===============
+
+If sample size $n$ is large, $t(n-1) \approx norm(0,1)$.
+
+Also, CLT says
+
+$$\frac{\bar{x}-\mu}{SD(\bar{x})} \approx norm(0,1)$$
+
+So
+
+$$t=\frac{\bar{x}-\mu}{SE(\bar{x})} \approx \frac{\bar{x}-\mu}{SD(\bar{x})} \approx norm(0,1)$$
+
+==============
+
+Since:
+
+* $t \approx norm(0,1)$, and
+* $t(n-1) \approx norm(0,1)$,
+
+we conclude that
+
+* $t \approx t(n-1)$
+
+So if $n$ is large, it's OK to use $t$-curves to:
+
+* make confidence intervals for $\mu$
+* approximate $P$-values in tests about $\mu$
+
+... no matter what the population looks like!
+
+But What if n is Not Large?
+====================
+
+If sample size $n$ is small and
+
+* population is skewed or
+* has an "outlier" group,
+
+then there could be problems.
+
+```{r eval=FALSE}
+require(manipulate)
+tSampler(~income,data=imagpop)
+```
+
+So ...
+==============
+
+When $n$ is not large ($n < 30$, say), we check the sample.
+
+* Make a histogram of the sample
+* or a density plot of the sample,
+* or a box-and-whisker plot of the sample.
+
+If the sample shows skewness or outliers, then probably the *population* has these features, too.
+
+Then `ttestGC()` might not be reliable.
+
+Types of Error
+===================
+type:  section
+id:  typeerror
+
+[Back to Contents](#/Contents)
+
+Designed to be Wrong (Sometimes)
+=============================
+
+Recall:
+
+  >95%-confidence intervals for $\mu$ will fail to contain $\mu$ about 5% of the time, in repeated sampling.
+  
+In general,
+
+  >$100(1-\alpha)\%$-confidence intervals will fail to contain $\mu$ about $100\alpha\%$ of the time, in repeated sampling.
+  
+Designed to be Wrong
+==================
+
+Test of significance do not always make the "right" decision, either!
+
+Error Types
+================
+type:  prompt
+
+| |$H_0$ true|$H_0$ false|
+|:---:|:----:|:---:|
+|Reject $H_0$|*Type-I Error*|OK|
+|Not reject $H_0$|OK|*Type-II Error*|
+
+* Type-I Error:  Rejecting the Null, when it is actually true.
+* Type-II Error: Failing to reject the Null, when it is actually false.
+  
+Designed to be Wrong (Sometimes)
+=====================
+
+If
+
+* $H_0$ is actually true, and
+* your cut-off value $\alpha$ is set at 0.05
+
+then a trustworthy test of significance will commit a Type-I error about 5% of the time, in repeated sampling!
+
+Designed to be Wrong (Sometimes)
+=====================
+
+In general, if
+
+* $H_0$ is actually true, and
+* your cut-off value is $\alpha$
+
+then a trustworthy test of significance will commit a Type-I error about $100\alpha\%$ of the time, in repeated sampling!
+
+Don't Believe it?
+=================
+
+Then try this app:
+
+```{r eval=FALSE}
+require(manipulate)
+Type12Errors()
+```
+
+Life is Hard ...
+==============
+
+To cut down on the chance of a Type-I error:
+
+* set cut-off $\alpha$ low.
+* But then if $H_0$ is false, Type-II errors become more likely!
+
+To cut down on chance of Type-II errors:
+
+* set cut-off $\alpha$ high.
+* But then if $H_0$ is true, Type-I errors become more likely!
+
+... and then You Die
+================
+
+The only way to make
+
+* Type-I errors unlikely, and
+* Type-II errors unlikely
+
+at the same time is to
+
+* set $\alpha$ very low, and
+* take a really large sample!
+
+Large samples are expensive and time-consuming.
+
+The Criminal Trial Analogy
+====================
+
+A test of significance is like a criminal trial in which only the prosecution presents evidence.
+
+The Criminal Trial Analogy
+==================
+
+|Test|Trial|
+|:---:|:---:|
+|Null Hypothesis|Defendant's "Not Guilty" Plea|
+|Alternative Hypothesis|Prosecution:  "He's Guilty"|
+|Parameter (unknown)|The Truth (we'll never know for sure)|
+|Test Statistic|Prosecutor's Evidence|
+|P-value|Prosecutor's Closing Argument|
+|Decision about $H_0$|Jury's Verdict|
+|Type-I Error|Innocent Person Convicted|
+|Type-II Error|Guilty Person Acquitted|

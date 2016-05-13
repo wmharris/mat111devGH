@@ -1,0 +1,60 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Monday, March 2 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+# Knife or Gun
+
+Here is some code to randomly assign subject to treatment groups (i.e., a completely randomized design for this experiment).  After the assignment, `xtabs()` alows you to examine the two treatment groups:
+
+
+```{r}
+assign <- RandomExp(subjects,sizes=c(10,10),groups=c("knife","gun"))
+assign
+xtabs(~treat.grp+loud,data=assign)
+```
+
+Run the code a few times?  Do the groups always look the same with respect to hog-hollerin'?
+
+
+
+Why is is a problem for the experiment if one group has more hog-hollerers than the other group does?
+
+
+
+## Attitudes:  Race and Sentence
+
+We are interested in the following Research Question:
+
+Who recommends higher sentences, on average:
+
+* subjects given a form where the defendant's suggested race is Black?
+* or subjects given a form where the defendant's suggested race is White?
+
+
+## Part a
+
+Is the data for our Research Question based on an experiment or on an observational study?
+
+
+
+## Part b
+
+We could have asked each subject the same question twice:
+
+    once for Tyrone Marcus Watson
+    once for William Shane Winchester
+
+Then we would have had a repeated measures design.
+
+Why did we not do this?
+
+

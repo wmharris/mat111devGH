@@ -1,0 +1,455 @@
+Two Factor Variables (Pt .2)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+- [The Inferential Aspect of a Research Question](#/Inf)
+- [The Chi-Square Test](#/chisq)
+- [Simulating P-Values](#/sim)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+The Inferential Aspect
+=================
+type:  section
+id:  Inf
+
+[Back to Contents](#/Contents)
+
+The Ledge-Jump Data
+===================
+
+```{r eval=FALSE}
+data(ledgejump)
+View(ledgejump)
+help(ledgejump)
+```
+
+Research Question:
+
+  >*Does the weather have any effect on crowd behavior?*
+  
+Tables of Results
+==================
+
+```{r}
+WeBe <- xtabs(~weather+crowd.behavior,
+              data=ledgejump)
+WeBe
+rowPerc(WeBe)
+```
+Looks like crowds were nastier in warm weather!
+
+Inferential Question
+=================
+
+Is the pattern in the data due to a real association between weather and crowd behavior?
+
+Or did it just occur by chance?
+
+================
+incremental:  true
+
+After all, many things can affect crowd behavior:
+
+* how long incident lasts
+* number of people in crowd
+* personalities of the onlookers who gather to watch
+* personality/behavior of would-be jumper
+
+These things vary from one incident to another.  We model them as "chance."
+
+Hypotheses
+==================
+
+Null and Alternative hypotheses:
+
+$H_0$:  Weather and crowd behavior are not related.
+
+$H_a$:  Weather and crowd behavior ARE related.
+
+* The Null thinks the relationship in the data occurred by chance.
+* The Alternative thinks the relationship in the data is too strong to be explained (reasonably) in terms of chance alone.
+
+What's Expected by the Null
+==================
+
+```{r echo=FALSE}
+WeBe
+```
+
+* Crowd baited in 10 cases
+* Crowd was polite in 11 cases
+* $\frac{10}{21} \times 100 = 47.6$% baiting
+* $\frac{11}{21} \times 100 = 52.4$% polite
+
+What's Expected by the Null
+==================
+incremental:  true
+
+```{r echo=FALSE}
+WeBe
+```
+
+* Cool weather 9 times.  Null expects:
+    - baiting 47.6% of 9 times = 4.28 times
+    - politeness 52.4% of 9 times = 4.72 times
+* Warm Weather 12 times.  Null expects:
+    - baiting 47.6% of 12 times = 5.71 times
+    - politeness 52.4% of 12 times = 6.29 times
+
+Expected Cell Counts
+================
+
+So the Null expects a table about like this ...
+
+```{r echo=FALSE}
+exp.counts <- function(tab) {
+  expected <- rowSums(tab) %*% t(colSums(tab))/sum(tab)
+  rownames(expected) <- rownames(tab)
+  colnames(expected) <- colnames(tab)
+  return(expected)
+}
+expWeBe <- exp.counts(WeBe)
+round(expWeBe,2)
+```
+
+... give or take some for chance variation in all of the factors that might affect crowd behavior.
+
+Formula for Expected Counts
+====================
+type:  prompt
+left:  50%
+
+In each cell, the count expected by the Null is:
+
+$$\frac{\text{rowSum} \times \text{colSum}}{\text{Grand Total}}.$$
+
+***
+
+```{r echo=FALSE}
+WeBe2 <- rbind(c(2,7),c(8,4))
+rownames(WeBe2) <- c("cool","warm")
+colnames(WeBe2) <- c("bait","polite")
+WeBe2
+```
+
+Example:
+
+For cool-baiting cell,
+
+$$\frac{(2+7) \times (2+8)}{21} = 4.29$$
+
+Observed vs. Expected
+==================
+left:  50%
+
+Observed:
+```{r echo=FALSE}
+WeBe2
+```
+Expected By Null:
+```{r echo=FALSE}
+round(expWeBe,2)
+```
+
+***
+Observed - Expected:
+```{r echo=FALSE}
+WeBe2-round(expWeBe,2)
+```
+
+The Chi-Square Statistic
+==================
+type:  prompt
+
+One Number to measure overall difference:
+
+$$\chi^2=\sum_{\text{all cells}} \frac{(\text{Observed}-\text{Expected})^2}{\text{Expected}}.$$
+
+This works out to:
+
+$$\frac{(2-4.29)^2}{4.29}+\frac{(7-4.71)^2}{4.71} \\
++\frac{(8-5.71)^2}{5.71}+\frac{(4-6.29)^2}{6.29} \\
+\approx 4.07$$
+
+Our Big Question
+=============
+
+* $\chi^2$ statistic is always $\geq 0$
+* the bigger it is, the more the data differ from what the Null expects
+
+Our Question is:
+
+>*What's the chance of getting 4.07 or more, if the Null is right?*
+
+This chance is called a *P-value.*
+
+Finding the P-Value
+=================
+
+Our strategy is *simulation*:
+
+* repeat the study many times, in a situation where the Null is correct
+* compute the $\chi^2$-statistic each time
+* keep track of how often it is $\geq 4.07$
+
+The P-value is $\approx$ the proportion of times the simulated $\chi^2$-statistic exceeds 4.07, the statistic we actually got.
+
+ChisqSimSlow()
+=================
+
+Here is an app to perform the simulation
+
+```{r eval=FALSE}
+require(manipulate)
+ChisqSimSlow(~weather+crowd.behavior,
+             data=ledgejump,
+             effects="fixed")
+```
+
+Deciding about the Null
+================
+type:  prompt
+
+A common convention is:
+
+>* If $P < 0.05$, we reject $H_0$
+* If $P \geq 0.05$, we fail to reject $H_0$
+
+General Social Survey, 2002
+================
+
+```{reval=FALSE}
+data(gss02)
+View(gss02)
+help(gss02)
+```
+
+(More information:  [General Social Survey]( http://www3.norc.org/gss+website/))
+
+Our Research Question:
+
+  >*Is there any association between one's race and whether or not one owns a gun?*
+
+Descriptive Aspect
+======================
+left:  40%
+
+```{r}
+RaceGun <- xtabs(
+  ~race+owngun,
+    data=gss02
+  )
+```
+***
+```{r}
+RaceGun
+```
+
+```{r eval=FALSE}
+rowPerc(RaceGun)
+```
+
+
+```{r echo=FALSE}
+rowPerc(RaceGun)[,1:2]
+```
+
+Inferential Aspect
+================
+
+Null and Alternative hypotheses:
+
+$H_0$:  In the U.S. population, race and gun ownership are not related.
+
+$H_a$:  In the U.S. population, race and gun ownership ARE related.
+
+Try it out:
+```{r eval=FALSE}
+ChisqSimSlow(~race+owngun,
+             data=gss02,effects="random")
+```
+
+Cool Facts
+===============
+type:  prompt
+
+For a two-way table, the "degrees of freedom" ($df$) are:
+
+$$df = (rows -1) \times (columns-1).$$
+
+If the Null is right, then:
+
+* $\chi^2$ should be about $df$,
+* give or take $\sqrt{2 \times df}$ or so.
+
+Example
+===============
+
+In the GSS 2002 race and gun study,
+
+$$df=(4-1) \times (2-1) = 3,$$
+
+so if the Null is right then:
+
+* $\chi^2$ should be about 3,
+* give or take $\sqrt{2 \times 3}=2.45$ or so.
+
+The actual value was $\chi^2=36.98$ --- far above what the Null expects!
+
+The Chi-Square test
+=================
+type:  section
+id:  chisq
+
+[Back to Contents](#/Contents)
+
+
+ChisqSimSlow is ...
+===============
+
+... awfully slow!
+
+(And unless you repeat many, many times, the approximation to the P-value is not so good!)
+
+chisqtestGC()
+=============
+
+chisqtestGC() computes chi-square statistic and P-value for you.
+
+We apply it in five steps.
+
+Research Question:
+
+>*Is there any relationship, in the Georgetown College population, between sex and seating preference?*
+
+Step One:  Hypotheses
+===================
+
+
+  >$H_0$:  In the GC population, sex and seating preference are not related.
+
+  >$H_a$:  In the GC population, sex and seating preference ARE related.
+
+Steps Two and Three
+=============
+
+* Step Two is computation of the $\chi^2$-statistic
+* Step Three is the computation of the P-value
+
+Usually these steps happen together:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,
+            data=m111survey)
+```
+
+  >$\chi^2 = 3.73$, and $P=0.155$.
+
+Step Four:  Decision about the Null
+==============
+
+  >Since $P=0.155 > 0.05$, we fail to reject $H_0$.
+
+Step Five:  Conclusion
+==============
+
+  >This study did not provide strong evidence that sex and seating preference are related, in the Georgetown College population.
+  
+A well-worded conclusion is:
+
+* non-technical (no "P-value", "$H_0$", etc.)
+* says how much evidence the study provides for $H_a$
+
+
+Simulating P-Values
+=================
+type:  section
+id:  sim
+
+[Back to Contents](#/Contents)
+
+Getting a Warning
+===============
+
+```{r eval=FALSE}
+chisqtestGC(~weather+crowd.behavior,
+             data=ledgejump)
+```
+
+You get a warning:
+
+  >"Some expected cell counts are low:  the approximation of the P-value may be unreliable.
+  Consider using simulation."
+  
+This warning occurs when some expected cell counts are less than 5.
+
+Consider using the `simulate.p.value` argument.
+
+Option:  "fixed"
+================
+
+In `ledgejump`, the 21 incidents remain the fixed during re-sampling:
+
+* 9 cool-weather
+* 12 warm-weather
+
+Only the response (baiting,polite) varied.
+
+For this type of simulation, use:
+
+```{r eval=FALSE}
+chisqtestGC(~weather+crowd.behavior,
+             data=ledgejump,
+             simulate.p.value="fixed",
+             B=2500,
+             graph=TRUE)
+```
+
+
+Option:  "random"
+================
+
+In `m111survey`, the 71 students were a random sample from the GC population.
+
+In re-sampling, both **sex** *and* the response **seat** will vary.
+
+For this type of simulation, use:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,
+             data=m111survey,
+             simulate.p.value="random",
+             B=2500,
+             graph=TRUE)
+```
+
+Option:  TRUE
+==============
+
+If you are in doubt, just use:
+
+```{r eval=FALSE}
+chisqtestGC(~sex+seat,
+             data=m111survey,
+             simulate.p.value=TRUE,
+             B=2500)
+```
+
+R will run a re-sampling routine of its own.
+

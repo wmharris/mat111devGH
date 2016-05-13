@@ -1,0 +1,95 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Wednesday, March 25 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Check that Sample
+
+Be a good doobie, and check the sample in the previous practice problem:
+
+```{r}
+densityplot(~sleep,data=m111survey,
+            main="Sleep Last Night",
+            xlab="hours of sleep")
+```
+
+The sample size was 71, which is pretty big. If it had been only 25 and the graph looked like this, do you think it would still be OK to use ttestGC() to make a confidence interval for $\mu$?
+
+
+
+# Sleep for Guys and Gals
+
+
+Research Question: Do guys and gals at GC differ in the amount of sleep they get, on average?
+
+Let $\mu_1$ be the mean amount of sleep for all GC females.
+
+Let $\mu_2$ be the mean amount of sleep for all GC males.
+
+## Part A
+
+Use `ttestGC()` to find a 95%-confidence interval for $\mu_1-\mu_2$.  Put the necessary code in the chunk below:
+
+```{r}
+
+```
+
+
+## Part B
+
+Do the data allow you to conclude that GC gals get less sleep, average, than guys do?
+
+
+
+# Spider Sppeds, Agains
+
+Define $\mu_d$ to be the mean difference in sprinting speeds for ALL Tidarren spiders (after amputation minus before amputation).
+
+## Part A
+
+Use `ttestGC()` to make a 95%-confidence interval for $\mu_d$.  Put the necessary code in the chunk below.  (First make sure you know how to spell the variable names!)
+
+```{r}
+
+```
+
+
+## Part B
+
+Based on the data, can you conclude that losing a pedipalp increases a spider's sprinting speed?  Why or why not?
+
+
+
+# Exploring Safety Checks
+
+## Part A
+
+Try the Shiny app "Intervals for One Mean" with:
+
+* the population set at "Way-Out Outlier Group"
+* sample size at n = 10
+* confidence level set at 95%
+
+Take at least 10,000 samples.
+
+What percent of the time did your confidence intervals contain the mean of the population?
+
+
+
+Describe the distribtuion of the t-statistics? Does it resemble the t-curve very closely?
+
+## Part B
+
+Try the same things again, but with sample size set at n = 50. Even at sample size 50, can you fully "trust" confidence intervals based on samples from this population?
+
+
+

@@ -1,0 +1,83 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "02/04/2016"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(tigerstats)
+```
+
+# Inference for Sex and Belief in Love at First Sight
+
+Try the simulation app for the question about sex and belief in love at first sight:
+
+
+```{r eval=FALSE}
+chisqSh(~ sex + love_first, data = m111survey)
+```
+
+How many times did you re-sample?
+
+
+
+What percentage of the time did the re sampled chi-square statistic exceed the chi-square statistic in the actual study?
+
+
+
+Do you think there is overwhelming evidence that in the GC population the two sexes differ in whether they believe in love at first sight?
+
+
+# chisqtestGC() on the sex and love at first sight Question
+
+Here's the code for a chi-square test to see if sex and belief in love at first sight are related in the GC population.  Run the code:
+
+```{r}
+chisqtestGC(~sex+love_first,data=m111survey,
+            graph=TRUE)
+```
+
+Now look at the output and answer these question:
+
+What's the test statistic?
+
+
+
+About how big should it be if the Null is correct?
+
+
+
+What's the P-value?
+
+
+# Race and Gun Owndership
+
+Are race and gun owndership related in the U.S. population?  In the code chunk below, insert the code needed to use chisqtestGC() to investigate this question.  **Tip**:  copy-paste and then modify the code from the previous problem.
+
+
+```{r}
+
+```
+
+
+Looking at the output, answer the following questions.
+
+What's the test statistic?
+
+
+
+About how big should it be if the Null is correct?
+
+
+
+What's the P-value?
+
+
+
+Do you think we have strong evidence for a relationship in the population, or could the pattern in the data be due just to chance?
+
+
+
+
+Do you think we have strong evidence for a relationship in the population, or could the pattern in the data be due just to chance?

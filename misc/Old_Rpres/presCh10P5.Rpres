@@ -1,0 +1,370 @@
+Tests of Significance (Pt. 5)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 5:
+============
+id: Contents
+
+- [Limited Reporting:  A Poor Practice](#/limited)
+- [The Perils of Data Snooping](#/snoop)
+
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+
+Limited Reporting
+===================
+type:  section
+id:  limited
+
+[Back to Contents](#/Contents)
+
+
+Research Question
+=======================
+
+  >*I wonder if any of my friends possess telekinetic powers?*
+  
+* You gather twenty friends.
+* Each friend flips a fair coin 100 times.
+* While flipping, he/she tries to make it land Heads, by "concentrating" on it.
+
+The First Ten Results
+================
+
+```{r echo=FALSE}
+set.seed(33192)
+CoinFlips <- rbinom(20,size=100,p=0.5)
+CoinData <- data.frame(heads=CoinFlips)
+```
+
+```
+   heads
+1     57
+2     54
+3     57
+4     61 (wow!!)
+5     45
+6     52
+7     60 (hmm!)
+8     52
+9     48
+10    57
+```
+
+The Next Ten Results
+======================
+
+```
+11    58 (hmm ...)
+12    58 (hmm ...)
+13    51
+14    46
+15    49
+16    53
+17    51
+18    51
+19    48
+20    46
+```
+
+Focus In
+==============
+
+Your attention is especially drawn to Friend #4, who got 61 heads.
+
+  >*Is Friend #4's performance strong evidence that for her the coin had more than a 50% chance of coming up Heads?*
+  
+Significance Test
+==================
+
+Let
+
+$p =$ chance that the coin lands Heads when friend #4 concentrates on it.
+
+Hypotheses are:
+
+  >$H_0: p=0.50$  (no telekinesis)
+  
+  >$H_a:  p > 0.50$ (something is afoot!)
+  
+Code and Results
+================
+
+```{r eval=FALSE}
+binomtestGC(x=61,n=100,p=0.50,
+          alternative="greater")
+```
+
+$P$-value is
+
+$$P(\text{Heads} \geq 61 \vert p=0.50) = 0.0176.$$
+
+* You reject $H_0$.
+* You conclude that there is strong evidence that friend #4 has telekinetic powers, to some extent.
+
+Obvious Problem
+====================
+
+You ignored the data from the other 19 friends!
+
+* You need to take all of your data into account
+* your $P$-value should reflect this
+
+Better P-Value
+==================
+
+The $P$-value should be
+
+$$P(\text{at least one friend gets } \geq 61 \text{ heads} \vert p=0.50)$$
+
+Function to Investigate
+=====================
+
+Teach R this function
+
+```{r eval=FALSE}
+HeadMax <- 
+  function(friends,
+           flips,
+           coin)
+  {return(max(rbinom(friends,
+                size=flips,
+                prob=coin)))}
+```
+
+This will simulate gathering friends and making them flip coins a certain number of times.  It will return the largest number of heads obtained.
+
+Try it Out
+=================
+
+Try this a few times.
+
+```{r eval=FALSE}
+HeadMax(friends=20,
+        flips=100,
+        coin=0.5)
+```
+
+Is it so unusual to get a friend with 61 or more Heads?
+
+In Fact ...
+==========
+
+```{r echo=FALSE}
+p.value <- pbinom(0,size=20,
+       prob=pbinom(60,size=100,prob=0.5,lower.tail=FALSE),
+       lower.tail=FALSE)
+```
+
+
+$$P(\text{at least one friend gets } \geq 61 \text{ heads} \vert p=0.50) \\\
+\approx `r round(p.value,3)`$$
+
+The total data provides essentially no evidence of telekinesis!
+
+Limited Reporting
+=====================
+type:  alert
+
+If:
+
+* one portion of your data shows an interesting pattern, and
+* the rest does not
+
+do NOT test and report only on the interesting portion!
+
+Data Snooping
+===================
+type:  section
+id:  snoop
+
+[Back to Contents](#/Contents)
+
+Attitudes
+===============
+
+```{r eval=FALSE}
+data(attitudes)
+View(attitudes)
+help(attitudes)
+```
+
+Primary Research Questions
+===========================
+
+When the study was conducted, researchers were primarily interested in the following questions:
+
+* Does suggested race of defendant affect the sentence recommended?
+* Does suggested race of victim affect the sentence recommended?
+* Does the way one lost one's money affect the decision about whether to attend the concert anyway?
+
+Other Questions
+===================
+
+But the data frame has many variables, so many other Research Questions suggest themselves to us.
+
+New Research Question
+===================
+
+  >*Who is harder on crime:  a GC female or a GC male?*
+  
+```{r eval=FALSE}
+favstats(sentence~sex,data=attitudes)
+```
+
+```{r echo=FALSE}
+favstats(sentence~sex,data=attitudes)[c(".group","mean","sd","n")]
+```
+
+Probably not much going on, here.
+
+
+New Research Question
+===================
+
+  >*Who is more likely to decide to attend the rock concert anyway:  a GC female or a GC male?*
+  
+
+```{r}
+SexRock <- xtabs(~sex+conc.decision,
+                 data=attitudes)
+rowPerc(SexRock)
+```
+
+Probably not much going on, here, either.
+
+New Research Question
+=========================
+
+  >*Who is harder on crime:  A GC student who would decide to atttend the rock concert or a GC student who decide not to attend?*
+  
+```{r eval=FALSE}
+favstats(sentence~conc.decision,data=attitudes)
+```
+
+```{r echo=FALSE}
+favstats(sentence~conc.decision,data=attitudes)[c(".group","mean","sd","n")]
+```
+
+Hmm, more than 4 years difference between the sample means!
+
+A Graph
+==============
+
+```{r setenceticket,echo=FALSE,fig.cap="Sentence and Ticket Decision",fig.width=25,fig.height=15}
+densityplot(~sentence,data=attitudes,groups=conc.decision,
+            auto.key=TRUE,main="Sentence by Ticket Decision",
+            from=2,to=50)
+```
+
+
+
+Better Run A Test!
+==================
+
+Parameters and Hypotheses
+
+  >$\mu_1 =$ mean sentence recommended by all GC students who would buy a ticket to the rock concert
+  
+  >$\mu_2 =$ mean sentence recommended by all GC students who would NOT buy a ticket to the rock concert
+  
+
+  >$H_0: \mu_1-\mu_2 = 0$
+  
+  >$H_a: \mu_1-\mu_2 \neq 0$
+  
+The Code
+===============
+
+```{r eval=FALSE}
+ttestGC(sentence~conc.decision,
+        data=attitudes,
+        mu=0,
+        first="buy")
+```
+
+
+Some Results
+==============
+
+```
+Test Statistic:  	t = 2.172 
+Degrees of Freedom:	  198.6 
+P-value:		P = 0.03102
+```
+
+* We reject $H_0$
+* We conclude that this data provides strong evidence that GC students who are inclined to spend money on rock concerts are harder on crime.
+
+Problem
+============
+
+* We did not plan, in advance of collecting the data, to perform this test.
+
+* We decided to perform the test BASED UPON an interesting pattern that we noticed in the data after we collected it.
+
+Data Snooping
+==============
+type:  prompt
+
+*Data snooping* is:
+
+  >the practice of performing an inferential procedure on data, based upon a pattern that you observe in it.
+  
+Curiosity is Good ...
+===================
+
+... but if
+
+* you look at the data from **many** points of view
+* and perform inferential procedures on the "angles" that look interesting
+
+then
+
+* you are liable to conclude statistical significance when there was only chance variation (Type-I errors)
+
+How Many Points of View
+======================
+
+* Humans are very good at detecting patterns.
+* For every pattern we notice, there may be thousands that we *would* have noticed had they been present.
+* In reality, we look at data from many, many points of view, without even knowing it!
+
+
+What to Do?
+===============
+
+* We should not shut down our curiosity.
+* Performing tests helps us to tell the difference between chance variation and a "real" pattern.
+
+So we suggest you distinguish between
+
+* Primary Research Questions (decided upon in advance of collecting data)
+* Secondary Research Questions (that occurred to you after you looked at the data)
+
+A Guideline
+===================
+
+  >Conclusions for Secondary Research questions should be cast as highly provisional!  They are more like an invitation to others to investigate further, with new data.
+
+
+
+

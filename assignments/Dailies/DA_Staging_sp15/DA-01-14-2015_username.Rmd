@@ -1,0 +1,42 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "01/14/2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(tigerstats)
+```
+
+
+
+
+# Dolphin Communication:  Your Coin Flips
+
+
+Imagine you are a dumb dolphin who can't communicate and guesses randomly.  Each guess is like a coin flip:
+
+* Heads, you get a fish treat
+* Tails you don't
+
+Flip your coin 16 times. How many heads did you get?
+
+
+## Dolphins Again:  Your App Simulations
+
+
+How many times did you simulate?
+
+
+
+What percentage of the time did you get 15 or more heads?
+
+
+
+Suppose Buzz is just guessing: about what's the chance that he would get 15 or more correct?
+
+
+
+Based on your results, do you think we have strong evidence that Buzz and Doris can communicate?

@@ -1,0 +1,229 @@
+Probability in Sampling (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+============
+id: Contents
+
+Our topic:
+
+  >defining parameters when you are performing an *experiment.*
+  
+There are two cases to consider:
+
+- [Subjects Randomly Sampled From Population](#/random)
+- [Subjects Not Representative of Population](#/notrandom)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Subjects a Random Sample
+===================
+type:  section
+id:  random
+
+[Back to Contents](#/Contents)
+
+Two Treatment Groups
+==============================
+
+Here we discuss how to identify and define parameters of interest when you are performing an experiment with two treatment groups.
+
+* The two treatments correspond to the two values of the explanatory variable.
+
+* In this course, such experiments deal with only two of the Basic Five Parameters:
+
+| Parameter | Estimator |
+|:---------:|:----------:|
+| difference of two means $\mu_1-\mu_2$ | $\bar{x}_1-\bar{x}_2$ |
+| difference of two proportions $p_1 - p_2$ | $\hat{p}_1-\hat{p}_2$ |
+
+
+Example
+==========================
+
+Learn about `m111surveyfa12`:
+
+```{r eval=FALSE}
+data(m111surveyfa12)
+View(m111surveyfa12)
+help(m111surveyfa12)
+```
+
+The 89 subjects are a random sample from the GC population.
+
+Population of Canada?
+==============================
+
+One question asked for the population of Canada (see variable **canada**), but was asked on survey forms in two different ways.  Some subjects were asked:
+
+  >"The population of Australia is about 23 million.  What do you think is the population of Canada?  (Give your answer in millions.)"
+
+Other subjects were asked:
+
+  >"The population of the United States is about 312 million.  What do you think is the population of Canada?  (Give your answer in millions.)"
+
+
+"Anchors" Differed
+=========================
+
+* For one group, population of Australia (small number) was the anchor.
+* For the other group, population of U.S. (large) was the anchor.
+
+Research Question was:
+
+  >*For GC students, are the estimates of Canada's population affected by anchoring information?*
+  
+Variable Analysis
+=======================
+
+* Explanatory variable is **anchor**
+    * it is a factor variable with two values ("australia","united_states")
+* Response variable is **canada**
+    * it is numerical
+    
+Definition of Parameters
+=============================
+
+Let
+
+  >$\mu_1 =$ mean estimate of population of Canada, in millions, given by ALL GC students, if all of them could have taken the survey with the Australia anchor.
+  
+Also let
+
+  >$\mu_2 =$ mean estimate of population of Canada, in millions, given by ALL GC students, if all of them could have taken the survey with the United States anchor.
+
+We are interested in $\mu_1-\mu_2$.
+
+One Population, Treated Two Ways
+=================================
+
+In this experiment, there is only one population:
+
+  >*all Georgetown College students.*
+  
+But we imagine it treated in two different ways:
+
+* all get the Australia anchor
+* all get the United States anchor
+
+The parameters describe this single population, treated (hypothetically) in these two different ways.
+
+Considerations of Chance
+==============================
+
+We do NOT have two independent samples from two different populations.
+
+But:
+
+* if the treatment groups are small compared to the population, and
+* if the subjects were randomized into their groups
+
+then
+
+* formula for EV of $\bar{x}_1-\bar{x}_2$ is still valid, and
+* formula for SD of $\bar{x}_1-\bar{x}_2$ is still approximately valid.
+
+
+Subjects Not Representative
+===================
+type:  section
+id:  not random
+
+[Back to Contents](#/Contents)
+
+
+Example
+==========================
+
+Recall about `knifeorgunblock`:
+
+```{r eval=FALSE}
+data(knifeorgunblock)
+View(knifeorgunblock)
+help(knifeorgunblock)
+```
+
+The 20 subjects are NOT a random sample from any larger population!  (Who volunteers to be *killed*??)
+
+Treatments Differed
+=========================
+
+* One group of subjects was slain with a knife.
+* The other group was slain by a gun.
+
+Research Question was:
+
+  >*What makes a person yell louder:  being killed by a knife or being killed by a gun?*
+  
+Variable Analysis
+=======================
+
+* Explanatory variable is **group**
+    * it is a factor variable with two values ("knife", "gun")
+* Response variable is **volume** (of the expiring subject's cries)
+    * it is numerical
+    
+Definition of Parameters
+=============================
+
+Let
+
+  >$\mu_1 =$ mean volume of dying screams for ALL twenty subjects, if all of them could have been killed with a knife.
+  
+Also let
+
+  >$\mu_2 =$ mean volume of dying screams for ALL twenty subjects, if all of them could have been killed with a gun.
+
+We are interested in $\mu_1-\mu_2$.
+
+One Population, Treated Two Ways
+=================================
+
+In this experiment, again there is one population, but it is just
+
+  >*the twenty people who volunteered.*
+  
+Again we imagine it treated in two different ways:
+
+* all killed by knife
+* all killed by gun
+
+The results of the experiment will not apply beyond the twenty subjects themselves.
+
+Considerations of Chance
+==============================
+
+Our two "samples" (the two treatment groups) are not independent at all.  But subjects **were** randomized into groups.
+
+Statistical theory says:
+
+* if subjects are randomized into the two groups
+
+then:
+
+* formula for EV of $\bar{x}_1-\bar{x}_2$ is still valid.
+* formula for SD of $\bar{x}_1-\bar{x}_2$ still approximately valid (usually a bit larger than true SD).
+
+Final Note
+==================
+
+For ANY experiment:
+
+
+  >If you employ blocking, then SD of $\bar{x}_1-\bar{x}_2$ is actually *smaller* than the formula we have learned.

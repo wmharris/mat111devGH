@@ -1,0 +1,578 @@
+Probability in Sampling (Pt. 1)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 1:
+============
+id: Contents
+
+- [Parameters and Statistics](#/paramstat)
+- [Five Parameters](#/param)
+- [One Mean](#/onemean)
+- [One Proportion](#/oneprop)
+- [Difference of Two Means](#/diffmeans)
+- [Difference of Two Proportions](#/diffprops)
+- [Mean of Differences](#meandiffs)
+- [Tips](#/tips)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+Parameters and Statistics
+===================
+type:  section
+id:  paramstat
+
+[Back to Contents](#/Contents)
+
+
+Definitions
+====================
+type:  prompt
+
+  >A *parameter* is a number associated with a population.
+  
+
+* It does not depend on chance
+* but usually is unknown
+  
+  >A *statistic* is a number we compute from the sample data
+
+
+* It can be known (we have the data)
+* but it depends on sample (and so depends on chance)
+
+
+Estimators
+====================
+type:  prompt
+
+We often use a statistic to *estimate* a parameter.
+
+Examples:
+
+| Parameter | Estimator |
+|:---------:|:----------:|
+| population mean $\mu$ | sample mean $\bar{x}$ |
+| population SD $\sigma$ | sample SD $s$ |
+| population median | median of sample |
+| population Q3 | Q3 of sample |
+
+We hope that usually
+
+$$\textbf{estimator} \approx \textbf{parameter}$$
+
+Reminder: An App
+================
+
+Our imaginary population:
+
+```{r eval=FALSE}
+data(imagpop)
+View(imagpop)
+```
+
+
+```{r eval=FALSE}
+require(manipulate)
+SimpleRandom()
+```
+
+* `favstats()` for the sample gives estimators (vary)
+* `favstats()` for the population gives parameters (fixed)
+
+
+The bigger the sample size, the more likely it is that
+
+$$\textbf{estimator} \approx \textbf{parameter}$$
+
+
+
+
+The Basic Five Parameters
+===================
+type:  section
+id:  param
+
+[Back to Contents](#/Contents)
+
+Five Important Parameters
+=============================
+type:  prompt
+
+| Parameter | Estimator |
+|:---------:|:----------:|
+| one mean $\mu$ | sample mean $\bar{x}$ |
+| one proportion $p$ | sample proportion $\hat{p}$ |
+| difference of two means $\mu_1-\mu_2$ | $\bar{x}_1-\bar{x}_2$ |
+| difference of two proportions $p_1 - p_2$ | $\hat{p}_1-\hat{p}_2$ |
+| mean of differences $\mu_d$ | sample mean of differences $\bar{d}$ |
+
+
+One Mean
+===================
+type:  section
+id:  onemean
+
+[Back to Contents](#/Contents)
+
+Research Question
+========================
+
+>*Is the mean height in `imagpop` more than 66 inches?*
+
+Parameter of Interest
+=========================
+
+One population mean.  Let's define it:
+
+  >Let $\mu =$ the mean height of all people in `imagpop`.
+
+The Estimator
+=====================
+
+The mean of the sample, $\bar{x}$.
+
+This is a random variable, and it has an expected value and a standard deviation:
+
+$$EV(\bar{x}) = \mu \\
+SD(\bar{x}) = \frac{\sigma}{\sqrt{n}}$$
+
+where
+
+* $\sigma$ is the SD of the population
+* $n$ is the sample size
+
+
+
+One Proportion
+===================
+type:  section
+id:  oneprop
+
+[Back to Contents](#/Contents)
+
+Research Question
+========================
+
+>*Are more than 5% of the people in `imagpop` math majors?*
+
+Parameter of Interest
+=========================
+
+One population proportion.  Let's define it:
+
+  >Let $p =$ the proportion of all people in `imagpop` who are math majors.
+
+The Estimator
+=====================
+
+The sample proportion:
+
+$$\hat{p}=\frac{\textbf{number in sample who are math majors}}{\textbf{sample size}}.$$
+
+This is a random variable, and it has an expected value and a standard deviation:
+
+$$EV(\hat{p}) = p \\
+SD(\hat{p}) = \sqrt{\frac{p(1-p)}{n}}$$
+
+where $n$ is the sample size.
+
+
+Difference of Two Means
+===================
+type:  section
+id:  diffmeans
+
+[Back to Contents](#/Contents)
+
+Research Question
+========================
+
+>*We wonder how much taller the guys in `imagpop` are, on average, than the gals in `imagpop`.*
+
+
+
+Parameter of Interest
+=========================
+Divide `imagpop` into two separate populations:  all of the females, and all of the males.  The parameters are:
+
+  >$\mu_1$ = mean height of all males in `imagpop`
+
+and
+
+  >$\mu_2$ = mean height of all females in `imagpop`.
+
+We are interested in the value of $\mu_1-\mu_2$:
+
+* if $\mu_1-\mu_2 >0$, then guys are taller, on average
+* if $\mu_1-\mu_2 <0$, then gals are taller, on average
+
+
+The Estimator
+=====================
+
+* We take a simple random sample of size $n_1$ of guys, computing sample mean $\bar{x}_1$.
+* We take an *independent* simple random sample of size $n_2$ of gals, computing sample mean $\bar{x}_2$.
+
+The estimator is $\bar{x}_1 - \bar{x}_2$, the difference of sample means.
+
+$$EV(\bar{x}_1 - \bar{x}_2) = \mu_1-\mu_2 \\
+SD(\bar{x}_1-\bar{x}_2)=\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$$
+
+where $\sigma_1$ and $\sigma_2$ are the population SDs.
+
+Practice Problem
+=================
+
+Fill in the blanks:
+
+>If you take a simple random sample of 25 guys and an independent simple random sample of 36 gals from `imagpop`, and compute $\bar{x}_1 - \bar{x}_2$, then it should turn out to be about ___________, give or take ____________ or so.
+
+Solution
+===============
+
+We need:
+
+$$EV(\bar{x}_1 - \bar{x}_2) = \mu_1-\mu_2 \\
+SD(\bar{x}_1-\bar{x}_2)=\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$$
+
+Fortunately, we have data for all of `imagpop`!
+
+Solution
+================
+
+We already know:
+
+* $n_1 = 25$
+* $n_2 = 36$
+
+For the other parameters:
+
+```{r}
+favstats(height~sex,
+  data=imagpop)[c(".group","mean","sd")]
+```
+
+Solution
+================
+
+$\mu_1-\mu_2 = 70.03-65.00 = 5.03.$
+
+For $SD(\bar{x}_1-\bar{x}_2)=\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}$, use R as calculator:
+
+```{r}
+sqrt(3.013^2/25+2.962^2/36)
+```
+
+Solution
+=================
+
+So we say:
+
+  >"$\bar{x}_1 - \bar{x}_2$ should be about 5.03 inches, give or take 0.78 inches or so."
+
+Difference of Two Proportions
+===================
+type:  section
+id:  diffprops
+
+[Back to Contents](#/Contents)
+
+Research Question
+======================
+
+  >*In `imagpop`, who is more likely to favor capital punishment:  a female or a male?*
+  
+Parameter of Interest
+=====================
+Divide `imagpop` into two separate populations:  all of the females, and all of the males.  The parameters are:
+
+  >$p_1$ = proportion of all females in `imagpop` who favor capital punishment
+
+and
+
+  >$p_2$ = proportion of all males in `imagpop` who favor capital punishment.
+
+We are interested in the value of $p_1-p_2$.
+
+The Estimator
+=====================
+
+* We take a simple random sample of size $n_1$ of gals, computing sample proportion $\hat{p}_1$.
+* We take an *independent* simple random sample of size $n_2$ of guys, computing sample proportion $\hat{p}_2$.
+
+The estimator is $\hat{p}_1 - \hat{p}_2$, the difference of sample proportions.
+
+$$EV(\hat{p}_1 - \hat{p}_2) = p_1-p_2 \\
+SD(\hat{p}_1 - \hat{p}_2) = \sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$$
+
+
+Mean of Differences
+===================
+type:  section
+id:  meandiffs
+
+[Back to Contents](#/Contents)
+
+Research Question
+=======================
+
+We will go back to `mat111survey`:
+
+```{r eval=FALSE}
+data(m111survey)
+View(m111survey)
+```
+
+Research Question:
+
+  >*Do people at Georgetown College want to be taller than they actually are?*
+  
+Parameter of Interest
+===========================
+
+Each person in the population has:
+
+* an ideal height
+* an actual height
+
+We are interested in the *differences*, for each person.  So we are interested in:
+
+  >$\mu_d$ = mean difference (ideal height minus actual height) for all people in the Georgetown College population.
+  
+Estimator
+====================
+
+* We take a simple random sample of size $n$ for the population
+* record ideal height and actual height for each person
+* compute the difference (ideal minus actual) for each person
+* compute the mean of these differences (written $\bar{d}$)
+
+
+$$EV(\bar{d}) = \mu_d \\
+SD(\bar{d})=\frac{\sigma_d}{\sqrt{n}}$$
+
+where $\sigma_d$ is the SD of the differences for the population.
+
+Tips for Identifying the Parameter
+===================================
+type:  section
+
+[Back to Contents](#/Contents)
+
+Keywords
+===============
+
+  >*On average*, do the people in `imagpop` make more than 38,000 dollars per year?
+
+"On average" often indicates a mean.
+
+Parameter is:
+
+  >$\mu =$ mean income of all people in `imagpop`.
+  
+Keywords
+==================
+
+  >Do a *majority* of people in `imagpop` favor capital punishment?
+  
+Words like "majority" and "minority" often indicate an interest in a proportion.
+
+The parameter is:
+
+  >$p =$ proportion of all people in `imagpop` who favor capital punishment.
+  
+Variable Analysis
+===================
+type:  prompt
+
+When the Research Question involves two variables:
+
+* identify and each variable
+* if relevant, decide which is explanatory and which is response
+* classify each one (factor?  numerical?)
+* for each factor, count how many levels it has
+
+
+Variable Analysis:  Example 1
+==============================
+
+Research Question:
+
+  >*On average, who drives faster at GC:  a guy or a gal?*
+  
+Variable Analysis:
+
+* One variable is **sex**
+    * it is the explanatory variable
+    * it is a factor
+    * it has two values:  "male" and "female"
+* The other variable is **fastest**:
+    * it is the response variable
+    * it is numerical
+    
+Variable Analysis:  Example 1
+================================
+
+If
+
+* explanatory variable is a factor with two values, and
+* response variable is numerical
+
+then we are probably interested in the difference of two means.
+
+(In this Research Question, the keyword "average" further supports this idea.)
+
+Variable Analysis:  Example 1
+================================
+
+So we define
+
+  >$\mu_1 =$ mean fastest speed ever driven, for all males at GC.
+  
+and
+
+  >$\mu_2 =$ mean fastest speed ever driven, for all females at GC.
+  
+We are interested in $\mu_1-\mu_2$.
+
+Variable Analysis:  Example 2
+================================
+
+Research Question:
+
+  >*At GC, who is more likely to believe in love at first sight:  a guy or a gal?*
+  
+Variable Analysis:
+
+* One variable is **sex**
+    * it is the explanatory variable
+    * it is a factor with two values ("male","female")
+* The other variable is **love_first**:
+    * it is the response variable
+    * it is a factor with two values ("no","yes")
+    
+
+Variable Analysis:  Example 2
+================================
+
+If
+
+* explanatory variable is a factor with two values, and
+* response variable is a factor with two values
+
+then we are probably interested in the difference of two proportions.
+
+(Proportions can stand for probabilities, so in this Research Question, the keyword "likely" further points toward proportions.)
+
+Variable Analysis:  Example 2
+=============================
+
+So we define
+
+  >$p_1 =$ proportion of all males at GC who believe in love at first sight.
+  
+and
+
+  >$p_2 =$ proportion of all females at GC who believe in love at first sight.
+  
+We are interested in $p_1-p_2$.
+
+Variable Analysis:  Example 3
+==================================
+
+Research Question:
+
+  >*On average, do people at GC want to be taller than they actually are?
+  
+Variable Analysis:
+
+* One variable is **height**
+    * it is numerical
+* The other variable is **ideal_height**:
+    * it is numerical
+
+Explanatory/Response distinction does not apply here:  we have repeated measures instead.
+
+
+Variable Analysis:  Example 3
+==================================
+
+When
+
+* you are in a repeated measures or matched pairs situation, and
+* both variables are numerical
+
+then you are probably interested in the mean of differences.
+
+Variable Analysis:  Example 3
+==================================
+
+So we are interested in
+
+  >$\mu_d =$ mean difference (ideal height minus actual height) for all students at Georgetown College.
+  
+Not Everything Fits In!
+========================
+type:  alert
+
+Many Research Questions do not involve one of the Big Five Parameters!
+
+Non-Fit:  Example 1
+========================
+
+  >At GC, do males and females differ in their seating preferences?
+  
+* Explanatory variable is **sex**
+    * it is a factor with two values ("male","female")
+* Response variable is **seat**:
+    * it is a factor with THREE values ("front","middle","back")
+    
+Non-Fit:  Example 1
+===========================
+
+When a variable has three or more values, you can't directly think about it with a proportion.
+
+But since both variables are factors, we can still study the Research Question with:
+
+* two-way tables
+* the $\chi^2$-test
+
+Non-Fit:  Example 2
+========================
+
+  >At GC, who has the highest GPA, on average:  a person who prefers to sit in the back, the middle or the front?
+  
+* Explanatory variable is **seat**:
+    * it is a factor with THREE values ("front","middle","back") 
+  * Response variable is **GPA**:
+      * it is numerical
+
+
+Non-Fit:  Example 2
+========================
+
+When the explanatory variable is a factor with three or more values, none of the Big Five Parameters apply.
+
+This time we appear to be interested in THREE means:
+
+  >$\mu_f =$ mean GPA of all students at GC who prefer the front
+  
+  >$\mu_m =$ mean GPA of all students at GC who prefer the middle
+  
+  >$\mu_b =$ mean GPA of all students at GC who prefer the back

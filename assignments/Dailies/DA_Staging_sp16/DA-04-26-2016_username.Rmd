@@ -1,0 +1,98 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday, April 26 2016"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tigerstats)
+```
+
+
+# Spider Speeds (one last time!)
+
+Does losing a pedipalp affect the sprinting speed of a Tidarren spider?
+
+Let $\mu_d$ be the mean difference in speed (after amputation minus before) for all Tidarren spiders.
+
+$H_0:  \mu_d = 0$
+
+$H_a:  \mu_d \neq 0$
+
+
+## Part a
+
+
+Perform the test of significance.  Do this by modifying the code below:
+
+```{r}
+ttestGC(~jiffrating-greatvaluerating,
+      data=labels, mu=0)
+```
+
+
+## Part b
+
+What's the value of the test statistic?
+
+
+By how many standard errors does the sample mean of differences $\bar{d}$ differ from 0?
+
+
+What's the P-value?
+
+
+If amputation makes no difference in speed, on average, then what's the chance of getting a test statistic at least as far form 0 as the one we actually got?
+
+
+What should we do with the Null Hypothesis this time?  Reject it or not?
+
+
+Do you think that the data provided strong evidence that amputation makes a difference in speed, on average?
+
+
+
+
+
+# Type-I and Type-II Errors
+
+I plan to test:
+
+* $H_0:  \mu = 50$
+* $H_a:  \mu \neq 50$
+
+Unknown to me, the mean of the population is 52.
+
+
+Can I make a Type-I error?
+
+
+Can I make a Type-II error?
+
+
+# Sagebrush Crickets
+
+What do you think?  Should we trust the results of the t-test?  Or should we ask a statistician for advice on how to analyze the data inferentially?
+
+
+# Miguel Cabrera
+
+In the 2014 Major League season, Detroit Tiger Miguel Cabrera had a batting average of .313 on 611 at-bats. Can we conclude from this data that in 2014 his chance of getting a hit was more than 30%?
+
+Define $p$ to be the probability that Cabrera gets a hit when he is at bat.
+
+* $H_0: p=0.3$
+* $H_a: p \neq 0.3$
+
+Perform the two sided test with binomtestGC(), using the summary data:
+
+What should you enter for n, the number of trials?
+
+What should you enter for x, the number of successes?
+
+What should you enter for p?
+
+Can you conclude that Cabrera's chance was better than 30%?
+
+

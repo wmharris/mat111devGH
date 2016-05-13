@@ -1,0 +1,409 @@
+Describing Patterns in Data (Pt. 2)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+In Part 2:
+=============
+id:  Contents
+
+- [One Numerical Variable:  Graphical Tools](#/NumGraph)
+    - Histograms
+    - Density Plots
+- [Terminology for Describing Shape](#/Terms)
+- [An Imaginary Population](#/Imagpop)
+- [Boxplots](#/Boxplots)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+One Numerical Variable
+===============
+type:  section
+id:  NumGraph
+
+(Graphical Tools)
+
+[Back to Contents](#/Contents)
+
+Graph Tool:  Histogram
+===============
+left:  70%
+
+```{r echo=FALSE,fig.width=15,fig.height=10}
+histogram(~fastest,
+          data=m111survey,
+          type="count",
+         xlab=list(label="speed (mph)",cex=2),
+         ylab=list(cex=2.5),
+         main=list(label="Distribution of Fastest Speed Driven",cex=2.5),
+         breaks=seq(60,200,by=20),
+         scales=list(cex=2.5))
+```
+
+***
+
+A *frequency* histogram.
+
+* 30 people drove between 80 and 100 mph.
+* One person drove between 190 and 200 mph.
+
+
+Graph Tool:  Histogram
+===============
+left:  70%
+
+```{r echo=FALSE,fig.width=15,fig.height=10}
+histogram(~fastest,
+          data=m111survey,
+          type="percent",
+         xlab=list(label="speed (mph)",cex=2),
+         ylab=list(cex=2.5),
+         main=list(label="Distribution of Fastest Speed Driven",cex=2.5),
+         breaks=seq(60,200,by=20),
+         scales=list(cex=2.5))
+```
+
+***
+
+A *relative frequency* histogram.
+
+* 42% drove between 80 and 100 mph.
+* 7% drove between 60 and 80 mph.
+
+
+Graph Tool:  Histogram
+===============
+left:  70%
+
+```{r echo=FALSE,fig.width=15,fig.height=10}
+histogram(~fastest,
+          data=m111survey,
+          type="density",
+         xlab=list(label="speed (mph)",cex=2),
+         ylab=list(cex=2.5),
+         main=list(label="Distribution of Fastest Speed Driven",cex=2.5),
+         breaks=seq(60,200,by=20),
+         scales=list(cex=2.5))
+```
+
+***
+
+A *density* histogram.
+
+* **area** of each rectangle gives **proportion** of values in its range
+* total area = 1 (100%)
+
+Density Histogram
+==============
+
+How this works:
+
+* The rectangle from 80 to 100 mph has base $80-60=20$.
+* Height of 80-100 rectangle was about 0.021
+* Proportion driving between 80 and 100 is:
+
+$$base \times height = 20 \times 0.021 \approx 0.42.$$
+
+* So, about 42% drove between 80 and 100 mph.
+
+Making a Density Histogram
+===============
+left:  60%
+
+```{r eval=FALSE}
+histogram(~fastest,
+ data=m111survey,
+ xlab="speed (mph)",
+ main="Fastest Speed")
+```
+
+***
+
+```{r echo=FALSE,fig.width=10,fig.height=10}
+histogram(~fastest,data=m111survey,
+          xlab=list(label="speed (mph)",cex=2.5),
+          scales=list(cex=2.5),
+          ylab=list(cex=2.5),
+          main=list(label="Fastest Speed",cex=2.5))
+```
+
+Graph Tool:  Density Plot
+==================
+
+```{r echo=FALSE,fig.width=20,fig.height=10}
+densityplot(~fastest,data=m111survey,
+          xlab=list(label="speed (mph)",cex=2.5),
+          scales=list(cex=2.5),
+          ylab=list(cex=2.5),
+          main=list(label="Fastest Speed Driven",cex=2.5),
+          panel=function(x,...){ 
+            panel.histogram(x,breaks=seq(60,200,20),...)
+            panel.densityplot(x,lwd=3,col="red",...)
+            
+          })
+```
+
+
+Making a Density Plot
+===========
+left:  50%
+
+```{r eval=FALSE}
+densityplot(~fastest,
+        data=m111survey,
+        xlab="speed (mph)",
+        main="Fastest Speed")
+```
+
+
+The Plot
+===============
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+densityplot(~fastest,data=m111survey,
+          scales=list(cex=2.5),lwd=3,
+          xlab=list(label="speed (mph)",cex=3),
+          ylab=list(cex=3),
+          main=list(label="Fastest Speed Ever Driven",cex=3))
+```
+
+Describing Shape of a Numerical Distribution
+==============
+type:  section
+
+
+Terminology
+=============
+type:  section
+id:  Terms
+
+* symmetric (mirror image of itself around a central vertical line)
+* skewed left (tail to the lower values)
+* skewed right (to higher values)
+* unimodal (one major "hump")
+* bimodal (two major "humps")
+
+[Back to Contents](#/Contents)
+
+Unimodal, Left-Skewed
+=================
+
+```{r echo=FALSE,fig.width=20,fig.height=10}
+set.seed(12345)
+dunileft <- rbeta(1000,shape1=10,shape2=1)
+plot(density(dunileft),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,at=F,labels=F)
+axis(2,at=F,labels=F)
+```
+
+Unimodal, Right-Skewed
+=================
+```{r echo=FALSE,fig.width=20,fig.height=10}
+set.seed(12345)
+duniright <- rbeta(1000,shape1=1,shape2=10)
+plot(density(duniright),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+Bimodal, Right-Skewed
+=================
+
+```{r echo=F,fig.width=20,fig.height=10}
+set.seed(12345)
+dbiright <- c(duniright,rnorm(400,mean=0.5,sd=0.1))
+plot(density(dbiright),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+Unimodal, Symmetric
+====================
+
+```{r echo=FALSE,fig.width=20,fig.height=10}
+set.seed(12345)
+dunisymm <- rnorm(1000)
+plot(density(dunisymm),axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+This is often called "bell-shaped."
+
+Bimodal, Symmetric
+===============
+
+```{r echo=FALSE,fig.width=20,fig.height=10}
+set.seed(12345)
+dbisymm <- rbeta(1000,shape1=0.25,shape2=0.25)
+plot(density(dbisymm),
+     axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+Bimodal, Symmetric
+===============
+
+```{r echo=F,fig.width=20,fig.height=10}
+set.seed(12345)
+dbisymm2 <- rbeta(1000,shape1=0.25,shape2=0.25)
+plot(density(dbisymm2,from=0,to=1),
+     axes=F,xlab="",ylab="",main="",frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+```
+
+An Imaginary Population
+==============
+type:  section
+id:  Imagpop
+
+```{r eval=FALSE}
+data(imagpop)
+```
+Some of the variables in imagpop:
+
+```{r echo=FALSE}
+head(imagpop[1:8,c(1,2,3,4,8)])
+```
+
+[Back to Contents](#/Contents)
+
+Describing Kim Kardashian Temp
+=================
+Numerical Approach:
+```{r eval=FALSE}
+favstats(~kkardashtemp,
+         data=imagpop)
+```
+
+```{r echo=FALSE}
+favstats(~kkardashtemp,data=imagpop)[1:8]
+```
+
+Describing Kim Kardashian Temp
+=================
+Graphical Approach:
+
+```{r eval=FALSE}
+densityplot(~kkardashtemp,data=imagpop,
+      xlab="Point Rating",
+      main="Kim Kardashian Temp")
+```
+
+
+```{r echo=FALSE,fig.width=25,fig.height=10}
+densityplot(~kkardashtemp,
+      data=imagpop,lwd=3,
+      xlab=list(label="Point Rating",cex=2.5),
+      ylab=list(cex=2.5),
+      scales=list(cex=2.5),
+      main=list(label="Kim Kardashian Temp",cex=2.5))
+```
+
+Describing Kim Kardashian Temp
+=================
+
+* Center
+* spread
+* shape
+* any unusual features
+
+So we say something like:
+
+* The mean rating is about 50.4, with a standard deviation of 41.76.
+* The distribution is symmetric, but bimodal, with modes near 0 and 100.
+* People either love her or hate her!
+
+Boxplots
+===============
+type:  section
+id:  Boxplots
+
+A Special Graphical Tool
+
+[Back to Contents](#/Contents)
+
+Boxplots
+===============
+
+```{r eval=F,fig.width=25,fig.height=10}
+ImaginaryData <- c(7.1,7.3,7.5,8.2,8.5,9.1,9.5,
+          9.8,9,9,9.9,10,10.5,11)
+bwplot(~ImaginaryData,xlab="x",
+  main="Example Boxplot")
+```
+
+```{r echo=F,fig.width=25,fig.height=10}
+ImaginaryData <- c(7.1,7.3,7.5,8.2,8.5,9.1,9.5,
+                   9.8,9,9,9.9,10,10.5,11)
+bwplot(~ImaginaryData,xlab=list(label="x",cex=3),scales=list(cex=2.5),
+       main=list(label="Example Boxplot",cex=3),
+       par.settings=list(box.rectangle=list(col="blue",lwd=3),
+box.umbrella=list(lty=1, col="blue",lwd=3),
+plot.symbol=list(col="blue", pch=19,cex=3)))
+```
+
+Boxplot Detect Outliers
+=================
+
+```{r eval=F}
+bwplot(~height,data=m111survey,
+       main="Height at GC",
+       xlab="height (inches)")
+```
+
+```{r echo=F, fig.width=25,fig.height=10}
+bwplot(~height,data=m111survey,cex=3,
+       scales=list(cex=2.5),
+       main=list(label="Height at GC",cex=3),
+       xlab=list(label="height (inches)",cex=3),
+       par.settings=list(box.rectangle=list(col="blue"),
+box.umbrella=list(lty=1, col="blue"),
+plot.symbol=list(col="blue", pch=19,cex=3)))
+```
+
+Boxplots Detect Skewness
+===============
+```{r echo=FALSE,fig.width=25,fig.height=15}
+bwplot(~fastest, data=m111survey,xlab=list(label="speed (mph)",cex=4),
+       scales=list(cex=4),
+       par.settings=list(box.rectangle=list(col="blue"),
+box.umbrella=list(lty=1, col="blue"),
+plot.symbol=list(col="blue", pch=19,cex=3)),
+                main = list(label="Fastest Speed Driven",cex=4), 
+                panel = function(box.ratio,...) {
+                  panel.violin(..., col = "bisque")
+                  panel.bwplot(box.ratio=0.3,...)
+                }
+       )
+```
+
+
+
+Boxplots Miss "Crowding"
+===========
+```{r kardashviolin,echo=FALSE,fig.width=25,fig.height=15}
+bwplot(~kkardashtemp, data=imagpop,xlab=list(label="rating points",cex=2.5),
+       scales=list(cex=2.5),
+       par.settings=list(box.rectangle=list(col="blue"),
+box.umbrella=list(lty=1, col="blue"),
+plot.symbol=list(col="blue", pch=19,cex=3)),
+                main = list(label="Kim Kardashian Rating",cex=2.5), 
+                panel = function(box.ratio,...) {
+                  panel.violin(..., col = "bisque",
+                               from=0,to=100)
+                  panel.bwplot(box.ratio=0.3,...)
+                }
+       )
+```

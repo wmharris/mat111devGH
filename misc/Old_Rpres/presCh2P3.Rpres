@@ -1,0 +1,386 @@
+Describing Patterns in Data (Part 3)
+========================================================
+author: Homer White, Georgetown College
+transition:  none
+transition-speed:  fast
+navigation: slide
+
+Patterns in Data:  Part 3
+=============
+id:  Contents
+
+- [One Factor and One Numerical Variable](#/FacNum)
+- [Mean/SD vs. median/IQR](#/MeanMedThrowDown)
+- [68-95 Rule](#/EmpRule)
+- [$z$-scores](#/zscore)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+Relationship Between a Factor and a Numerical Variable
+==================
+type:  section
+id:  FacNum
+
+[Back to Contents](#/Contents)
+
+Factor and Numerical Variable
+===================
+
+>**Research Question**:  *Who tends to drive faster -- GC guys or GC gals?*
+
+* Question about the *relationship* between two variables.
+* Explanatory variable:  **sex** (factor)
+* Response variable:  **fastest** (numerical)
+
+Idea for Investigation
+==============
+type:  prompt
+
+* Compare the *conditional distributions* of the numerical variable, given each value of the factor variable.
+* Getting conditional distributions requires breaking data into "groups", one for each value of the factor.
+* If the conditonal distributions differ, then the two variables are related.
+
+Numerical Approach
+================
+
+```{r eval=FALSE}
+favstats(fastest~sex,data=m111survey)
+```
+
+Note the formula-data input:  formula is:
+
+$$numerical \sim factor$$
+
+Numerical Approach
+===================
+
+```{r echo=FALSE}
+favstats(fastest~sex,data=m111survey)[1:8]
+```
+
+*Focus on a measure of center (definitely NOT on max or min!)*.
+
+Guys drive faster, on average (mean speed 113.5 mph, compared to 100 mph for the gals).
+
+Graphics:  Parallel Boxplots
+===============
+left: 60%
+
+```{r eval=FALSE}
+bwplot(fastest~sex,
+       data=m111survey,
+ xlab="speed (mph)",
+ main="Fastest Speed")
+```
+
+***
+
+```{r echo=F}
+bwplot(fastest~sex,data=m111survey,scales=list(cex=2.5),
+ xlab=list(label="speed (mph)",cex=2.5),
+ main=list("Fastest Speed",cex=2.5),
+ par.settings=list(box.rectangle=list(col="blue"),
+box.umbrella=list(lty=1, col="blue"),
+plot.symbol=list(col="blue", pch=19,cex=3)))
+```
+
+Graphics:  Histograms
+=================
+
+```{r eval=F}
+histogram(~fastest|sex,data=m111survey,
+       type="density",
+       main="Fastest Speed Driven, by Sex",
+       xlab="Fastest Speed, in mph")
+```
+
+The Result
+================
+
+```{r echo=F, fig.width=25,fig.height=15}
+histogram(~fastest|sex,data=m111survey,scales=list(cex=2.5),
+       type="density",
+       ylab=list(cex=2.5),
+       main=list(label="Fastest Speed Driven, by Sex",cex=2.5),
+       xlab=list(label="Fastest Speed, in mph",cex=2.5),
+      par.strip.text=list(cex=2.5))
+```
+
+
+Graphics:  Grouped Density Plots
+=================
+
+```{r eval=F}
+densityplot(~fastest,data=m111survey,
+       groups=sex,
+       main="Fastest Speed Driven, by Sex",
+       xlab="speed (mph)",
+       auto.key=TRUE)
+```
+
+
+====================
+
+
+```{r echo=F,fig.width=25,fig.height=15}
+densityplot(~fastest,data=m111survey,lwd=3,scales=list(cex=2.5),
+       groups=sex,
+      ylab=list(cex=2.5),
+       main=list(label="Fastest Speed Driven, by Sex",cex=2.5),
+       xlab=list(label="speed (mph)",cex=2.5),
+       auto.key=list(cex=2.5))
+```
+
+Comparing Measures of Center and Spread
+================
+type:  section
+id:  MeanMedThrowDown
+
+[Back to Contents](#/Contents)
+
+Two Pairs of Measures
+==============
+
+* Two Measures of center:
+    * mean
+    * median
+* Two measures of spread
+    * standard deviation (SD)
+    * interquartile range (IQR)
+
+Which to use?
+
+Mean/Median
+=================
+type:  prompt
+
+In a histogram or density plot:
+
+* Half of the area comes before the median
+* the graph "balances" over the mean
+
+
+Mean/Median with Symmetry
+=============
+
+```{r echo=FALSE, fig.width=25,fig.height=15}
+set.seed(12345)
+dunisymm <- rnorm(500)
+plot(density(dunisymm),axes=F,xlab="",ylab="",main="",,frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+abline(v=c(median(dunisymm),mean(dunisymm)),lwd=2,lty=c(1,2))
+legend(x="topright",legend=c("median","mean"),lty=c(1,2),cex=3)
+```
+The mean and median are about the same!
+
+Mean/Median with Skewness
+=================
+
+```{r echo=FALSE, fig.width=25,fig.height=15}
+set.seed(12345)
+skewy <- rexp(1000)
+plot(density(skewy),xlab="",ylab="",main="",axes=F,frame.plot=T,lwd=3,col="blue")
+axis(1,labels=F,at=F)
+axis(2,labels=F,at=F)
+abline(v=c(median(skewy),mean(skewy)),lwd=2,lty=c(1,2))
+legend(x="topright",legend=c("median","mean"),lty=c(1,2),cex=3)
+```
+
+The mean is dragged toward the tail.
+
+Mean/Median, No Outliers
+==================
+
+```{r makefake, echo=FALSE}
+set.seed(12345)
+SmallDataset <- sort(round(rnorm(9,mean=50,sd=10),0))
+```
+
+```{r}
+SmallDataset
+```
+
+```{r eval=F}
+favstats(~SmallDataset)
+```
+
+
+```{r echo=F}
+favstats(~SmallDataset)[1:7]
+```
+
+Mean and median are both in the "middle."
+
+Mean/Median, With Outlier
+==================
+
+```{r}
+NewData <- c(SmallDataset,200)
+NewData
+```
+
+```{r eval=F}
+favstats(~NewData)
+```
+
+
+```{r echo=F}
+favstats(~NewData)[1:7]
+```
+
+Mean is much bigger than all values except the outlier!  The SD is also quite inflated.
+
+Criterion
+===============
+type:  prompt
+
+If
+
+* the data are **strongly** skewed, or
+* have **extreme** outliers in one direction but not the other
+
+then use median/IQR rather than mean/SD to describe center/spread.
+
+The 68-95 Rule
+=================
+type:  section
+id:  EmpRule
+
+[Back to Contents](#/Contents)
+
+The 68-95 Rule
+===================
+
+If the distribution of a numerical variable is roughly bell-shaped, then
+
+* about 68% of the values are within one SD of the mean
+* about 95% are within 2 SDs of the mean
+* about 99.7% are within 3 SDs of the mean
+
+(This is sometimes called the *Empirical Rule*.)
+
+68-95 Rule Limits
+=====================
+
+The rule works well even if the data are somewhat skewed, but be careful!
+
+```{r eval=FALSE}
+require(manipulate)
+EmpRuleGC()
+```
+
+68-95 Rule Application
+====================
+<small>A population has heights that have a bell-shaped distribution, with a mean of 70 inches and a standard deviation of 3 inches.</small>
+* About what percentage of people are taller than 73 inches?
+* About what percentage are shorter than 64 inches?
+* The percentage that are taller than 74 inches is less than $U$% and bigger than $L$%.  Find $U$ and $L$.
+
+<small>Suggestion:  try</small>
+```{r eval=F}
+require(manipulate)
+EmpRuleGC(mean=70,sd=3)
+```
+
+z-scores
+==================
+type:  section
+id:  zscore
+
+[Back to Contents](#/Contents)
+
+z-scores
+====================
+Suppse you want to compare an individual to a group.  The $z$-score for the individual value $x$ is:
+
+$$z=\frac{x-\bar{x}}{s},$$
+
+where
+
+* $\bar{x}$ is the mean of the group
+* $s$ is the standard deviation of the group
+
+Idea of a z-score
+===============
+type:  prompt
+
+The $z$-score of $x$ tells you how many SDs $x$ is above or below the mean for the group.  It measures how unusual $x$ is.
+
+Our Rule for Being Surprised
+====================
+type:  prompt
+
+Let's just agree to say that a value $x$ is:
+
+* surprisingly high if $z>2$
+* surprisingly low if $z<-2$
+
+Application
+===============
+
+**Question:**  Suppose that Linda is 72 inches tall.  How does she compare with the other GC students in the `m111survey` data?
+
+Solution:  Get her $z$-score.
+
+```{r eval=FALSE}
+favstats(~height,data=m111survey)
+```
+
+```{r echo=F}
+favstats(~height,data=m111survey)[6:7]
+```
+
+==================
+
+
+The mean is about 67.987 inches, and the SD is about 5.296 inches.  Hence Linda's $z$-score is:
+
+```{r}
+(72-67.987)/5.296
+```
+
+The $z$ score is about 0.76, which means that Linda is only about three-fourths of a standard deviation above the mean height.
+
+She is taller than average, but not unusually tall.
+
+==============
+
+**Question**:  Is Linda unusually tall, *for a female*?
+
+**Solution**:
+
+```{r eval=FALSE}
+favstats(height~sex,data=m111survey)
+```
+
+```{r echo=F}
+favstats(height~sex,data=m111survey)[c(".group","mean","sd")]
+```
+
+Linda's $z$-score relative to the *females* is:
+
+```{r}
+(72-64.94)/4.622
+```
+
+===============
+So Linda is about 1.53 SDs above the mean female height.
+
+That's more impressive, but still not terribly unusual.
+
+Note
+===============
+type:  prompt
+
+* $z$-scores and our criterion for "surprise" make the most sense when the distribution is roughly bell-shaped.
+* But even if the distribution is a bit skewed, they are still useful.
+

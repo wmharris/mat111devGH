@@ -1,0 +1,64 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Friday, April 10 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Spider Speeds (one last time!)
+
+Does losing a pedipalp affect the sprinting speed of a Tidarren spider?
+
+Let $\mu_d$ be the mean difference in speed (after amputation minus before) for all Tidarren spiders.
+
+$H_0:  \mu_d = 0$
+
+$H_a:  \mu_d \neq 0$
+
+
+## Part a
+
+
+Perform the test of significance.  Do this by modifying the code below:
+
+```{r}
+ttestGC(~jiffrating-greatvaluerating,
+      data=labels, mu=0)
+```
+
+
+## Part b
+
+What's the value of the test statistic?
+
+
+By how many standard errors does the sample mean of differences $\bar{d}$ differ from 0?
+
+
+What's the P-value?
+
+
+If amputation makes no difference in speed, on average, then what's the chance of getting a test statistic at least as far form 0 as the one we actually got?
+
+
+What should we do with the Null Hypothesis this time?  Reject it or not?
+
+
+Do you think that the data provided strong evidence that amputation makes a difference in speed, on average?
+
+
+
+# Sagebrush Crickets
+
+What do you think? Should we trust the results of the t-test for this example? Or should we ask a statistician for advice on how to analyze the data inferentially?  Just write a few words about which way you are leaning, and why.
+
+
+
+

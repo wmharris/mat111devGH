@@ -1,0 +1,67 @@
+---
+title: "DA"
+author: "Your Full Name Here"
+date: "01/30/2015"
+output: pdf_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Row Percents for Sex and Seat
+
+What percentage of females preferred the back?  In the code chunk below, enter the math to find this percentage:
+
+```{r}
+
+```
+
+
+What percentage of males preferred the back?  In the code chunk below, enter the math to find this percentage:
+
+```{r}
+
+```
+
+# Sex and Belief in Love at First Sight
+
+The code-chunk below gives code for a two way-table for the sex and seat question, followed by a table of row percents, and a barchart.  Run the code to see what it does.
+
+```{r}
+sexSeat <- xtabs(~sex+seat,data=m111survey)
+sexSeat
+rowPerc(sexSeat)
+barchartGC(sexSeat,type="percent",flat=TRUE)
+```
+
+In the code chunk below, enter the code needed to make a two-way table, a table of row percents and a barchart for the question about the relationship between sex and belief in love at first sight.  **Tip**:  copy the above code into the chunk, then modify it.
+
+```{r}
+
+```
+
+# Inference for Sex and Belief in Love at First Sight
+
+Try the simulation app for the question about sex and belief in love at first sight:
+
+
+```{r eval=FALSE}
+ChisqSimSlow(~sex+love_first,data=m111survey)
+```
+
+How many times did you re-sample?
+
+
+
+What percentage of the time did the re sampled chi-square statistic exceed the chi-square statistic in the actual study?
+
+
+
+Do you think there is overwhelming evidence that in the GC population the two sexes differ in whether they believe in love at first sight?
+
+
+

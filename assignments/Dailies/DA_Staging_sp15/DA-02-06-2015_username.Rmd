@@ -1,0 +1,97 @@
+---
+title: "DA"
+author: "Your Name Here"
+date: "Tuesday February 6, 2015"
+output: html_document
+---
+
+```{r include=FALSE}
+library(knitr)
+library(mosaic)
+library(tigerstats)
+```
+
+
+# Beetles and Stumps
+
+## Part a
+
+We decided that **larvae** and **stumps** are both numerical variables.
+
+In our study, which one do you think is the explanatory variable?
+
+
+
+Which one is the response?
+
+
+## Part b
+
+In the code-chunk below, write the code needed to make a scatter plot to investigate the relationship between **larvae** and **stumps**.  (**Tip**:  Find code from the slides that makes a scatter plot, then copy it into the eac of the two code vchunks below.  Using the top copy as a reference, modify the bottom copy so that it fits our situation.  Try it out.  When you are sure that it works, delete the top code chunk.)
+
+Remember:  the explanatory variable should appear on the x-axis!
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+## Part c
+
+Examining the scatter plot, describe the relationship:  is it positive, negative, curvilinear, or is there no relationship at all?
+
+
+True or False:  the more stumps there are in a plot, the more larvae cluster tend to be found in it.
+
+
+## Speed and Fuel Efficiency
+
+## Part a
+
+We decided that **speed** and **fuel** are both numerical variables.
+
+In our study, which one do you think is the explanatory variable?
+
+
+
+Which one is the response?
+
+
+## Part b
+
+Create a code chunk below and write into it the code to make a scatter plot to study the relationship between driving speed and fuel efficiency.  Remember:  the explanatory variable should be on the x-axis!
+
+
+
+
+
+
+## Part c
+
+Describe the relationship:  is it positive linear, negative linear, curvilinear, or is there no relationship?
+
+
+
+## Part d
+
+Units for **efficiency are** "liters per 100 km", the number of liters of fuel required to drive the car 100 kilometers at the given speed.
+
+Does a high number for efficiency represent good or poor fuel efficiency?
+
+
+At about what speed does the car have the best fuel efficiency?
+
+
+# Justin Verlander's Pitches
+
+Look at the scatter plots of **pz** vs. **px** for Justin Verlander's pitches.
+
+For which types of pitch does there appear to be a relationship between the horizontal break over the plate (**px**) and the height of the pitch over the plate (**pz**)?
+

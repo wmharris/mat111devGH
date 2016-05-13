@@ -1,0 +1,464 @@
+Goodness of Fit (Pt. 1)
+========================================================
+author: Homer White, Georgetown College
+transition:  fade
+transition-speed:  fast
+navigation: slide
+
+In Part 1:
+============
+id: Contents
+
+- [A Fair Die?  Data Snooping](#/fairdie)
+- [The $\chi^2$-Test Again](#/chisq)
+
+Load Packages
+================
+
+Always remember to make sure the necessary packages are loaded:
+
+```{r message=F}
+require(mosaic)
+require(tigerstats)
+```
+
+```{r echo=FALSE}
+trellis.par.set(theme.rpres())
+```
+
+
+```{r echo=FALSE}
+
+#overwrite pchisqGC() to magnify title,axes, and labels
+
+UnderShade <- function(low,high,func,...) { #Utility
+  x.coords <- c(low,seq(low,high,length.out=301),high)
+  y.coords <- c(0,func(seq(low,high,length.out=301),...),0)
+  polygon(x.coords,y.coords,col="lightblue",cex=2)
+}
+
+pchisqGC <- function(bound,region="above",df=NA,xlab="chi_square_statistic",graph=FALSE) {
+  if (!is.numeric(bound)) stop("Specify a numerical boundary")
+  if (bound < 0)  stop("The chi-square statistic must be at least 0")
+  if (is.na(df)) stop("Specify the degrees of freedom using the argument df")
+  if (!(region %in% c("below","above"))) stop("Specify either \"region=\"below\" or
+\"region=\"above\"")
+  if (df < 0) stop("Degrees of freedom must be positive")
+
+  if (region=="below")  {
+    area <- pchisq(bound,df=df)
+    if (graph && df==1) warning("No graph produced for region below when df=1")
+    if (graph) {
+    bound <- round(bound,2)
+    upper <- max(qchisq(.9999,df=df),bound+1)
+    lower <- 0
+    curve(dchisq(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=501,xlab=xlab,
+          main=paste("Chi-Square Curve, df = ",df,"\nShaded Area = ",round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    axis(1,at=c(lower,bound,upper),labels=c(as.character(0),as.character(bound),""),cex.axis=2.5)
+    axis(2)
+   x.coords <- c(lower,seq(lower,bound,length.out=301),bound)
+   y.coords <- c(0,dchisq(seq(lower,bound,length.out=301),df=df),0)
+   polygon(x.coords,y.coords,col="lightblue",cex=2)
+    }
+  return(area)
+  }
+
+  if (region=="above")  {
+    area <- pchisq(bound,df=df,lower.tail=FALSE)
+    if (graph) {
+    bound <- round(bound,2)
+    upper <- max(qchisq(.9999,df=df),bound+1)
+    lower <- 0
+    curve(dchisq(x,df=df),from=lower,to=upper,ylab="density",axes=FALSE,n=501,xlab=xlab,
+          main=paste("Chi-Square Curve, df = ",df,"\nShaded Area = ",round(area,4)),
+          cex.main=2.5,cex.lab=2.5)
+    axis(1,at=c(lower,bound,upper),labels=c(as.character(0),as.character(bound),""),cex.axis=2.5)
+    axis(2)
+    x.coords <- c(bound,seq(bound,upper,length.out=301),upper)
+    y.coords <- c(0,dchisq(seq(bound,upper,length.out=301),df=df),0)
+    polygon(x.coords,y.coords,col="lightblue",cex=2)
+    }
+    return(area)
+  }
+  
+ 
+
+}#end of pchisqGC
+```
+
+A Fair Die?
+===================
+type:  section
+id:  fairdie
+
+[Back to Contents](#/Contents)
+
+
+The Wild, Wild West
+=======================
+
+* You are the Sheriff of a rough town in the wild, wild West
+* A gambler comes to town
+* He claims to play with a fair die
+* But the locals say it's weighted
+* You impound the die to check it out
+* The gambler begs you not to damage it
+* So you roll it 60 times
+
+The 60 Rolls
+=================
+What you got:
+
+Spots|One|Two|Three|Four|Five|Six|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|Observed Counts|8|18|11|7|9|7|
+
+What you expect if the die is fair (give or take some for chance error of course!):
+
+Spots|One|Two|Three|Four|Five|Six|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|Expected Counts|10|10|10|10|10|10|
+
+My, that's a *whole lotta* two-spots!
+
+Better Run a Test!
+===================
+
+Let 
+
+  >$p =$ chance of die landing with two-spot side up
+  
+Hypotheses:
+
+  >$H_0: p = 1/6$  (fair die)
+  
+  >$H_a: p \neq 1/6$ (weighted die)
+  
+The Code
+===============
+
+```{r eval=FALSE}
+binomtestGC(x=18,n=60,p=1/6)
+```
+
+
+Results
+=============
+
+```
+P-value:  	P = 0.0089
+```
+
+* If the die is fair, then there is only about a 0.89% chance of getting as far from the expected numbers of two-spots as we actually got.
+* Better reject $H_0$.
+* Conclusion:  Ride gambler out of town (on a rail!)
+
+Wait a Minute ...
+========================
+
+We designed the test of significance based upon observing a large number of two-spots.
+
+  >That's data-snooping!
+  
+We need to take ALL of the data into account, in an even-handed way.
+
+Chi-Square to the Rescue!
+======================
+
+The familiar $\chi^2$-statistic will take all of the data into account:
+
+$$\chi^2=\sum_{\text{all cells}} \frac{(\text{Observed}-\text{Expected})^2}{\text{Expected}}.$$
+
+Compute the Chi-Square
+======================
+
+$$\chi^2 = \frac{(8-10)^2}{10}+\frac{(18-10)^2}{10}+\frac{(11-10)^2}{10} \\
++\frac{(7-10)^2}{10}+\frac{(9-10)^2}{10}+\frac{(7-10)^2}{10} \\
+= 8.8.$$
+
+What are the Chances?
+=======================
+
+What is the chance that
+
+$$\chi^2 \geq 8.8$$
+
+if the die is actually fair?
+
+We need a $P$-value!
+
+Simulation!
+================
+
+```{r}
+throws <- c(one=8,two=18,three=11,
+            four=7,five=9,six=7)
+NullProbs <- rep(1/6,6)
+```
+
+Take this to the simulation app:
+
+```{r eval=FALSE}
+require(manipulate)
+SlowGoodness(throws,NullProbs)
+```
+
+Hmm---maybe we should not jump to conclusions!
+
+The Chi-Square Test 
+===================
+type:  section
+id:  chisq
+
+[Back to Contents](#/Contents)
+
+Statistical Theory, Again
+==================
+
+* Statisticians have discovered the $\chi^2$-family of random variables
+* There is a different $\chi^2$ random variable for each "degree of freedom" $df$
+* $df$ can be $1,2,3,4,\ldots$
+
+Example
+==========
+
+```{r echo=FALSE,fig.width=20,fig,height=15}
+opar <- par()
+par(mar=c(5.1,5.1,5.1,4.1))
+curve(dchisq(x,df=3),from=0,to=10,xlab=expression(chi^2),ylab="",
+      cex.main=2.5,cex.lab=2,cex.axis=2.5,
+      main="Distribution of Chi-Square Random Variable\nDegrees of Freedom = 3")
+par(opar)
+```
+
+$\chi^2$ density curves are right-skewed.
+
+Also ...
+================
+Statisticians have found that:
+
+$$EV(\chi^2(df)) = df, \\
+SD(\chi^2(df)) = \sqrt{2 \times df}$$
+
+Also ...
+=======
+
+In a "goodness of fit" test like the one with the die, if:
+
+* the expected cell counts for a fair die are big enough
+* (each expected count $\geq 5$ is plenty)
+
+then:
+
+* the $\chi^2$-statistic is approximately a $\chi^2$ random variable
+* with $df = \text{number of cells} -1$
+
+The Die Study
+===================
+
+Spots|One|Two|Three|Four|Five|Six|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|Observed Counts|8|18|11|7|9|7|
+|Expected Counts|10|10|10|10|10|10|
+
+* The expected cells counts are all above 5
+* There are six cells
+* $6-1=5$
+* So if the die is fair, then:
+
+$$\chi^2-\text{statistic } \approx \chi^2(5)$$
+
+The Die Study
+================
+
+So if the die is fair, you would expect that
+
+* the $\chi^2$-statistic should work out to about 5,
+* give or take $\sqrt{2 \times 5} = 3.16$ or so, for chance error in the die throwing
+
+We actually got $\chi^2 = 8.8$.
+
+This is not so far above what we expected.
+
+The P-Value
+=============
+
+If we don't want to simulate, we could approximate the $P$-value using the density curve for a $\chi^2(5)$ random variable.
+
+P-Value
+==========
+
+```{r echo=FALSE,fig.width=25,fig.height=15}
+opar <- par()
+par(mar=c(5.1,5.1,5.1,4.1))
+pchisqGC(bound=8.8,region="above",df=5,graph=TRUE)
+par(opar)
+```
+
+Our Revised Results
+======================
+
+* $P > 0.05$, so we don't reject the gambler's claim that the die is fair.
+* The 60 rolls did not provide strong evidence that the die is weighted
+* (But we might keep an eye on that gambler)
+
+More Formally
+===================
+
+The $\chi^2$-test for *goodness of fit* addresses the inferential aspect of research questions about a single factor variable:
+
+  >Does the data provide strong evidence against a claim that the distribution of the factor variable is a *particular* set of values?
+  
+Define Parameters
+======================
+
+Let
+
+  >$p_1 =$ probability that die lands one-spot up
+  
+  >$p_2 =$ probability that die lands two-spot up
+  
+  >$p_3 =$ probability that die lands three-spot up
+  
+  >$p_4 =$ probability that die lands four-spot up
+  
+  >$p_5 =$ probability that die lands five-spot up
+  
+  >$p_6 =$ probability that die lands six-spot up
+  
+Hypotheses
+===============
+
+  >$H_0:$ All six of those probabilities are $1/6$
+  
+  >$H_a:$  At least one of those probabilities is not $1/6$
+  
+The Code
+=================
+Set up observed counts:
+
+```{r}
+throws <- c(one=8,two=18,three=11,
+            four=7,five=9,six=7)
+```
+Set Up Null's expected counts:
+
+```{r}
+NullProbs <- rep(1/6,6)
+```
+
+The test:
+
+```{r eval=FALSE}
+chisqtestGC(throws,p=NullProbs,
+            graph=TRUE)
+```
+
+Tour of the Results
+========================
+
+```
+       obs  exp contribution
+one     8   10      0.4
+two     18  10      6.4
+three   11  10      0.1
+four    7   10      0.9
+five    9   10      0.1
+six     7   10      0.9
+```
+
+The two-spots really did stand out!
+
+Tour of Results
+==================
+
+```
+Chi-Square Statistic = 8.8 
+Degrees of Freedom of the table = 5 
+P-Value = 0.1173 
+```
+
+Want Less Output?
+===================
+
+If you don't need the table of
+
+* observed counts
+* expected counts
+* contribution to $\chi^2$-statistic
+
+then set argument `verbose` to `FALSE`:
+
+```{r eval=FALSE}
+chisqtestGC(throws,p=NullProbs,
+            verbose=FALSE)
+```
+
+Another Example
+===================
+
+  >*At Georgetown College, are students equally split between front-sitters, middle-sitters and back-sitters?*
+  
+Parameters
+================
+
+The variable under investigation is **seat**, from `m111survey`.
+
+Let
+
+  >$p_f =$ proportion of all GC students who prefer the Front
+  
+  >$p_m =$ proportion of all GC students who prefer Middle
+  
+  >$p_b =$ proportion of all GC students who prefer the Back
+  
+Hypotheses
+================
+
+  >$H_0:$ All three those proportions are $1/3$
+  
+  >$H_a:$  At least one of those proportions is not $1/3$
+
+The Code
+=============
+
+```{r eval=FALSE}
+chisqtestGC(~seat,data=m111survey,
+      p=c(1/3,1/3,1/3),
+      graph=TRUE)
+```
+
+
+Tour of results
+====================
+
+| |Obs|Exp|Contributions|
+|:---:|:---:|:----:|:----:|
+|front|27|23.67|0.47|
+|middle|32|23.67|2.93|
+|back|12|23.67|5.75|
+
+```
+Chi-Square Statistic = 9.1549 
+Degrees of Freedom of the table = 2 
+P-Value = 0.0103 
+```
+
+* $P <0.05$, so we reject $H_0$.
+* Strong evidence here that the GC student body is not equally split on seating preference.
+
+Want to Simulate?
+========================
+
+You can always approximate the $P$-value through simulation:
+
+```{r eval=FALSE}
+set.seed(2020)
+chisqtestGC(~seat,data=m111survey,
+        p=rep(1/3,3),
+        simulate.p.value=TRUE,
+        graph=TRUE)
+```
+
+You *should* do so if one or more of the expected cell counts is less than 5.
