@@ -1,6 +1,6 @@
 ---
 title: "Basic Probability: Pt.1"
-author: "Homer White"
+author: "Will Harris"
 date: "September, 2014"
 output:
   ioslides_presentation:
