@@ -1,7 +1,7 @@
 ---
 title: "Basic Probability: Pt.1"
 author: "Will Harris"
-date: "September, 2014"
+date: "September, 2016"
 output:
   ioslides_presentation:
     incremental: no
