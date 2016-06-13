@@ -25,7 +25,7 @@ A **random variable** is a number whose value depends on the outcome of a chance
 
 ## Example
 
-You flip a fair coin three times.
+You flip a  fair coin three times.
 
 Let $X =$ the number of heads you get.
 
